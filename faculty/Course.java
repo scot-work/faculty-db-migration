@@ -1,6 +1,7 @@
 package faculty;
 
 import java.util.*;
+import java.io.PrintWriter;
 
 class Course {
 	int id;
@@ -10,6 +11,7 @@ class Course {
 	String dayAndTime;
 	String description;
 	String facultyHandle;
+	String url;
 	List<Section> sections; 
 
 	public Course(String title) {
@@ -28,6 +30,21 @@ class Course {
 			}
 		}
 		return result;
+	}
+
+	public void toHTML(PrintWriter writer) {
+		writer.println(HtmlStrings.HEADER);
+    writer.println(HtmlStrings.TITLE);
+    writer.println(HtmlStrings.BODY);
+    writer.println("<h2>" + title + "</h2>");
+    // time
+    writer.println("<p><strong>Time:</strong> " + dayAndTime + " </p>");
+    // location
+    writer.println("<p><strong>Location:</strong> " + location + " </p>");
+    // Supplemental URL
+    writer.println("<p><strong>Supplemental URL:</strong> " + url + " </p>");
+
+    writer.println(HtmlStrings.FOOTER);
 	}
 
 	public String url() {

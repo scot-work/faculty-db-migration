@@ -15,7 +15,7 @@ class Faculty {
  String handle;
  int facultyID;
  int towerID;
- String email;
+ List<String> emails;
  Education education;
    // inactive faculty will not be in sjsu_people_details_master.towerid
  boolean active;
@@ -32,16 +32,14 @@ class Faculty {
  List<License> licenses;
  List<Position> positions;
  List<Course> courses;
+ List<Link> links;
 // photo
-// links
 
  Faculty(int facultyID){
   this.facultyID = facultyID;
 }
 
-/**
-* Output one faculty
-*/
+/*
 public String toString() {
   String result = "\nName: " + firstName;
   if (Migrate.isValid(middleName)) {
@@ -76,6 +74,7 @@ public String toString() {
   }
   return result;
 }
+*/
 
 public void outputHTML() {
   try {
@@ -92,13 +91,20 @@ public void outputHTML() {
       writer.println(" " + middleName);
     }
     writer.println(" " + lastName + "</h2>"); 
+    if (photoSetting == 2){
+      String photoURL = Migrate.baseURL + handle + "/" + handle + ".jpg";
+      writer.println("<img src=\"" + photoURL + "\" alt=\"" + photoDescription + "\" />");
+    }
     writer.println("<p>");
     for(Position p : positions){
       writer.println("<em>" + p.positionDescription + ", " + p.department + "</em><br />");
     }
     writer.println("<em>" + titles + "</em><br />");
+    writer.println("</p>");
     writer.println("<h4>Email</h4>");
-    writer.println("<p>" + email + "</p>");
+    for(String email : emails){
+    writer.println("<p><a href=\"mailto:" + email + "\">" + email + "</a></p>");
+  }
     writer.println("<h4>Phone Number(s)</h4>");
     writer.println("<p>" + phone + "</p>");
     writer.println("<h4>Office Hours</h4>");
@@ -130,13 +136,31 @@ public void outputHTML() {
     writer.println(bio);
 
     writer.println("<hr /><h3>Links</h3>");
-
-
+    writer.println("<ul>");
+    for (Link l : links ){
+      writer.println("<li><a href=\"" + l.url + "\">" + l.label + "</a></li>");
+    }
+    writer.println("</ul>");
     writer.println(HtmlStrings.FOOTER);
     writer.close();
+
   } catch (FileNotFoundException | UnsupportedEncodingException e){
     e.printStackTrace();
   }
-}
 
+// Output course pages
+  for (Course c : courses){
+    try {
+     String outputDir = Migrate.outputDirectory + this.handle + "/courses/" + c.name;
+     String outputFile = outputDir + "/index.html";
+     new File(outputDir).mkdirs();
+     PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
+      c.toHTML(writer);
+    writer.close();
+   } catch (FileNotFoundException | UnsupportedEncodingException e){
+    e.printStackTrace();
+  }
+
+}
+}
 }

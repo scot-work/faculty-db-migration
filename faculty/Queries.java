@@ -39,4 +39,6 @@ class Queries {
 	public static String LinkDetails = "SELECT * FROM sjsu_people_links WHERE id=?";
 	// Get license information
 	public static String LicenseQuery = "SELECT * FROM sjsu_people_licenses_certificates splc LEFT JOIN sjsu_licenses_certificates_master slcm ON splc.license_code = slcm.accomplishment WHERE splc.faculty_id=?";
+	// Get home page links
+	public static String HomeLinksQuery = "SELECT url, label FROM sjsu_people_links WHERE faculty_id =?";
 }
