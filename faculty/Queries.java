@@ -55,4 +55,15 @@ class Queries {
 	// Get module active/inactive status
 	public static String GetModuleActiveStatus = "SELECT * FROM sjsu_people_website_settings "
 		+ "WHERE faculty_id=?";
+	// Get custom pages
+	public static String GetCustomPages = "SELECT * FROM sjsu_people_pages "
+		+ "WHERE faculty_id=?";
+
+	// Get links from custom page
+	public static String GetCustomPageLinks = "SELECT label, url FROM sjsu_people_page_links "
+		+ "WHERE page_id=? ORDER BY position";
+		// Get documents from custom page
+	public static String GetCustomPageDocs = "SELECT spd.label, spd.path "
+		+ "FROM sjsu_people_page_docs sppd, sjsu_people_documents spd "
+		+ "WHERE sppd.page_id=? AND sppd.document_id = spd.id ORDER BY sppd.position";
 }

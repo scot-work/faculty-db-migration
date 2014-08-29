@@ -2,6 +2,7 @@ package faculty;
 
 import java.sql.*;
 import java.util.*;
+import java.io.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,8 +30,8 @@ public class Migrate {
 	public static String baseURL = "/people/";
 	public static String outputDirectory = "/var/www/html/people/";
 	public static String liveSiteBaseDir = "http://dev.sjsu.edu/people/";
-	public static void main(String[] args) {
 
+	public static void main(String[] args) {
 		Properties prop = new Properties();
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();         
 		InputStream stream = loader.getResourceAsStream("dev.properties");
@@ -40,33 +41,73 @@ public class Migrate {
 			e.printStackTrace();
 		}
 
+		if (args.length == 0) {
+			try {
+				processAllFacultyPages(prop);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} else {
+			if (args[0].equals("empty")) {
+				try {
+				outputEmptyFolders(prop);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			}
+		}
+	}
 
-    /*
-     * Get a database connection
-     */
-
-    try {
-    	Class.forName("com.mysql.jdbc.Driver");
-    } catch (ClassNotFoundException e) {
-    	e.printStackTrace();
-    }
-    try {
-    	Connection conn = DriverManager.getConnection(prop.getProperty("ConnectionString"));
-    	getFacultyList(conn);
-    	conn.close();
-    } catch (SQLException ex) {
-    	System.out.println("SQLException: " + ex.getMessage());
-    	System.out.println("SQLState: " + ex.getSQLState());
-    	System.out.println("VendorError: " + ex.getErrorCode());
-    }
+/**
+*  Output empty folder for each faculty
+*
+*/
+static void outputEmptyFolders(Properties prop) throws java.sql.SQLException {
+	Connection conn = null;
+	try {
+		Class.forName("com.mysql.jdbc.Driver");
+	} catch (ClassNotFoundException e) {
+		e.printStackTrace();
+	}
+	try {
+		conn = DriverManager.getConnection(prop.getProperty("ConnectionString"));
+	} catch (SQLException ex) {
+		System.out.println("SQLException: " + ex.getMessage());
+		System.out.println("SQLState: " + ex.getSQLState());
+		System.out.println("VendorError: " + ex.getErrorCode());
+	}
+	PreparedStatement stmt = conn.prepareStatement(Queries.PublishedQuery);
+	ResultSet rs = stmt.executeQuery();
+	String handle = "";
+	while (rs.next()) {
+		handle = rs.getString("handle");
+		String outputDir = outputDirectory + handle;
+    	new File(outputDir).mkdirs();
+	}
+	rs.close();
+	stmt.close();
+	conn.close();
 }
+
 
 /**
 *  Create a list of published faculty
 *
 */
-static void getFacultyList(Connection conn) throws java.sql.SQLException {
-	List<Faculty> facultyList = new ArrayList();
+static void processAllFacultyPages(Properties prop) throws java.sql.SQLException {
+	Connection conn = null;
+	try {
+		Class.forName("com.mysql.jdbc.Driver");
+	} catch (ClassNotFoundException e) {
+		e.printStackTrace();
+	}
+	try {
+		conn = DriverManager.getConnection(prop.getProperty("ConnectionString"));
+	} catch (SQLException ex) {
+		System.out.println("SQLException: " + ex.getMessage());
+		System.out.println("SQLState: " + ex.getSQLState());
+		System.out.println("VendorError: " + ex.getErrorCode());
+	}
 	PreparedStatement stmt = conn.prepareStatement(Queries.PublishedQuery);
 	ResultSet rs = stmt.executeQuery();
 	while (rs.next()) {
@@ -80,6 +121,7 @@ static void getFacultyList(Connection conn) throws java.sql.SQLException {
 	}
 	rs.close();
 	stmt.close();
+	conn.close();
 }
 
 static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLException {
@@ -89,7 +131,7 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 	stmt.setInt(1, f.facultyID);
 	ResultSet rs = stmt.executeQuery();
 	int id = 0;
-	while (rs.next()){
+	while (rs.next()) {
 		id = rs.getInt("towerid");
 	}
 	rs.close();
@@ -113,6 +155,7 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 	stmt.close();
 
     // Get self-entered info
+    // SELECT * FROM sjsu_people_details WHERE id=?
 	stmt = conn.prepareStatement(Queries.DetailsQuery);
 	stmt.setInt(1, f.facultyID);
 	rs = stmt.executeQuery();
@@ -122,22 +165,22 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 		f.bio = rs.getString("bio");
 		f.photoSetting = rs.getInt("photo_setting");
 		f.photoDescription = rs.getString("photo_description");
-		if (isValid(rs.getString("phone"))){
+		if (isValid(rs.getString("phone"))) {
 			f.phone = rs.getString("phone");
 		}
-		if (isValid(rs.getString("first_name"))){
+		if (isValid(rs.getString("first_name"))) {
 			f.firstName = rs.getString("first_name");
 		}
-		if (isValid(rs.getString("middle_name"))){
+		if (isValid(rs.getString("middle_name"))) {
 			f.middleName = rs.getString("middle_name");
 		}
-		if (isValid(rs.getString("email"))){
+		if (isValid(rs.getString("email"))) {
 			f.emails.add(rs.getString("email"));
 		}
 		f.titles = rs.getString("titles");
 		f.handle = rs.getString("published_handle");
 		f.useFormEntryForPublications = (rs.getInt("publications_use_form_entry") == 1)? true : false;
-		if (!(f.useFormEntryForPublications)){
+		if (!(f.useFormEntryForPublications)) {
 			f.publicationsText = rs.getString("publications_freeform");
 		}
 	}
@@ -147,61 +190,60 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
   // get module status
   // sjsu_people_website_settings
 
-
 	stmt = conn.prepareStatement(Queries.GetModuleActiveStatus);
 	stmt.setInt(1, f.facultyID);
 	rs = stmt.executeQuery();
 	while(rs.next()) {
 		f.active = (rs.getInt("active") == 1)?true:false;
-		if (rs.getInt("bio_active") == 0){
+		if (rs.getInt("bio_active") == 0) {
 			f.bioActive = false;
 			f.active = false;
 		} else {
 			f.bioActive = true;
 		}
-		if (rs.getInt("courses_active") == 0){
+		if (rs.getInt("courses_active") == 0) {
 			f.coursesActive = false;
 			f.active = false;
 
 		} else {
 			f.coursesActive = true;
 		}
-		if (rs.getInt("education_active") == 0){
+		if (rs.getInt("education_active") == 0) {
 			f.educationActive = false;
 			f.active = false;
 
 		} else {
 			f.educationActive = true;
 		}
-		if (rs.getInt("certificates_active") == 0){
+		if (rs.getInt("certificates_active") == 0) {
 			f.licensesCertificatesActive = false;
 			f.active = false;
 
 		} else {
 			f.licensesCertificatesActive = true;
 		}
-		if (rs.getInt("links_active") == 0){
+		if (rs.getInt("links_active") == 0) {
 			f.linksActive = false;
 			f.active = false;
 
 		} else {
 			f.linksActive = true;
 		}
-		if (rs.getInt("professional_services_active") == 0){
+		if (rs.getInt("professional_services_active") == 0) {
 			f.professionalServicesActive = false;
 
 		} 
-		if (rs.getInt("publications_active") == 0){
+		if (rs.getInt("publications_active") == 0) {
 			f.publicationsActive = false;
 		} else {
 			f.publicationsActive = true;
 		}
-		if (rs.getInt("research_active") == 0){
+		if (rs.getInt("research_active") == 0) {
 			f.researchActive = false;
 		} else {
 			f.researchActive = true;
 		}
-		if (rs.getInt("expert_active") == 0){
+		if (rs.getInt("expert_active") == 0) {
 			f.expertActive = false;
 		} else {
 			f.expertActive = true;
@@ -210,10 +252,8 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 	rs.close();
 	stmt.close();
 
-
-
 // get form-entered publications
-	if (f.useFormEntryForPublications){
+	if (f.useFormEntryForPublications) {
 		List publications = new ArrayList<Publication>();
 		stmt = conn.prepareStatement(Queries.GetPublications);
 		stmt.setInt(1, f.facultyID);
@@ -244,15 +284,6 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 
 	f.education = new Education(f.towerID, f.facultyID, conn);
 
-  // Download image
-	if (f.photoSetting == 2){
-		try {
-			saveImage(liveSiteBaseDir + f.handle + "/" + f.handle + ".jpg", outputDirectory + f.handle + "/" + f.handle + ".jpg");
-		} catch (IOException e){
-			e.printStackTrace();
-		}
-	}
-
     // Get licenses and Certificates
 	List licenses = new ArrayList<License>();
 	stmt = conn.prepareStatement(Queries.LicenseQuery);
@@ -274,7 +305,7 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 	f.licenses = licenses;
 
     // Clean up licenses
-	for (License l : f.licenses){
+	for (License l : f.licenses) {
 		stmt = conn.prepareStatement(Queries.GetCountryFromCode);
 		stmt.setString(1, l.countryCode);
 		rs = stmt.executeQuery();
@@ -324,6 +355,51 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 	rs.close();
 	stmt.close();
 
+	// Get Custom Pages
+	List customPages = new ArrayList<CustomPage>();
+	stmt = conn.prepareStatement(Queries.GetCustomPages);
+	stmt.setInt(1, f.facultyID);
+	rs = stmt.executeQuery();
+	while(rs.next()) {
+		CustomPage p = new CustomPage(rs.getInt("id"));
+		p.name = rs.getString("name");
+		p.title = rs.getString("title");
+		p.content = rs.getString("content");
+		p.url = baseURL + f.handle + "/" + p.name;
+		p.active = rs.getInt("status") == 1?true:false;
+		customPages.add(p);
+	}
+ 	rs.close();
+	stmt.close();
+	f.customPages = customPages;
+
+	// process Custom Pages
+		// get links
+	for (CustomPage p : f.customPages) {
+		List<Link> links = new ArrayList<Link>();
+		stmt = conn.prepareStatement(Queries.GetCustomPageLinks);
+		stmt.setInt(1, p.id);
+		rs = stmt.executeQuery();
+		while(rs.next()) {
+			Link l = new Link(rs.getString("label"), rs.getString("url"));
+			links.add(l);
+		}
+		p.links = links;
+	}
+	// get documents
+	for (CustomPage p : f.customPages) {
+		List<Document> docs = new ArrayList<Document>();
+		stmt = conn.prepareStatement(Queries.GetCustomPageDocs);
+		stmt.setInt(1, p.id);
+		rs = stmt.executeQuery();
+		while(rs.next()) {
+			Document d = new Document(rs.getString("label"), p.url 
+				+ "/" + rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1));
+			docs.add(d);
+		}
+		p.documents = docs;
+	}
+
     // Get Courses
 	List courses = new ArrayList<Course>();
 	Course course = null;
@@ -359,7 +435,7 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 			section.name = rs.getString("name");
 			section.description = rs.getString("description");
       // If any section is inactive, make the course inactive
-			if (rs.getInt("status") == 0){
+			if (rs.getInt("status") == 0) {
 				section.active = false;
 				c.active = false;
 			} else {
@@ -371,9 +447,9 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 		c.sections = sections;
 		rs.close();
 		stmt.close();
+
       // get docs for section
       // SELECT * FROM sjsu_people_course_section_docs WHERE course_section_id=?
-
 		for (Section s : c.sections) {
 			List documents = new ArrayList<Document>();
 			stmt = conn.prepareStatement(Queries.SectionDocsQuery);
