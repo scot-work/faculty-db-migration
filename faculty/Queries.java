@@ -26,11 +26,11 @@ class Queries {
   // Get official contact information about a faculty
 	public static String OfficialInfoQuery = "SELECT * FROM sjsu_people_details_master WHERE towerid=?";
   // Get a list of courses for a faculty
-	public static String CoursesQuery = "SELECT * FROM sjsu_people_course_entry WHERE faculty_id=?";
+	public static String CoursesQuery = "SELECT * FROM sjsu_people_course_entry WHERE faculty_id=? ORDER BY position;";
   // Get list of page sections for one course
-	public static String CourseSectionsQuery = "SELECT * FROM sjsu_people_course_section WHERE course_id=?";
+	public static String CourseSectionsQuery = "SELECT * FROM sjsu_people_course_section WHERE course_id=? ORDER BY position";
   // Get a list of documents from a course section
-	public static String SectionDocsQuery = "SELECT spd.path, spd.label FROM sjsu_people_course_section_docs spcsd, sjsu_people_documents spd WHERE spd.id = spcsd.document_id AND spcsd.course_section_id=?";
+	public static String SectionDocsQuery = "SELECT spd.path, spd.label FROM sjsu_people_course_section_docs spcsd, sjsu_people_documents spd WHERE spd.id = spcsd.document_id AND spcsd.course_section_id=? ORDER BY spcsd.position";
   // Get a list of links from a course section
 	public static String SectionLinksQuery = "SELECT * FROM sjsu_people_course_section_links WHERE course_section_id=?";
   // Get details about a document
@@ -38,7 +38,21 @@ class Queries {
   // Get details about a link
 	public static String LinkDetails = "SELECT * FROM sjsu_people_links WHERE id=?";
 	// Get license information
-	public static String LicenseQuery = "SELECT * FROM sjsu_people_licenses_certificates splc LEFT JOIN sjsu_licenses_certificates_master slcm ON splc.license_code = slcm.accomplishment WHERE splc.faculty_id=?";
+	public static String LicenseQuery = "SELECT * FROM sjsu_people_licenses_certificates splc "
+		+ "LEFT JOIN sjsu_licenses_certificates_master slcm "
+		+ "ON splc.license_code = slcm.accomplishment WHERE splc.faculty_id=?";
 	// Get home page links
-	public static String HomeLinksQuery = "SELECT url, label FROM sjsu_people_links WHERE faculty_id =?";
+	public static String HomeLinksQuery = "SELECT url, label FROM sjsu_people_links "
+	+ "WHERE faculty_id =?";
+	// Get publications
+	// sjsu_publication_author_master identifier, description
+	// sjsu_publication_type_master
+	public static String GetPublications = "SELECT * FROM sjsu_people_publications WHERE faculty_id=? "
+		+ "ORDER BY position";
+	// Get research
+	public static String GetResearch = "SELECT * FROM sjsu_people_research WHERE faculty_id=? "
+		+ "ORDER BY position";
+	// Get module active/inactive status
+	public static String GetModuleActiveStatus = "SELECT * FROM sjsu_people_website_settings "
+		+ "WHERE faculty_id=?";
 }

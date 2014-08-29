@@ -12,7 +12,7 @@ class Document {
 	}
 
 	public String toHTML() {
-		return "<a href=\"" + url + "\">" + label + "</a>";
+		return "<li><a href=\"" + url + "\">" + label + "</a></li>";
 	}
 
 }

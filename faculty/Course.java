@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 
 class Course {
 	int id;
+	boolean active;
 	String title;
 	String name;
 	String location;
@@ -14,7 +15,7 @@ class Course {
 	String url;
 	List<Section> sections; 
 
-	public Course(String title) {
+	 Course(String title) {
 		this.title = title;
 	}
 
@@ -32,22 +33,31 @@ class Course {
 		return result;
 	}
 
-	public void toHTML(PrintWriter writer) {
+	 void toHTML(PrintWriter writer) {
 		writer.println(HtmlStrings.HEADER);
-    writer.println(HtmlStrings.TITLE);
-    writer.println(HtmlStrings.BODY);
-    writer.println("<h2>" + title + "</h2>");
+		writer.println(HtmlStrings.TITLE);
+		writer.println(HtmlStrings.BODY);
+		writer.println("<h2>" + title + "</h2>");
+		if (active) {
+			writer.println("<em>active</em>");
+		} else {
+			writer.println("<em>inactive/hidden</em>");
+		}
     // time
-    writer.println("<p><strong>Time:</strong> " + dayAndTime + " </p>");
+		writer.println("<p><strong>Time:</strong> " + dayAndTime + " </p>");
     // location
-    writer.println("<p><strong>Location:</strong> " + location + " </p>");
+		writer.println("<p><strong>Location:</strong> " + location + " </p>");
     // Supplemental URL
-    writer.println("<p><strong>Supplemental URL:</strong> " + url + " </p>");
-
-    writer.println(HtmlStrings.FOOTER);
+		writer.println("<p><strong>Supplemental URL:</strong> <a href=\"" + url + "\">" + url + "</a></p>");
+		writer.println("<h2>Description</h2>");
+		writer.println("<p>" + description + "</p>");
+		for (Section s : sections){
+			writer.println(s.toHTML());
+		}
+		writer.println(HtmlStrings.FOOTER);
 	}
 
-	public String url() {
+	 String url() {
 		return "/people/" + facultyHandle + "/courses/" + name;
 	}
 
