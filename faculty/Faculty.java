@@ -52,7 +52,7 @@ class Faculty {
 	Faculty(int facultyID) {
 		this.facultyID = facultyID;
 	}
-	
+
 	/**
 	 * Full name
 	 * @return
@@ -165,7 +165,6 @@ class Faculty {
 		}
 
 		// Output publications
-		// TODO move output method to Publications class
 		if ((useFormEntryForPublications && (publications.size() > 0)) || Migrate.isValid(publicationsText)) {
 			try {
 				String outputDir = Migrate.outputDirectory + this.handle + "/publications/";
@@ -192,6 +191,30 @@ class Faculty {
 				e.printStackTrace();
 			}
 		}
+
+		// Output research
+
+		try {
+			String outputDir = Migrate.outputDirectory + this.handle + "/research/";
+			String outputFile = outputDir + "/index.html";
+			new File(outputDir).mkdirs();
+			PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
+			writer.println(HtmlStrings.HEADER);
+			writer.println(HtmlStrings.TITLE);
+			writer.println(HtmlStrings.BODY);
+			writer.println("<h2>" + fullName() + "</h2>"); 
+			writer.println("<h3>Research &amp; Scholarly Activity</h3>");
+			writer.println("<ul>");
+			for (Research r : research) {
+				writer.println(r.toHTML());
+			}
+			writer.println("</ul>");
+			writer.println(HtmlStrings.FOOTER);
+			writer.close();
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
 
 		// Custom pages
 		for (CustomPage p : customPages){

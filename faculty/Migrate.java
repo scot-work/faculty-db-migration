@@ -13,9 +13,7 @@ import faculty.Position;
 /*
 * TODO:
 * Course photo
-* Custom Pages  
 * Professional & Service Activity
-* Research & Scholarly Activity
 * ORDER BY position
 */
 
@@ -156,7 +154,7 @@ static void processFacultySite(Connection conn, Faculty currentFaculty) throws j
 	rs.close();
 	stmt.close();
 
-    // Get self-entered info
+    // Get self-entered info 
     // SELECT * FROM sjsu_people_details WHERE id=?
 	stmt = conn.prepareStatement(Queries.DetailsQuery);
 	stmt.setInt(1, currentFaculty.facultyID);
@@ -170,12 +168,15 @@ static void processFacultySite(Connection conn, Faculty currentFaculty) throws j
 		if (isValid(rs.getString("phone"))) {
 			currentFaculty.phone = rs.getString("phone");
 		}
+		// This is the preferred first name
 		if (isValid(rs.getString("first_name"))) {
 			currentFaculty.firstName = rs.getString("first_name");
 		}
+		// This is the preferred middle name
 		if (isValid(rs.getString("middle_name"))) {
 			currentFaculty.middleName = rs.getString("middle_name");
 		}
+		// This is an additional middle name 
 		if (isValid(rs.getString("email"))) {
 			currentFaculty.emails.add(rs.getString("email"));
 		}

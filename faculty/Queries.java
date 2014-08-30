@@ -100,6 +100,10 @@ class Queries {
 	// Get custom pages
 	public static String GetCustomPages = "SELECT * FROM sjsu_people_pages "
 			+ "WHERE faculty_id=?";
+	
+	// Get professional activity
+	public static String GetProfessionalActivities = "SELECT * FROM sjsu_people_professional_activities "
+				+ "WHERE faculty_id=?";
 
 	// Get links from custom page
 	public static String GetCustomPageLinks = "SELECT label, url FROM sjsu_people_page_links "
