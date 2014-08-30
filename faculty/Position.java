@@ -4,8 +4,15 @@ class Position {
 String positionDescription;
 String department;
 
-public Position(String desc){
+ Position(String desc){
 	this.positionDescription = desc;
 }
+/**
+ * Return as formatted HTML
+ * @return
+ */
+ String toHTML(){
+	 return "<em>" + positionDescription + ", " + department + "</em>";
+ }
 
 }

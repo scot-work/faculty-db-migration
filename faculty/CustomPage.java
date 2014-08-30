@@ -13,11 +13,19 @@ class CustomPage {
 	List<Document> documents;
 	boolean active;
 
+	/**
+	 * Create a new custom page
+	 * @param id
+	 */
 	CustomPage(int id) {
 		this.id = id;
 	}
 
-void toHTML(PrintWriter writer) {
+	/**
+	 * Output Custom Page as a web page
+	 * @param writer
+	 */
+	void toHTML(PrintWriter writer) {
 		writer.println(HtmlStrings.HEADER);
 		writer.println(HtmlStrings.TITLE);
 		writer.println(HtmlStrings.BODY);
@@ -27,5 +35,4 @@ void toHTML(PrintWriter writer) {
 		}
 		writer.println(HtmlStrings.FOOTER);
 	}
-
 }

@@ -3,14 +3,21 @@ package faculty;
 class Document {
 	String label;
 	String url;
-	
-// example: /people/scot.close/courses/test/s0/52-Fall-09-1 Greensheet.pdf
 
+	/**
+	 * Create a new Document object
+	 * @param label Name to use in link
+	 * @param url URL
+	 */
 	public Document(String label, String url){
 		this.label = label;
 		this.url = url;
 	}
 
+	/**
+	 * Return as a formatted list item/link
+	 * @return HTML list item
+	 */
 	public String toHTML() {
 		return "<li><a href=\"" + url + "\">" + label + "</a></li>";
 	}

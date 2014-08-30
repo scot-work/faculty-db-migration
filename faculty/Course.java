@@ -15,10 +15,17 @@ class Course {
 	String url;
 	List<Section> sections; 
 
-	 Course(String title) {
+	/**
+	 * Create a new Course
+	 * @param title Course Title
+	 */
+	Course(String title) {
 		this.title = title;
 	}
 
+	/**
+	 * Output course content as a formatted string
+	 */
 	public String toString() {
 		String result = title + ", " + name + ", " + location + ", " + dayAndTime;
 		if (description != null){
@@ -33,7 +40,11 @@ class Course {
 		return result;
 	}
 
-	 void toHTML(PrintWriter writer) {
+	/**
+	 * Output course as a web page
+	 * @param writer
+	 */
+	void toHTML(PrintWriter writer) {
 		writer.println(HtmlStrings.HEADER);
 		writer.println(HtmlStrings.TITLE);
 		writer.println(HtmlStrings.BODY);
@@ -43,11 +54,11 @@ class Course {
 		} else {
 			writer.println("<em>inactive/hidden</em>");
 		}
-    // time
+		// time
 		writer.println("<p><strong>Time:</strong> " + dayAndTime + " </p>");
-    // location
+		// location
 		writer.println("<p><strong>Location:</strong> " + location + " </p>");
-    // Supplemental URL
+		// Supplemental URL
 		writer.println("<p><strong>Supplemental URL:</strong> <a href=\"" + url + "\">" + url + "</a></p>");
 		writer.println("<h2>Description</h2>");
 		writer.println("<p>" + description + "</p>");
@@ -57,7 +68,11 @@ class Course {
 		writer.println(HtmlStrings.FOOTER);
 	}
 
-	 String url() {
+	/**
+	 * Get the URL for this course page
+	 * @return URL
+	 */
+	String url() {
 		return "/people/" + facultyHandle + "/courses/" + name;
 	}
 

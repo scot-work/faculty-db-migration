@@ -17,21 +17,18 @@ public class Publication {
 	String  publicationType ;
 	String[] months = {"January","February","March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 
+	/**
+	 * Constructor
+	 */
 	public Publication() {
 
 	}
 
-/*
-* <li>Author(s). &quot;<a href="URL">Title</a>
-		,&quot; Publication Name.
-		Publication Type.
-		Vol. volume. 
-		Issue issue. 
-		Publisher Location: Publisher Name, (December 1951). pp.page.
 
-	  <p><span class="text_blue">Abstract: </span>abstract<p>
-	</li>	
-*/
+	/**
+	 * Return as formatted HTML
+	 * @return
+	 */
 	public String toHTML(){
 		String result = "<li>";
 		if (Migrate.isValid(authors)) {
@@ -71,6 +68,6 @@ public class Publication {
 		}
 		result += "</li>";
 		return result;
-}
+	}
 
 }

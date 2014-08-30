@@ -3,12 +3,7 @@ package faculty;
 import java.sql.*;
 import java.util.*;
 import java.io.*;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
-import faculty.Degree;
 import faculty.Faculty;
 import faculty.Education;
 import faculty.Queries;
@@ -18,7 +13,7 @@ import faculty.Position;
 /*
 * TODO:
 * Course photo
-* Custom Pages sjsu_people_pages 
+* Custom Pages  
 * Professional & Service Activity
 * Research & Scholarly Activity
 * ORDER BY position
@@ -91,9 +86,10 @@ static void outputEmptyFolders(Properties prop) throws java.sql.SQLException {
 
 
 /**
-*  Create a list of published faculty
-*
-*/
+ * Get faculty one at a time from database and export
+ * @param prop properties file
+ * @throws java.sql.SQLException
+ */
 static void processAllFacultyPages(Properties prop) throws java.sql.SQLException {
 	Connection conn = null;
 	try {
@@ -116,7 +112,7 @@ static void processAllFacultyPages(Properties prop) throws java.sql.SQLException
 		faculty.lastName = rs.getString("last_name");
 		faculty.firstName = rs.getString("first_name");
 		faculty.handle = rs.getString("handle");
-		processFacultyHome(conn, faculty);
+		processFacultySite(conn, faculty);
 		faculty.outputHTML();    
 	}
 	rs.close();
@@ -124,11 +120,17 @@ static void processAllFacultyPages(Properties prop) throws java.sql.SQLException
 	conn.close();
 }
 
-static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLException {
+/**
+ * Process one faculty site
+ * @param conn
+ * @param currentFaculty
+ * @throws java.sql.SQLException
+ */
+static void processFacultySite(Connection conn, Faculty currentFaculty) throws java.sql.SQLException {
 
-    // Get SJSU ID
+    // Get SJSU ID from Faculty ID
 	PreparedStatement stmt = conn.prepareStatement(Queries.TowerIDQuery);
-	stmt.setInt(1, f.facultyID);
+	stmt.setInt(1, currentFaculty.facultyID);
 	ResultSet rs = stmt.executeQuery();
 	int id = 0;
 	while (rs.next()) {
@@ -136,20 +138,20 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 	}
 	rs.close();
 	stmt.close();
-	f.towerID = id;
+	currentFaculty.towerID = id;
 
     // Get official info
 	stmt = conn.prepareStatement(Queries.OfficialInfoQuery);
-	stmt.setInt(1, f.towerID);
+	stmt.setInt(1, currentFaculty.towerID);
 	rs = stmt.executeQuery();
 	while(rs.next()) {
-		List emails = new ArrayList<String>();
+		List<String> emails = new ArrayList<String>();
 		emails.add(rs.getString("email_addr"));
-		f.emails = emails;
-		f.firstName = rs.getString("first_name");
-		f.middleName = rs.getString("middle_name");
-		f.lastName = rs.getString("last_name");
-		f.phone = rs.getString("phone");
+		currentFaculty.emails = emails;
+		currentFaculty.firstName = rs.getString("first_name");
+		currentFaculty.middleName = rs.getString("middle_name");
+		currentFaculty.lastName = rs.getString("last_name");
+		currentFaculty.phone = rs.getString("phone");
 	}
 	rs.close();
 	stmt.close();
@@ -157,110 +159,107 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
     // Get self-entered info
     // SELECT * FROM sjsu_people_details WHERE id=?
 	stmt = conn.prepareStatement(Queries.DetailsQuery);
-	stmt.setInt(1, f.facultyID);
+	stmt.setInt(1, currentFaculty.facultyID);
 	rs = stmt.executeQuery();
 	while(rs.next()) {
-		f.additionalInfo = rs.getString("additional_info");
-		f.officeHours = rs.getString("office_hours");
-		f.bio = rs.getString("bio");
-		f.photoSetting = rs.getInt("photo_setting");
-		f.photoDescription = rs.getString("photo_description");
+		currentFaculty.additionalInfo = rs.getString("additional_info");
+		currentFaculty.officeHours = rs.getString("office_hours");
+		currentFaculty.bio = rs.getString("bio");
+		currentFaculty.photoSetting = rs.getInt("photo_setting");
+		currentFaculty.photoDescription = rs.getString("photo_description");
 		if (isValid(rs.getString("phone"))) {
-			f.phone = rs.getString("phone");
+			currentFaculty.phone = rs.getString("phone");
 		}
 		if (isValid(rs.getString("first_name"))) {
-			f.firstName = rs.getString("first_name");
+			currentFaculty.firstName = rs.getString("first_name");
 		}
 		if (isValid(rs.getString("middle_name"))) {
-			f.middleName = rs.getString("middle_name");
+			currentFaculty.middleName = rs.getString("middle_name");
 		}
 		if (isValid(rs.getString("email"))) {
-			f.emails.add(rs.getString("email"));
+			currentFaculty.emails.add(rs.getString("email"));
 		}
-		f.titles = rs.getString("titles");
-		f.handle = rs.getString("published_handle");
-		f.useFormEntryForPublications = (rs.getInt("publications_use_form_entry") == 1)? true : false;
-		if (!(f.useFormEntryForPublications)) {
-			f.publicationsText = rs.getString("publications_freeform");
+		currentFaculty.titles = rs.getString("titles");
+		currentFaculty.handle = rs.getString("published_handle");
+		currentFaculty.useFormEntryForPublications = (rs.getInt("publications_use_form_entry") == 1)? true : false;
+		if (!(currentFaculty.useFormEntryForPublications)) {
+			currentFaculty.publicationsText = rs.getString("publications_freeform");
 		}
 	}
 	rs.close();
 	stmt.close();
 
-  // get module status
-  // sjsu_people_website_settings
-
+  // get module status If a sub-page module is inactive, make parent page inactive
 	stmt = conn.prepareStatement(Queries.GetModuleActiveStatus);
-	stmt.setInt(1, f.facultyID);
+	stmt.setInt(1, currentFaculty.facultyID);
 	rs = stmt.executeQuery();
 	while(rs.next()) {
-		f.active = (rs.getInt("active") == 1)?true:false;
+		currentFaculty.active = (rs.getInt("active") == 1)?true:false;
 		if (rs.getInt("bio_active") == 0) {
-			f.bioActive = false;
-			f.active = false;
+			currentFaculty.bioActive = false;
+			currentFaculty.active = false;
 		} else {
-			f.bioActive = true;
+			currentFaculty.bioActive = true;
 		}
 		if (rs.getInt("courses_active") == 0) {
-			f.coursesActive = false;
-			f.active = false;
+			currentFaculty.coursesActive = false;
+			currentFaculty.active = false;
 
 		} else {
-			f.coursesActive = true;
+			currentFaculty.coursesActive = true;
 		}
 		if (rs.getInt("education_active") == 0) {
-			f.educationActive = false;
-			f.active = false;
+			currentFaculty.educationActive = false;
+			currentFaculty.active = false;
 
 		} else {
-			f.educationActive = true;
+			currentFaculty.educationActive = true;
 		}
 		if (rs.getInt("certificates_active") == 0) {
-			f.licensesCertificatesActive = false;
-			f.active = false;
+			currentFaculty.licensesCertificatesActive = false;
+			currentFaculty.active = false;
 
 		} else {
-			f.licensesCertificatesActive = true;
+			currentFaculty.licensesCertificatesActive = true;
 		}
 		if (rs.getInt("links_active") == 0) {
-			f.linksActive = false;
-			f.active = false;
+			currentFaculty.linksActive = false;
+			currentFaculty.active = false;
 
 		} else {
-			f.linksActive = true;
+			currentFaculty.linksActive = true;
 		}
 		if (rs.getInt("professional_services_active") == 0) {
-			f.professionalServicesActive = false;
+			currentFaculty.professionalServicesActive = false;
 
 		} 
 		if (rs.getInt("publications_active") == 0) {
-			f.publicationsActive = false;
+			currentFaculty.publicationsActive = false;
 		} else {
-			f.publicationsActive = true;
+			currentFaculty.publicationsActive = true;
 		}
 		if (rs.getInt("research_active") == 0) {
-			f.researchActive = false;
+			currentFaculty.researchActive = false;
 		} else {
-			f.researchActive = true;
+			currentFaculty.researchActive = true;
 		}
 		if (rs.getInt("expert_active") == 0) {
-			f.expertActive = false;
+			currentFaculty.expertActive = false;
 		} else {
-			f.expertActive = true;
+			currentFaculty.expertActive = true;
 		}
 	}
 	rs.close();
 	stmt.close();
 
-// get form-entered publications
-	if (f.useFormEntryForPublications) {
-		List publications = new ArrayList<Publication>();
+	// get form-entered publications
+	if (currentFaculty.useFormEntryForPublications) {
+		List<Publication> publications = new ArrayList<Publication>();
 		stmt = conn.prepareStatement(Queries.GetPublications);
-		stmt.setInt(1, f.facultyID);
+		stmt.setInt(1, currentFaculty.facultyID);
 		rs = stmt.executeQuery();
 		while(rs.next()) {
 			Publication p = new Publication();
-
 			p.title = rs.getString("title");
 			p.name = rs.getString("name");
 			p.publisher = rs.getString("publisher");
@@ -277,17 +276,18 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 			p.publicationType = rs.getString("publication_type");
 			publications.add(p);
 		}
-		f.publications = publications;
+		currentFaculty.publications = publications;
 		rs.close();
 		stmt.close();
 	}
 
-	f.education = new Education(f.towerID, f.facultyID, conn);
+	// Get Education
+	currentFaculty.education = new Education(currentFaculty.towerID, currentFaculty.facultyID, conn);
 
     // Get licenses and Certificates
-	List licenses = new ArrayList<License>();
+	List<License> licenses = new ArrayList<License>();
 	stmt = conn.prepareStatement(Queries.LicenseQuery);
-	stmt.setInt(1, f.facultyID);
+	stmt.setInt(1, currentFaculty.facultyID);
 	rs = stmt.executeQuery();
 	while(rs.next()) {
 		License l = new License();
@@ -302,10 +302,10 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 	}
 	rs.close();
 	stmt.close();
-	f.licenses = licenses;
+	currentFaculty.licenses = licenses;
 
-    // Clean up licenses
-	for (License l : f.licenses) {
+    // Clean up license state and country
+	for (License l : currentFaculty.licenses) {
 		stmt = conn.prepareStatement(Queries.GetCountryFromCode);
 		stmt.setString(1, l.countryCode);
 		rs = stmt.executeQuery();
@@ -328,9 +328,9 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 
     // Get job title(s)
 	stmt = conn.prepareStatement(Queries.JobsQuery);
-	stmt.setInt(1, f.towerID);
+	stmt.setInt(1, currentFaculty.towerID);
 	rs = stmt.executeQuery();
-	List positions = new ArrayList<Position>();
+	List<Position> positions = new ArrayList<Position>();
 	Position position = null;
 	while(rs.next()) {
 		position = new Position(rs.getString("position_descr"));
@@ -339,43 +339,42 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 	}
 	rs.close();
 	stmt.close();
-	f.positions = positions;
+	currentFaculty.positions = positions;
 
     // Get home page links
-	List homeLinks = new ArrayList<Link>();
+	List<Link> homeLinks = new ArrayList<Link>();
 	stmt = conn.prepareStatement(Queries.HomeLinksQuery);
-	stmt.setInt(1, f.facultyID);
+	stmt.setInt(1, currentFaculty.facultyID);
 	rs = stmt.executeQuery();
 	Link homeLink = null;
 	while(rs.next()) {
 		homeLink = new Link(rs.getString("label"), rs.getString("url"));
 		homeLinks.add(homeLink);
 	}
-	f.links = homeLinks;
+	currentFaculty.links = homeLinks;
 	rs.close();
 	stmt.close();
 
 	// Get Custom Pages
-	List customPages = new ArrayList<CustomPage>();
+	List<CustomPage> customPages = new ArrayList<CustomPage>();
 	stmt = conn.prepareStatement(Queries.GetCustomPages);
-	stmt.setInt(1, f.facultyID);
+	stmt.setInt(1, currentFaculty.facultyID);
 	rs = stmt.executeQuery();
 	while(rs.next()) {
 		CustomPage p = new CustomPage(rs.getInt("id"));
 		p.name = rs.getString("name");
 		p.title = rs.getString("title");
 		p.content = rs.getString("content");
-		p.url = baseURL + f.handle + "/" + p.name;
+		p.url = baseURL + currentFaculty.handle + "/" + p.name;
 		p.active = rs.getInt("status") == 1?true:false;
 		customPages.add(p);
 	}
  	rs.close();
 	stmt.close();
-	f.customPages = customPages;
+	currentFaculty.customPages = customPages;
 
-	// process Custom Pages
-		// get links
-	for (CustomPage p : f.customPages) {
+	// get links
+	for (CustomPage p : currentFaculty.customPages) {
 		List<Link> links = new ArrayList<Link>();
 		stmt = conn.prepareStatement(Queries.GetCustomPageLinks);
 		stmt.setInt(1, p.id);
@@ -386,8 +385,9 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 		}
 		p.links = links;
 	}
+	
 	// get documents
-	for (CustomPage p : f.customPages) {
+	for (CustomPage p : currentFaculty.customPages) {
 		List<Document> docs = new ArrayList<Document>();
 		stmt = conn.prepareStatement(Queries.GetCustomPageDocs);
 		stmt.setInt(1, p.id);
@@ -399,16 +399,35 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 		}
 		p.documents = docs;
 	}
-
+	// Get Research
+	// SELECT * FROM sjsu_people_research WHERE faculty_id=? ORDER BY position
+	List<Research> research = new ArrayList<Research>();
+	Research researchItem = null;
+	stmt = conn.prepareStatement(Queries.GetResearch);
+	stmt.setInt(1, currentFaculty.facultyID);
+	rs = stmt.executeQuery();
+	while(rs.next()) {
+		researchItem = new Research();
+		researchItem.title = rs.getString("title");
+		researchItem.sponsor = rs.getString("sponsor");
+		researchItem.startYear = rs.getInt("start_year");
+		researchItem.summary = rs.getString("summary");
+		researchItem.endYear = rs.getInt("end_year");
+		researchItem.organization = rs.getString("organization");
+		researchItem.grant = rs.getString("grant");
+		research.add(researchItem);
+	}
+	currentFaculty.research = research;
+	
     // Get Courses
-	List courses = new ArrayList<Course>();
+	List<Course> courses = new ArrayList<Course>();
 	Course course = null;
 	stmt = conn.prepareStatement(Queries.CoursesQuery);
-	stmt.setInt(1, f.facultyID);
+	stmt.setInt(1, currentFaculty.facultyID);
 	rs = stmt.executeQuery();
 	while(rs.next()) {
 		course = new Course(rs.getString("title"));
-		course.facultyHandle = f.handle;
+		course.facultyHandle = currentFaculty.handle;
 		course.name = rs.getString("name");
 		course.location = rs.getString("location");
 		course.dayAndTime = rs.getString("time");
@@ -420,13 +439,13 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 	}
 	rs.close();
 	stmt.close();
-	f.courses = courses;
+	currentFaculty.courses = courses;
 
     // process courses
     // get sections
 	Section section = null;
-	for (Course c : f.courses) {
-		List sections = new ArrayList<Section>();
+	for (Course c : currentFaculty.courses) {
+		List<Section> sections = new ArrayList<Section>();
 		stmt = conn.prepareStatement(Queries.CourseSectionsQuery);
 		stmt.setInt(1, c.id);
 		rs = stmt.executeQuery();
@@ -434,7 +453,7 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 			section = new Section(rs.getInt("id"));
 			section.name = rs.getString("name");
 			section.description = rs.getString("description");
-      // If any section is inactive, make the course inactive
+			// If any section is inactive, make the course inactive
 			if (rs.getInt("status") == 0) {
 				section.active = false;
 				c.active = false;
@@ -451,7 +470,7 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
       // get docs for section
       // SELECT * FROM sjsu_people_course_section_docs WHERE course_section_id=?
 		for (Section s : c.sections) {
-			List documents = new ArrayList<Document>();
+			List<Document> documents = new ArrayList<Document>();
 			stmt = conn.prepareStatement(Queries.SectionDocsQuery);
 			stmt.setInt(1, s.id);
 			rs = stmt.executeQuery();
@@ -463,7 +482,7 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 			rs.close();
 			stmt.close();
 
-			List sectionLinks = new ArrayList<Link>();
+			List<Link> sectionLinks = new ArrayList<Link>();
 			stmt = conn.prepareStatement(Queries.SectionLinksQuery);
 			stmt.setInt(1, s.id);
 			rs = stmt.executeQuery();
@@ -475,12 +494,14 @@ static void processFacultyHome(Connection conn, Faculty f) throws java.sql.SQLEx
 			rs.close();
 			stmt.close();
 		} 
-    } // end of for course
+    } 
 }
 
-/*
-* Is this a valid string (not null, not empty)?
-*/
+/**
+ * Find out if a string should be printed
+ * @param s Input string
+ * @return True if it should be printed
+ */
 static boolean isValid(String s) {
 	if (s == null || s.equals("null")) {
 		return false;
@@ -490,9 +511,12 @@ static boolean isValid(String s) {
 	return true;
 }
 
-/*
-* Load an image from the provided URL and write it to the provided file path
-*/
+/**
+ * Read an image from the Web, save as file
+ * @param imageUrl
+ * @param destinationFile
+ * @throws IOException
+ */
 static void saveImage(String imageUrl, String destinationFile) throws IOException {
 	URL url = new URL(imageUrl);
 	InputStream is = url.openStream();
