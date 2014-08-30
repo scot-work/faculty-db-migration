@@ -3,20 +3,25 @@ package faculty;
 import java.util.*;
 
 class Section {
-String description;
-String name;
-List<Document> docs; 
-List<Link> links;
-String url;
-int id;
-int position;
-boolean active;
+	String description;
+	String name;
+	List<Document> docs; 
+	List<Link> links;
+	String url;
+	int id;
+	int position;
+	boolean active;
 
  Section(int id){
 	// System.out.println("\ncreating section: " + Integer.toString(id));
 	this.id = id;
 }
 
+/**
+* Create a string describing this Section
+* @param
+* @return String
+*/
  public String toString() {
 
 	String result = "\n";
@@ -43,6 +48,11 @@ boolean active;
 	return result;
 }
 
+/**
+* Return an HTML chunk for displaying this section
+* 
+* @return HTML string
+*/
  String toHTML() {
 		String result = "\n";
 		//if (!active){result += "<div style=\"background-color: yellow;\">";}
