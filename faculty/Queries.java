@@ -103,7 +103,7 @@ class Queries {
 	
 	// Get professional activity
 	public static String GetProfessionalActivities = "SELECT * FROM sjsu_people_professional_activities "
-				+ "WHERE faculty_id=?";
+				+ "WHERE faculty_id=? ORDER BY position";
 
 	// Get links from custom page
 	public static String GetCustomPageLinks = "SELECT label, url FROM sjsu_people_page_links "

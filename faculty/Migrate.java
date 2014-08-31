@@ -9,21 +9,21 @@ import faculty.Education;
 import faculty.Queries;
 import faculty.Position;
 
-
-/*
-* TODO:
-* Course photo
-* Professional & Service Activity
-* ORDER BY position
-*/
-
-
+/**
+ * 
+ * @author Scot Close
+ *
+ */
 public class Migrate {
 
 	public static String baseURL = "/people/";
 	public static String outputDirectory = "/var/www/html/people/";
 	public static String liveSiteBaseDir = "http://dev.sjsu.edu/people/";
 
+	/**
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		Properties prop = new Properties();
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();         
@@ -436,6 +436,8 @@ static void processFacultySite(Connection conn, Faculty currentFaculty) throws j
 		course.active = rs.getInt("status") == 1?true:false;
 		course.description = rs.getString("description");
 		course.url = rs.getString("url");
+		course.photoSetting = rs.getInt("photo_setting");
+		course.photoDescription = rs.getString("photo_description");
 		courses.add(course);
 	}
 	rs.close();

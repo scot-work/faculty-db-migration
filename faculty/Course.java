@@ -13,6 +13,8 @@ class Course {
 	String description;
 	String facultyHandle;
 	String url;
+	String photoDescription;
+	int photoSetting;
 	List<Section> sections; 
 
 	/**
@@ -48,6 +50,9 @@ class Course {
 		writer.println(HtmlStrings.HEADER);
 		writer.println(HtmlStrings.TITLE);
 		writer.println(HtmlStrings.BODY);
+		if (photoSetting != 0){
+			writer.println("<img src=\"" + url +  name + ".jpg\" alt=\"" + photoDescription + "\"/>");
+		}
 		writer.println("<h2>" + title + "</h2>");
 		if (active) {
 			writer.println("<em>active</em>");
