@@ -16,9 +16,9 @@ import faculty.Position;
  */
 public class Migrate {
 
-	public static String baseURL = "/people/";
-	public static String outputDirectory = "/var/www/html/people/";
-	public static String liveSiteBaseDir = "http://dev.sjsu.edu/people/";
+	public static String baseURL;
+	public static String outputDirectory;
+	public static String liveSiteBaseDir;
 
 	/**
 	 * 
@@ -33,7 +33,9 @@ public class Migrate {
 		} catch (IOException e ) {
 			e.printStackTrace();
 		}
-
+		Migrate.outputDirectory = prop.getProperty("outputDirectory");
+		Migrate.liveSiteBaseDir = prop.getProperty("liveSiteBaseDir");
+		Migrate.baseURL = prop.getProperty("baseURL");
 		if (args.length == 0) {
 			try {
 				processAllFacultyPages(prop);
@@ -57,6 +59,7 @@ public class Migrate {
 */
 static void outputEmptyFolders(Properties prop) throws java.sql.SQLException {
 	Connection conn = null;
+	String outputDirectory = "";
 	try {
 		Class.forName("com.mysql.jdbc.Driver");
 	} catch (ClassNotFoundException e) {
