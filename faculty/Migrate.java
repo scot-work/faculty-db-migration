@@ -49,6 +49,10 @@ public class Migrate {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+			} else if (args[0].equals("xmltest")){
+				System.out.println("Testing XML output");
+				WriteXMLFile file = new WriteXMLFile();
+				file.main(args);
 			}
 		}
 	}
