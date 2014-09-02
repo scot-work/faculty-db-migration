@@ -36,11 +36,17 @@ public class WriteXMLFile {
 		Element bodycode = doc.createElement("bodycode");
 		Element footcode = doc.createElement("footcode");
 		Element config = doc.createElement("config");
-		Element maincontent = doc.createElement("maincontent");
+		Element mainContent = doc.createElement("maincontent");
 		Element metadata = doc.createElement("metadata");
+		Element columnOne = doc.createElement("column_one");
 		Comment openComment = doc.createComment("com.omniupdate.properties");
 		Comment closeComment = doc.createComment("/com.omniupdate.properties");
 		Element parameter = doc.createElement("parameter");
+		parameter.setAttribute("name", "columns");
+		parameter.setAttribute("type", "select");
+		parameter.setAttribute("group","Everyone");
+		parameter.setAttribute("prompt", "Number of Columns");
+		parameter.setAttribute("alt", "How many columns do you want your page to have?");
 		Element title = doc.createElement("title");
 		Element option = doc.createElement("option");
 		doc.appendChild(document);
@@ -55,7 +61,8 @@ public class WriteXMLFile {
 		config.appendChild(parameter);
 		parameter.appendChild(option);
 		document.appendChild(metadata);
-		document.appendChild(maincontent);
+		document.appendChild(mainContent);
+		mainContent.appendChild(columnOne);
  
 		// write the content into xml file
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -65,12 +72,7 @@ public class WriteXMLFile {
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(new File("test.xml"));
  
-		// Output to console for testing
-		// StreamResult result = new StreamResult(System.out);
- 
 		transformer.transform(source, result);
- 
-		System.out.println("File saved!");
  
 	  } catch (ParserConfigurationException pce) {
 		pce.printStackTrace();
