@@ -4,6 +4,7 @@ import java.io.File;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -14,6 +15,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.ProcessingInstruction;
  
 public class WriteXMLFile {
  
@@ -26,55 +28,40 @@ public class WriteXMLFile {
  
 		// root elements
 		Document doc = docBuilder.newDocument();
-		Element rootElement = doc.createElement("document");
-		doc.appendChild(rootElement);
- 
-		Element headcode = doc.createElement("headcode");
-		rootElement.appendChild(headcode);
-		Element bodycode = doc.createElement("bodycode");
-		rootElement.appendChild(bodycode);
-		Element footcode = doc.createElement("footcode");
-		rootElement.appendChild(footcode);
-		Element config = doc.createElement("config");
-		rootElement.appendChild(config);
-		Comment openComment = doc.createComment("com.omniupdate.properties");
-		config.appendChild(openComment);
-		Element title = doc.createElement("title");
-		config.appendChild(title);
-		Comment closeComment = doc.createComment("/com.omniupdate.properties");
-		config.appendChild(closeComment);
+		doc.setXmlStandalone(true);
+		Element document = doc.createElement("document");
+		ProcessingInstruction pi = doc.createProcessingInstruction("pcf-stylesheet", "path=\"/_resources/xsl/default.xsl\" site=\"templates\" extension=\"html\"");
 		
-		// set attribute to staff element
-		Attr attr = doc.createAttribute("id");
-		attr.setValue("1");
-		//staff.setAttributeNode(attr);
- 
-		// shorten way
-		// staff.setAttribute("id", "1");
- 
-		// firstname elements
-		Element firstname = doc.createElement("firstname");
-		firstname.appendChild(doc.createTextNode("yong"));
-		//staff.appendChild(firstname);
- 
-		// lastname elements
-		Element lastname = doc.createElement("lastname");
-		lastname.appendChild(doc.createTextNode("mook kim"));
-		//staff.appendChild(lastname);
- 
-		// nickname elements
-		Element nickname = doc.createElement("nickname");
-		nickname.appendChild(doc.createTextNode("mkyong"));
-		//staff.appendChild(nickname);
- 
-		// salary elements
-		Element salary = doc.createElement("salary");
-		salary.appendChild(doc.createTextNode("100000"));
-		//staff.appendChild(salary);
+		Element headcode = doc.createElement("headcode");
+		Element bodycode = doc.createElement("bodycode");
+		Element footcode = doc.createElement("footcode");
+		Element config = doc.createElement("config");
+		Element maincontent = doc.createElement("maincontent");
+		Element metadata = doc.createElement("metadata");
+		Comment openComment = doc.createComment("com.omniupdate.properties");
+		Comment closeComment = doc.createComment("/com.omniupdate.properties");
+		Element parameter = doc.createElement("parameter");
+		Element title = doc.createElement("title");
+		Element option = doc.createElement("option");
+		doc.appendChild(document);
+		document.appendChild(headcode);
+		doc.insertBefore(pi, document);
+		document.appendChild(bodycode);
+		document.appendChild(footcode);
+		document.appendChild(config);
+		config.appendChild(openComment);
+		config.appendChild(title);
+		config.appendChild(closeComment);
+		config.appendChild(parameter);
+		parameter.appendChild(option);
+		document.appendChild(metadata);
+		document.appendChild(maincontent);
  
 		// write the content into xml file
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		Transformer transformer = transformerFactory.newTransformer();
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "http://commons.omniupdate.com/dtd/standard.dtd");
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(new File("test.xml"));
  
