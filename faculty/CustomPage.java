@@ -10,7 +10,7 @@ class CustomPage {
 	String content;
 	String url;
 	List<Link> links;
-	List<Document> documents;
+	List<Doc> documents;
 	boolean active;
 
 	/**

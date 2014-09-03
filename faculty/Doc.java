@@ -1,6 +1,6 @@
 package faculty;
 
-class Document {
+class Doc {
 	String label;
 	String url;
 
@@ -9,7 +9,7 @@ class Document {
 	 * @param label Name to use in link
 	 * @param url URL
 	 */
-	public Document(String label, String url){
+	public Doc(String label, String url){
 		this.label = label;
 		this.url = url;
 	}

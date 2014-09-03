@@ -3,6 +3,8 @@ package faculty;
 import java.util.*;
 import java.io.PrintWriter;
 
+import org.w3c.dom.Document;
+
 class Course {
 	int id;
 	boolean active;
@@ -25,6 +27,11 @@ class Course {
 		this.title = title;
 	}
 
+	void toXml(){
+		Document doc = XmlHelper.getXmlOutline();
+		// XmlHelper.outputXml(doc);
+	}
+	
 	/**
 	 * Output course content as a formatted string
 	 */

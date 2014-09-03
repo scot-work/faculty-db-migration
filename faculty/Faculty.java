@@ -2,9 +2,14 @@ package faculty;
 
 import faculty.Education;
 import faculty.Degree;
+
 import java.util.*;
 import java.io.*;
-import java.io.PrintWriter;
+
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.Document;
+import org.w3c.dom.Text;
+import org.w3c.dom.Element;
 
 class Faculty {
 	String lastName;
@@ -66,10 +71,110 @@ class Faculty {
 		return result;
 	}
 
+	/** 
+	 * Output as XML (pcf)
+	 */
+	void outputXml(){
+		Document doc = XmlHelper.getXmlOutline();
+
+		// insert data into doc
+		Text titleText = doc.createTextNode(fullName());
+		Element titleNode = (Element) (doc.getElementsByTagName("title")).item(0);
+		titleNode.appendChild(titleText);
+		CDATASection bodyText = doc.createCDATASection(getContentAsHtml());
+		Element bodyNode = (Element) (doc.getElementsByTagName("maincontent")).item(0);
+		bodyNode.appendChild(bodyText);
+		//File outputFile = null;
+		//String outputDir = Migrate.outputDirectory + this.handle;
+		String xml = XmlHelper.getStringFromDoc(doc);
+		
+		// Remove CDATA tag before writing file
+		xml = xml.replaceAll("<!\\[CDATA\\[", "");
+		xml = xml.replaceAll("\\]\\]>", "");
+		//System.out.println(xml);
+		XmlHelper.outputHtml(this.handle, xml);
+		//outputFile = new File(outputDir);
+		//outputFile.mkdirs();
+		//XmlHelper.outputXml(doc, outputDir);
+	}
+
+	/**
+	 * Convert to HTML string
+	 * @return
+	 */
+	String getContentAsHtml(){
+		String content = "";	
+
+		content += ("<h2>" + fullName() + "</h2>"); 
+		if (photoSetting == 2){
+			String photoURL = Migrate.baseURL + handle + "/" + handle + ".jpg";
+			content += ("<img src=\"" + photoURL + "\" alt=\"" + photoDescription + "\" />");
+		}
+		content += ("<p>");
+		for(Position p : positions){
+			content += (p.toHTML() + "<br />");
+		}
+		content += ("<em>" + titles + "</em><br />");
+		content += ("</p>");
+		content += ("<h4>Email</h4>");
+		for(String email : emails){
+			content += ("<p><a href=\"mailto:" + email + "\">" + email + "</a></p>");
+		}
+		content += ("<h4>Phone Number(s)</h4>");
+		content += ("<p>" + phone + "</p>");
+		content += ("<h4>Office Hours</h4>");
+		content += ("<p>" + officeHours + "</p>");
+
+		// Courses
+		content += (coursesActive?"":"<div style=\"background-color: yellow;\">");
+		content += ("<hr /><h3>Courses</h3>");
+		content += ("<ul>");
+		for(Course c : courses) {
+			if(c.active){
+				content += ("<li><a href=\"" + c.url() + "\">" + c.title + "</a></li>");
+			}
+		}
+		content += ("</ul>");
+		content += (coursesActive?"":"</div>");
+
+		// Education
+		content += (educationActive?"":"<div style=\"background-color: yellow;\">");
+		content += ("<hr /><h3>Education</h3>");
+		content += ("<ul>");  
+		for (Degree d : education.degrees) {
+			content += ("<li>" + d + "</li>");
+		}
+		content += ("</ul>");
+		content += (educationActive?"":"</div>");
+
+		// Licenses and Certificates
+		content += (licensesCertificatesActive?"":"<div style=\"background-color: yellow;\">");
+		content += ("<hr /><h3>Licenses &amp; Certificates</h3>");
+		content += ("<ul>");
+		for (License l : licenses){
+			content += ("<li>" + l + "</li>");
+		}
+		content += ("</ul>");
+		content += (licensesCertificatesActive?"":"</div>");
+
+		// Bio
+		content += (bioActive?"":"<div style=\"background-color: yellow;\">");
+		content += ("<hr /><h3>Bio</h3>");
+		content += (bio);
+		content += (bioActive?"":"</div>");
+		content += ("<hr /><h3>Links</h3>");
+		content += ("<ul>");
+		for (Link l : links ){
+			content += ("<li><a href=\"" + l.url + "\">" + l.label + "</a></li>");
+		}
+		content += ("</ul>");
+		return content;
+	}
+
 	/**
 	 * Write as an HTML page
 	 */
-	void outputHTML() {
+	void outputHtml() {
 		try {
 			String outputDir = Migrate.outputDirectory + this.handle;
 			new File(outputDir).mkdirs();

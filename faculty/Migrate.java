@@ -8,6 +8,7 @@ import faculty.Faculty;
 import faculty.Education;
 import faculty.Queries;
 import faculty.Position;
+import org.w3c.dom.Document;
 
 /**
  * 
@@ -51,8 +52,10 @@ public class Migrate {
 			}
 			} else if (args[0].equals("xmltest")){
 				System.out.println("Testing XML output");
-				WriteXMLFile file = new WriteXMLFile();
-				file.main(args);
+				Document doc = XmlHelper.getXmlOutline();
+				//XmlHelper.outputXml(doc);
+				//WriteXMLFile file = new WriteXMLFile();
+				//file.main(args);
 			}
 		}
 	}
@@ -118,7 +121,8 @@ static void processAllFacultyPages(Properties prop) throws java.sql.SQLException
 		faculty.firstName = rs.getString("first_name");
 		faculty.handle = rs.getString("handle");
 		processFacultySite(conn, faculty);
-		faculty.outputHTML();    
+		// faculty.outputHtml();    
+		faculty.outputXml();
 	}
 	rs.close();
 	stmt.close();
@@ -396,12 +400,12 @@ static void processFacultySite(Connection conn, Faculty currentFaculty) throws j
 	
 	// get documents
 	for (CustomPage p : currentFaculty.customPages) {
-		List<Document> docs = new ArrayList<Document>();
+		List<Doc> docs = new ArrayList<Doc>();
 		stmt = conn.prepareStatement(Queries.GetCustomPageDocs);
 		stmt.setInt(1, p.id);
 		rs = stmt.executeQuery();
 		while(rs.next()) {
-			Document d = new Document(rs.getString("label"), p.url 
+			Doc d = new Doc(rs.getString("label"), p.url 
 				+ "/" + rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1));
 			docs.add(d);
 		}
@@ -480,12 +484,12 @@ static void processFacultySite(Connection conn, Faculty currentFaculty) throws j
       // get docs for section
       // SELECT * FROM sjsu_people_course_section_docs WHERE course_section_id=?
 		for (Section s : c.sections) {
-			List<Document> documents = new ArrayList<Document>();
+			List<Doc> documents = new ArrayList<Doc>();
 			stmt = conn.prepareStatement(Queries.SectionDocsQuery);
 			stmt.setInt(1, s.id);
 			rs = stmt.executeQuery();
 			while(rs.next()) {
-				Document d = new Document(rs.getString("label"), s.url + "/" + rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1));
+				Doc d = new Doc(rs.getString("label"), s.url + "/" + rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1));
 				documents.add(d);
 			}
 			s.docs = documents;
