@@ -52,7 +52,7 @@ public class Migrate {
 			}
 			} else if (args[0].equals("xmltest")){
 				System.out.println("Testing XML output");
-				Document doc = XmlHelper.getXmlOutline();
+				Document doc = XmlHelper.getXmlOutline("interior");
 				//XmlHelper.outputXml(doc);
 				//WriteXMLFile file = new WriteXMLFile();
 				//file.main(args);
@@ -439,7 +439,7 @@ static void processFacultySite(Connection conn, Faculty currentFaculty) throws j
 	rs = stmt.executeQuery();
 	while(rs.next()) {
 		course = new Course(rs.getString("title"));
-		course.facultyHandle = currentFaculty.handle;
+		course.faculty = currentFaculty;
 		course.name = rs.getString("name");
 		course.location = rs.getString("location");
 		course.dayAndTime = rs.getString("time");

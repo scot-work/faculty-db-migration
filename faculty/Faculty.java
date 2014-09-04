@@ -75,27 +75,37 @@ class Faculty {
 	 * Output as XML (pcf)
 	 */
 	void outputXml(){
-		Document doc = XmlHelper.getXmlOutline();
+		// Get empty DOM
+		Document doc = XmlHelper.getXmlOutline("interior");
 
 		// insert data into doc
+		
+		// Add title
 		Text titleText = doc.createTextNode(fullName());
 		Element titleNode = (Element) (doc.getElementsByTagName("title")).item(0);
 		titleNode.appendChild(titleText);
-		CDATASection bodyText = doc.createCDATASection(getContentAsHtml());
+		// Editable areas
 		Element bodyNode = (Element) (doc.getElementsByTagName("maincontent")).item(0);
-		bodyNode.appendChild(bodyText);
-		//File outputFile = null;
-		//String outputDir = Migrate.outputDirectory + this.handle;
+		Element columnTwo = doc.createElement("column_two");
+		bodyNode.appendChild(columnTwo);
+		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_DIV_OPEN));
+		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_EDITOR));
+		
+		// Add content
+		CDATASection bodyText = doc.createCDATASection(getContentAsHtml());
+		columnTwo.appendChild(bodyText);
+		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_DIV_CLOSE));
 		String xml = XmlHelper.getStringFromDoc(doc);
 		
 		// Remove CDATA tag before writing file
 		xml = xml.replaceAll("<!\\[CDATA\\[", "");
 		xml = xml.replaceAll("\\]\\]>", "");
-		//System.out.println(xml);
-		XmlHelper.outputHtml(this.handle, xml);
-		//outputFile = new File(outputDir);
-		//outputFile.mkdirs();
-		//XmlHelper.outputXml(doc, outputDir);
+		XmlHelper.outputPcf(this.handle, xml);
+		
+		// Output course pages
+		for (Course c : courses) {
+			c.toXml();	
+		}
 	}
 
 	/**

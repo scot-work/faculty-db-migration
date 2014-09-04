@@ -3,9 +3,13 @@ package faculty;
 import java.util.*;
 import java.io.PrintWriter;
 
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 class Course {
+	Faculty faculty;
 	int id;
 	boolean active;
 	String title;
@@ -13,7 +17,6 @@ class Course {
 	String location;
 	String dayAndTime;
 	String description;
-	String facultyHandle;
 	String url;
 	String photoDescription;
 	int photoSetting;
@@ -28,10 +31,58 @@ class Course {
 	}
 
 	void toXml(){
-		Document doc = XmlHelper.getXmlOutline();
-		// XmlHelper.outputXml(doc);
+		Document doc = XmlHelper.getXmlOutline("interior");
+		// Get empty DOM
+		// insert data into doc
+
+		// Add title
+		Text titleText = doc.createTextNode(faculty.fullName());
+		Element titleNode = (Element) (doc.getElementsByTagName("title")).item(0);
+		titleNode.appendChild(titleText);
+		// Editable areas
+		Element bodyNode = (Element) (doc.getElementsByTagName("maincontent")).item(0);
+		Element columnTwo = doc.createElement("column_two");
+		bodyNode.appendChild(columnTwo);
+		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_DIV_OPEN));
+		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_EDITOR));
+
+		// Add content
+		CDATASection bodyText = doc.createCDATASection(getContentAsHtml());
+		columnTwo.appendChild(bodyText);
+		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_DIV_CLOSE));
+		String xml = XmlHelper.getStringFromDoc(doc);
+
+		// Remove CDATA tag before writing file
+		xml = xml.replaceAll("<!\\[CDATA\\[", "");
+		xml = xml.replaceAll("\\]\\]>", "");
+		XmlHelper.outputPcf(faculty.handle + "/courses/" + this.name, xml);
 	}
-	
+
+	/**
+	 * Return an html string with the course content
+	 * @return
+	 */
+	private String getContentAsHtml() {
+		String content = "<h2>" + title + "</h2>";
+		if (active) {
+			content += ("<em>active</em>");
+		} else {
+			content += ("<em>inactive/hidden</em>");
+		}
+		// time
+		content += ("<p><strong>Time:</strong> " + dayAndTime + " </p>");
+		// location
+		content += ("<p><strong>Location:</strong> " + location + " </p>");
+		// Supplemental URL
+		content += ("<p><strong>Supplemental URL:</strong> <a href=\"" + url + "\">" + url + "</a></p>");
+		content += ("<h2>Description</h2>");
+		content += ("<p>" + description + "</p>");
+		for (Section s : sections){
+			content += (s.toHTML());
+		}
+		return content;
+	}
+
 	/**
 	 * Output course content as a formatted string
 	 */
@@ -85,7 +136,7 @@ class Course {
 	 * @return URL
 	 */
 	String url() {
-		return "/people/" + facultyHandle + "/courses/" + name;
+		return "/people/" + faculty.handle + "/courses/" + name;
 	}
 
 }
