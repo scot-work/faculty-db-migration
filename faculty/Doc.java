@@ -19,7 +19,7 @@ class Doc {
 	 * @return HTML list item
 	 */
 	public String toHTML() {
-		return "<li><a href=\"" + url + "\">" + label + "</a></li>";
+		return "\n<li><a href=\"" + url + "\">" + label + "</a></li>";
 	}
 
 }

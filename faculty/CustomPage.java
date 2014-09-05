@@ -22,6 +22,24 @@ class CustomPage {
 	}
 
 	/**
+	 * Return page contents as html
+	 * @return
+	 */
+	String getContentAsHtml() {
+		String result = "\n<h2>" + title + "</h2>";
+		result += "\n<p>" + content + "</p>";
+		if (documents.size() > 0) {
+			result += "\n<h3>Documents</h3>";
+			result += "\n<ul>";
+			for (Doc d : documents){
+				result += d.toHTML();
+			}
+			result += "\n</ul>";
+		}
+		return result;
+	}
+
+	/**
 	 * Output Custom Page as a web page
 	 * @param writer
 	 */

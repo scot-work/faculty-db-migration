@@ -125,8 +125,27 @@ class Faculty {
 		XmlHelper.toXml(this, publicationContent, this.handle + "/publications/");
 		
 		// Output research page
+		String researchContent = "";
+		
+		researchContent += (HtmlStrings.HEADER);
+		researchContent += (HtmlStrings.TITLE);
+		researchContent += (HtmlStrings.BODY);
+		researchContent += ("<h2>" + fullName() + "</h2>"); 
+		researchContent += ("\n<h3>Research &amp; Scholarly Activity</h3>");
+		researchContent += ("\n<ul>");
+		for (Research r : research) {
+			researchContent += (r.getContentAsHtml());
+		}
+		researchContent += ("</ul>");
+		XmlHelper.toXml(this, researchContent, this.handle + "/research/");
 		
 		// Output custom pages
+		String customContent = "";
+		for (CustomPage p : customPages){
+			customContent = p.getContentAsHtml();
+			XmlHelper.toXml(this, customContent, this.handle + "/" + p.name);
+		}
+		
 		
 		// get photo
 		
