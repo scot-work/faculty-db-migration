@@ -2,6 +2,7 @@ package faculty;
 
 class Research {
 	int faculty_id;
+	Faculty faculty;
 	String title;
 	String sponsor;
 	int startYear;
@@ -15,7 +16,7 @@ class Research {
 	 * Output one Research item
 	 * @param writer
 	 */
-	String toHTML() {
+	String getContentAsHtml() {
 		String result = "<li><strong>";
 		result += title;
 		result += "</strong><br />";
@@ -33,5 +34,13 @@ class Research {
 		result += "<p>Description: " + summary + "</p></li>";
 		return result;
 		
+	}
+	/**
+	 * Output as a pcf page
+	 */
+	void writePcf(){
+		String content = getContentAsHtml();
+		String path = faculty.handle + "/research/";
+		XmlHelper.toXml(faculty, content, path);
 	}
 }

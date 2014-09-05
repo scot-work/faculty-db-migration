@@ -18,6 +18,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 
+
+import org.w3c.dom.CDATASection;
 //import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
 //import org.w3c.dom.DOMImplementation;
@@ -72,6 +74,39 @@ public class XmlHelper {
 		out = out.replaceAll("<br>", "<br />"); 
 		out = out.replaceAll("<p>\\s*?</li>", "</p>\n</li>"); 
 		return out;
+	}
+	
+	/**
+	 * Compose a page
+	 */
+	
+	static void toXml(Faculty faculty, String content, String path){
+		Document doc = XmlHelper.getXmlOutline("interior");
+		// Get empty DOM
+		// insert data into doc
+
+		// Add title
+		Text titleText = doc.createTextNode(faculty.fullName());
+		Element titleNode = (Element) (doc.getElementsByTagName("title")).item(0);
+		titleNode.appendChild(titleText);
+		// Editable areas
+		Element bodyNode = (Element) (doc.getElementsByTagName("maincontent")).item(0);
+		Element columnTwo = doc.createElement("column_two");
+		bodyNode.appendChild(columnTwo);
+		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_DIV_OPEN));
+		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_EDITOR));
+
+		// Add content
+		CDATASection bodyText = doc.createCDATASection(content);
+		columnTwo.appendChild(bodyText);
+		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_DIV_CLOSE));
+		String xml = XmlHelper.getStringFromDoc(doc);
+
+		// Remove CDATA tag before writing file
+		xml = xml.replaceAll("<!\\[CDATA\\[", "");
+		xml = xml.replaceAll("\\]\\]>", "");
+		// XmlHelper.outputPcf(faculty.handle + "/courses/" + this.name, xml);
+		outputPcf(path, xml);
 	}
 
 	/**

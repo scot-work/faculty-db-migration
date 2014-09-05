@@ -104,8 +104,32 @@ class Faculty {
 		
 		// Output course pages
 		for (Course c : courses) {
-			c.toXml();	
+			c.writePcf();
 		}
+		// Output publications page
+		String publicationContent = "";
+		if ((useFormEntryForPublications && (publications.size() > 0)) 
+				|| Migrate.isValid(publicationsText)) {
+				publicationContent = ("<h2>" + fullName() + "</h2>"); 
+				publicationContent += ("<h3>Publications &amp; Presentations</h3>");
+				publicationContent += ("<ul>");
+				if (useFormEntryForPublications && (publications.size() > 0)) {
+					for (Publication p : publications) {
+						publicationContent += (p.toHTML());
+					}
+				} else {
+					publicationContent += ("<li>" + publicationsText + "</li>");
+				}
+				publicationContent += ("</ul>");
+		}
+		XmlHelper.toXml(this, publicationContent, this.handle + "/publications/");
+		
+		// Output research page
+		
+		// Output custom pages
+		
+		// get photo
+		
 	}
 
 	/**
@@ -184,7 +208,7 @@ class Faculty {
 	/**
 	 * Write as an HTML page
 	 */
-	void outputHtml() {
+/*	void outputHtml() {
 		try {
 			String outputDir = Migrate.outputDirectory + this.handle;
 			new File(outputDir).mkdirs();
@@ -280,7 +304,8 @@ class Faculty {
 		}
 
 		// Output publications
-		if ((useFormEntryForPublications && (publications.size() > 0)) || Migrate.isValid(publicationsText)) {
+		if ((useFormEntryForPublications && (publications.size() > 0)) 
+				|| Migrate.isValid(publicationsText)) {
 			try {
 				String outputDir = Migrate.outputDirectory + this.handle + "/publications/";
 				String outputFile = outputDir + "/index.html";
@@ -308,7 +333,6 @@ class Faculty {
 		}
 
 		// Output research
-
 		try {
 			String outputDir = Migrate.outputDirectory + this.handle + "/research/";
 			String outputFile = outputDir + "/index.html";
@@ -321,7 +345,7 @@ class Faculty {
 			writer.println("<h3>Research &amp; Scholarly Activity</h3>");
 			writer.println("<ul>");
 			for (Research r : research) {
-				writer.println(r.toHTML());
+				// writer.println(r.toHTML());
 			}
 			writer.println("</ul>");
 			writer.println(HtmlStrings.FOOTER);
@@ -356,5 +380,5 @@ class Faculty {
 				e.printStackTrace();
 			}
 		}
-	}
+	}*/
 }

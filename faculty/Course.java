@@ -29,8 +29,21 @@ class Course {
 	Course(String title) {
 		this.title = title;
 	}
-
-	void toXml(){
+	
+	/**
+	 * Output as a pcf page
+	 */
+	void writePcf(){
+		String content = getContentAsHtml();
+		String path = faculty.handle + "/courses/" + this.name;
+		XmlHelper.toXml(faculty, content, path);
+	}
+	
+/**
+ * write as a pcf file
+ * TODO move this to XmlHelper
+ */
+	void toXmlx(){
 		Document doc = XmlHelper.getXmlOutline("interior");
 		// Get empty DOM
 		// insert data into doc

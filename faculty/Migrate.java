@@ -1,13 +1,20 @@
 package faculty;
 
-import java.sql.*;
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
-import faculty.Faculty;
-import faculty.Education;
-import faculty.Queries;
-import faculty.Position;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import org.w3c.dom.Document;
 
 /**
@@ -272,6 +279,7 @@ static void processFacultySite(Connection conn, Faculty currentFaculty) throws j
 		rs = stmt.executeQuery();
 		while(rs.next()) {
 			Publication p = new Publication();
+			p.faculty = currentFaculty;
 			p.title = rs.getString("title");
 			p.name = rs.getString("name");
 			p.publisher = rs.getString("publisher");
@@ -420,6 +428,7 @@ static void processFacultySite(Connection conn, Faculty currentFaculty) throws j
 	rs = stmt.executeQuery();
 	while(rs.next()) {
 		researchItem = new Research();
+		researchItem.faculty = currentFaculty;
 		researchItem.title = rs.getString("title");
 		researchItem.sponsor = rs.getString("sponsor");
 		researchItem.startYear = rs.getInt("start_year");
