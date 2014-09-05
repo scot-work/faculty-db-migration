@@ -103,6 +103,17 @@ class Faculty {
 		XmlHelper.outputPcf(this.handle, xml);
 		
 		// Output course pages
+		
+		if (courses.size() > 0) {
+			// Output course page
+			String courseContent = "\n<ul>";
+			for (Course c : courses) {
+				courseContent += "\n<li><a href=\"" + c.url + "\">" + c.title + "</a></li>";
+			}
+			courseContent += "</ul>";
+			XmlHelper.toXml(this, courseContent, this.handle + "/courses/");
+		}
+		
 		for (Course c : courses) {
 			c.writePcf();
 		}
@@ -158,16 +169,18 @@ class Faculty {
 	String getContentAsHtml(){
 		String content = "";	
 
-		content += ("<h2>" + fullName() + "</h2>"); 
+		content += ("\n<h2>" + fullName() + "</h2>"); 
 		if (photoSetting == 2){
 			String photoURL = Migrate.baseURL + handle + "/" + handle + ".jpg";
 			content += ("<img src=\"" + photoURL + "\" alt=\"" + photoDescription + "\" />");
 		}
-		content += ("<p>");
+		content += ("\n<p>");
 		for(Position p : positions){
 			content += (p.toHTML() + "<br />");
 		}
-		content += ("<em>" + titles + "</em><br />");
+		if (Migrate.isValid(titles)){
+			content += ("\n<em>" + titles + "</em><br />");
+		}
 		content += ("</p>");
 		content += ("<h4>Email</h4>");
 		for(String email : emails){
@@ -175,9 +188,10 @@ class Faculty {
 		}
 		content += ("<h4>Phone Number(s)</h4>");
 		content += ("<p>" + phone + "</p>");
+		if (Migrate.isValid(officeHours)){
 		content += ("<h4>Office Hours</h4>");
 		content += ("<p>" + officeHours + "</p>");
-
+		}
 		// Courses
 		content += (coursesActive?"":"<div style=\"background-color: yellow;\">");
 		content += ("<hr /><h3>Courses</h3>");
@@ -211,10 +225,12 @@ class Faculty {
 		content += (licensesCertificatesActive?"":"</div>");
 
 		// Bio
+		if (Migrate.isValid(bio)){
 		content += (bioActive?"":"<div style=\"background-color: yellow;\">");
 		content += ("<hr /><h3>Bio</h3>");
 		content += (bio);
 		content += (bioActive?"":"</div>");
+		}
 		content += ("<hr /><h3>Links</h3>");
 		content += ("<ul>");
 		for (Link l : links ){
