@@ -4,7 +4,6 @@ import faculty.Education;
 import faculty.Degree;
 
 import java.util.*;
-import java.io.*;
 
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
@@ -126,7 +125,7 @@ class Faculty {
 				publicationContent += ("<ul>");
 				if (useFormEntryForPublications && (publications.size() > 0)) {
 					for (Publication p : publications) {
-						publicationContent += (p.toHTML());
+						publicationContent += (p.getContentAsHtml());
 					}
 				} else {
 					publicationContent += ("<li>" + publicationsText + "</li>");
@@ -137,10 +136,6 @@ class Faculty {
 		
 		// Output research page
 		String researchContent = "";
-		
-		researchContent += (HtmlStrings.HEADER);
-		researchContent += (HtmlStrings.TITLE);
-		researchContent += (HtmlStrings.BODY);
 		researchContent += ("<h2>" + fullName() + "</h2>"); 
 		researchContent += ("\n<h3>Research &amp; Scholarly Activity</h3>");
 		researchContent += ("\n<ul>");
@@ -156,7 +151,6 @@ class Faculty {
 			customContent = p.getContentAsHtml();
 			XmlHelper.toXml(this, customContent, this.handle + "/" + p.name);
 		}
-		
 		
 		// get photo
 		
@@ -239,181 +233,4 @@ class Faculty {
 		content += ("</ul>");
 		return content;
 	}
-
-	/**
-	 * Write as an HTML page
-	 */
-/*	void outputHtml() {
-		try {
-			String outputDir = Migrate.outputDirectory + this.handle;
-			new File(outputDir).mkdirs();
-			String outputFile = outputDir + "/index.html";
-			PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
-			writer.println(HtmlStrings.HEADER);
-			writer.println(HtmlStrings.TITLE);
-			writer.println(HtmlStrings.BODY);
-
-			writer.println("<h2>" + fullName() + "</h2>"); 
-			if (photoSetting == 2){
-				String photoURL = Migrate.baseURL + handle + "/" + handle + ".jpg";
-				writer.println("<img src=\"" + photoURL + "\" alt=\"" + photoDescription + "\" />");
-			}
-			writer.println("<p>");
-			for(Position p : positions){
-				writer.println(p.toHTML() + "<br />");
-			}
-			writer.println("<em>" + titles + "</em><br />");
-			writer.println("</p>");
-			writer.println("<h4>Email</h4>");
-			for(String email : emails){
-				writer.println("<p><a href=\"mailto:" + email + "\">" + email + "</a></p>");
-			}
-			writer.println("<h4>Phone Number(s)</h4>");
-			writer.println("<p>" + phone + "</p>");
-			writer.println("<h4>Office Hours</h4>");
-			writer.println("<p>" + officeHours + "</p>");
-			writer.println("</p>");
-
-			// Courses
-			writer.println(coursesActive?"":"<div style=\"background-color: yellow;\">");
-			writer.println("<hr /><h3>Courses</h3>");
-			writer.println("<ul>");
-			for(Course c : courses) {
-				if(c.active){
-					writer.print("<li><a href=\"" + c.url() + "\">" + c.title + "</a></li>");
-				}
-			}
-			writer.println("</ul>");
-			writer.println(coursesActive?"":"</div>");
-
-			// Education
-			writer.println(educationActive?"":"<div style=\"background-color: yellow;\">");
-			writer.println("<hr /><h3>Education</h3>");
-			writer.println("<ul>");  
-			for (Degree d : education.degrees) {
-				writer.print("<li>" + d + "</li>");
-			}
-			writer.println("</ul>");
-			writer.println(educationActive?"":"</div>");
-
-			// Licenses and Certificates
-			writer.println(licensesCertificatesActive?"":"<div style=\"background-color: yellow;\">");
-			writer.println("<hr /><h3>Licenses &amp; Certificates</h3>");
-			writer.println("<ul>");
-			for (License l : licenses){
-				writer.print("<li>" + l + "</li>");
-			}
-			writer.println("</ul>");
-			writer.println(licensesCertificatesActive?"":"</div>");
-
-			// Bio
-			writer.println(bioActive?"":"<div style=\"background-color: yellow;\">");
-			writer.println("<hr /><h3>Bio</h3>");
-			writer.println(bio);
-			writer.println(bioActive?"":"</div>");
-			writer.println("<hr /><h3>Links</h3>");
-			writer.println("<ul>");
-			for (Link l : links ){
-				writer.println("<li><a href=\"" + l.url + "\">" + l.label + "</a></li>");
-			}
-			writer.println("</ul>");
-			writer.println(HtmlStrings.FOOTER);
-			writer.close();
-
-		} catch (FileNotFoundException | UnsupportedEncodingException e){
-			e.printStackTrace();
-		}
-
-		// Output course pages
-		for (Course c : courses) {
-			try {
-				String outputDir = Migrate.outputDirectory + this.handle + "/courses/" + c.name;
-				String outputFile = outputDir + "/index.html";
-				new File(outputDir).mkdirs();
-				PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
-				c.toHTML(writer);
-				writer.close();
-			} catch (FileNotFoundException | UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-		}
-
-		// Output publications
-		if ((useFormEntryForPublications && (publications.size() > 0)) 
-				|| Migrate.isValid(publicationsText)) {
-			try {
-				String outputDir = Migrate.outputDirectory + this.handle + "/publications/";
-				String outputFile = outputDir + "/index.html";
-				new File(outputDir).mkdirs();
-				PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
-				writer.println(HtmlStrings.HEADER);
-				writer.println(HtmlStrings.TITLE);
-				writer.println(HtmlStrings.BODY);
-				writer.println("<h2>" + fullName() + "</h2>"); 
-				writer.println("<h3>Publications &amp; Presentations</h3>");
-				writer.println("<ul>");
-				if (useFormEntryForPublications && (publications.size() > 0)) {
-					for (Publication p : publications) {
-						writer.println(p.toHTML());
-					}
-				} else {
-					writer.println("<li>" + publicationsText + "</li>");
-				}
-				writer.println("</ul>");
-				writer.println(HtmlStrings.FOOTER);
-				writer.close();
-			} catch (FileNotFoundException | UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-		}
-
-		// Output research
-		try {
-			String outputDir = Migrate.outputDirectory + this.handle + "/research/";
-			String outputFile = outputDir + "/index.html";
-			new File(outputDir).mkdirs();
-			PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
-			writer.println(HtmlStrings.HEADER);
-			writer.println(HtmlStrings.TITLE);
-			writer.println(HtmlStrings.BODY);
-			writer.println("<h2>" + fullName() + "</h2>"); 
-			writer.println("<h3>Research &amp; Scholarly Activity</h3>");
-			writer.println("<ul>");
-			for (Research r : research) {
-				// writer.println(r.toHTML());
-			}
-			writer.println("</ul>");
-			writer.println(HtmlStrings.FOOTER);
-			writer.close();
-		} catch (FileNotFoundException | UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-
-
-		// Custom pages
-		for (CustomPage p : customPages){
-			System.out.println(p.title);
-			try {
-				String outputDir = Migrate.outputDirectory + this.handle + "/" + p.name;
-				String outputFile = outputDir + "/index.html";
-				System.out.println(outputDir);
-				new File(outputDir).mkdirs();
-				PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
-				p.toHTML(writer);
-				writer.close();
-			} catch (FileNotFoundException | UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-		}
-
-		// get photo
-		if (photoSetting == 2){
-			try {
-				Migrate.saveImage(Migrate.liveSiteBaseDir + handle + "/" + handle + ".jpg", 
-						Migrate.outputDirectory + handle + "/" + handle + ".jpg");
-			} catch (IOException e){
-				e.printStackTrace();
-			}
-		}
-	}*/
 }
