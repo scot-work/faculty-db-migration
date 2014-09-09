@@ -66,7 +66,9 @@ public class Migrate {
 			}
 		}
 	}
-
+/**
+* Output experts data as XML
+*/
 	private static void outputExpertsData(Properties prop) throws java.sql.SQLException {
 		Connection conn = null;
 		String outputDirectory = "";
@@ -85,15 +87,20 @@ public class Migrate {
 		PreparedStatement stmt = conn.prepareStatement(Queries.PublishedQuery);
 		ResultSet rs = stmt.executeQuery();
 		String handle = "";
+
 		int facultyID;
 		while (rs.next()) {
 			handle = rs.getString("handle");
+			Expert expert = new Expert(handle);
 			facultyID = rs.getInt("faculty_id");
 			PreparedStatement expertsQuery = conn.prepareStatement(Queries.GetExpertsData);
 			expertsQuery.setInt(1, facultyID);
 			ResultSet experts = expertsQuery.executeQuery();
 			while (experts.next()){
-				System.out.println("handle: " + handle);
+				expert.handle = handle;
+				expert.categoryOne = experts.getString("expertise_category_1");
+				expert.categoryTwo = experts.getString("expertise_category_2");
+				expert.summary = experts.getString("expertise_summary");
 			}
 		}
 		rs.close();

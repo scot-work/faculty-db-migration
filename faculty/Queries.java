@@ -114,6 +114,6 @@ class Queries {
 			+ "WHERE sppd.page_id=? AND sppd.document_id = spd.id ORDER BY sppd.position";
 	
 	// Get experts data
-	public static String GetExpertsData = "SELECT * FROM sjsu_experts_published" +
-			"WHERE faculty_id=? ";
+	public static String GetExpertsData = "SELECT * FROM sjsu_experts_published " +
+			"WHERE faculty_id=?";
 }
