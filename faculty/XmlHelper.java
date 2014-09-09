@@ -110,7 +110,7 @@ public class XmlHelper {
 	}
 
 	/**
-	 * Write the page
+	 * Write an index.pcf page
 	 * @param content
 	 */
 	static void outputPcf(String directory, String content) {
@@ -119,6 +119,24 @@ public class XmlHelper {
 			String outputDir = Migrate.outputDirectory + directory;
 			new File(outputDir).mkdirs();
 			String outputFile = outputDir + "/index.pcf";
+			PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
+			writer.println(content);
+			writer.close();
+		} catch (FileNotFoundException | UnsupportedEncodingException e){
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Write a sidenav.inc page
+	 * @param content
+	 */
+	static void outputSidenav(String directory, String content) {
+		// content = cleanup(content);
+		try {
+			String outputDir = Migrate.outputDirectory + directory;
+			new File(outputDir).mkdirs();
+			String outputFile = outputDir + "/sidenav.inc";
 			PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
 			writer.println(content);
 			writer.close();

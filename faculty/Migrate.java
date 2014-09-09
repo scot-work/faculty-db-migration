@@ -56,12 +56,54 @@ public class Migrate {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			} 
+			} else if (args[0].equals("experts")){
+				try {
+					outputExpertsData(prop);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
+	private static void outputExpertsData(Properties prop) throws java.sql.SQLException {
+		Connection conn = null;
+		String outputDirectory = "";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		try {
+			conn = DriverManager.getConnection(prop.getProperty("ConnectionString"));
+		} catch (SQLException ex) {
+			System.out.println("SQLException: " + ex.getMessage());
+			System.out.println("SQLState: " + ex.getSQLState());
+			System.out.println("VendorError: " + ex.getErrorCode());
+		}
+		PreparedStatement stmt = conn.prepareStatement(Queries.PublishedQuery);
+		ResultSet rs = stmt.executeQuery();
+		String handle = "";
+		int facultyID;
+		while (rs.next()) {
+			handle = rs.getString("handle");
+			facultyID = rs.getInt("faculty_id");
+			PreparedStatement expertsQuery = conn.prepareStatement(Queries.GetExpertsData);
+			expertsQuery.setInt(1, facultyID);
+			ResultSet experts = expertsQuery.executeQuery();
+			while (experts.next()){
+				System.out.println("handle: " + handle);
+			}
+		}
+		rs.close();
+		stmt.close();
+		conn.close();
+
+	}
+
 	/**
-	 *  Output an empty folder for each faculty
+	 *  Output an empty folder for each faculty so permissions can be set in OU Campus
 	 *
 	 */
 	static void outputEmptyFolders(Properties prop) throws java.sql.SQLException {
@@ -121,11 +163,14 @@ public class Migrate {
 			faculty.firstName = rs.getString("first_name");
 			faculty.handle = rs.getString("handle");
 			processFacultySite(conn, faculty);
-			faculty.outputXml();
+			if (faculty.isActive){
+				faculty.outputXml();
+			}
 		}
 		rs.close();
 		stmt.close();
 		conn.close();
+
 	}
 
 	/**
@@ -152,7 +197,10 @@ public class Migrate {
 		stmt = conn.prepareStatement(Queries.OfficialInfoQuery);
 		stmt.setInt(1, currentFaculty.towerID);
 		rs = stmt.executeQuery();
+		// NOTE: if faculty not found, faculty is not active
+		currentFaculty.isActive = false;
 		while(rs.next()) {
+			currentFaculty.isActive = true;
 			List<String> emails = new ArrayList<String>();
 			emails.add(rs.getString("email_addr"));
 			currentFaculty.emails = emails;
@@ -487,7 +535,8 @@ public class Migrate {
 				stmt.setInt(1, s.id);
 				rs = stmt.executeQuery();
 				while(rs.next()) {
-					Doc d = new Doc(rs.getString("label"), s.url + "/" + rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1));
+					Doc d = new Doc(rs.getString("label"), s.url + "/" 
+							+ rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1));
 					documents.add(d);
 				}
 				s.docs = documents;
@@ -506,6 +555,16 @@ public class Migrate {
 				rs.close();
 				stmt.close();
 			} 
+
+			// get photo
+			/*if (currentFaculty.photoSetting == 2){
+				try {
+					Migrate.saveImage(Migrate.liveSiteBaseDir + currentFaculty.handle + "/" + currentFaculty.handle + ".jpg", 
+							Migrate.outputDirectory + currentFaculty.handle + "/" + currentFaculty.handle + ".jpg");
+				} catch (IOException e){
+					e.printStackTrace();
+				}
+			}*/
 		} 
 	}
 

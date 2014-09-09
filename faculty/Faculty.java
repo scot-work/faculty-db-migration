@@ -3,6 +3,7 @@ package faculty;
 import faculty.Education;
 import faculty.Degree;
 
+import java.io.IOException;
 import java.util.*;
 
 import org.w3c.dom.CDATASection;
@@ -16,6 +17,7 @@ class Faculty {
 	String handle;
 	int facultyID;
 	int towerID;
+	boolean isActive;
 	List<String> emails;
 	Education education;
 	String bio;
@@ -152,8 +154,26 @@ class Faculty {
 			XmlHelper.toXml(this, customContent, this.handle + "/" + p.name);
 		}
 		
-		// get photo
+		// save photo
+		if (photoSetting == 2){
+			try {
+				Migrate.saveImage(Migrate.liveSiteBaseDir + handle + "/" + handle + ".jpg", 
+						Migrate.outputDirectory + handle + "/" + handle + ".jpg");
+			} catch (IOException e){
+				e.printStackTrace();
+			}
+		}
 		
+		// write sidenav.inc	
+		String sidenav = "";
+		sidenav += coursesActive?"\n<li><a href=\"" + Migrate.baseURL + this.handle + "/" +  "courses/\">Courses" + "</a></li>":"";
+		sidenav += publicationsActive?"\n<li><a href=\"" + Migrate.baseURL + this.handle + "/" +  "publications/\">Publications &amp; Presentations" 
+				+ "</a></li>":"";
+		sidenav += researchActive?"\n<li><a href=\"" + Migrate.baseURL + this.handle + "/" +  "research/\">Research &amp; Scholarly Activity" 
+				+ "</a></li>":"";
+		sidenav += professionalServicesActive?"\n<li><a href=\"" + Migrate.baseURL + this.handle + "/" +  "professional_service/\">Professional &amp; Service Activity" 
+				+ "</a></li>":"";
+		XmlHelper.outputSidenav(this.handle, sidenav);
 	}
 
 	/**
@@ -190,11 +210,14 @@ class Faculty {
 		content += (coursesActive?"":"<div style=\"background-color: yellow;\">");
 		content += ("<hr /><h3>Courses</h3>");
 		content += ("<ul>");
+		String courseNav = "";
 		for(Course c : courses) {
 			if(c.active){
-				content += ("<li><a href=\"" + c.url() + "\">" + c.title + "</a></li>");
+				courseNav += ("\n<li><a href=\"" + c.url() + "\">" + c.title + "</a></li>");
 			}
 		}
+		XmlHelper.outputSidenav(this.handle + "/courses/", courseNav);
+		content += courseNav;
 		content += ("</ul>");
 		content += (coursesActive?"":"</div>");
 
