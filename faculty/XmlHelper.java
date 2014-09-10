@@ -42,6 +42,9 @@ public class XmlHelper {
 	 * @return
 	 */
 	public static String getStringFromDoc(org.w3c.dom.Document doc)    {
+		if (doc == null){
+			System.out.println("XML document is null");
+		}
         try
         {
            DOMSource domSource = new DOMSource(doc);
@@ -57,8 +60,9 @@ public class XmlHelper {
         }
         catch(TransformerException ex)
         {
-           ex.printStackTrace();
-           return null;
+        	System.out.println("Transformer Exception");
+           // ex.printStackTrace();
+           return "Error in transformation";
         }
     }
 	

@@ -14,6 +14,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 
 
 /**
@@ -58,6 +64,7 @@ public class Migrate {
 				}
 			} else if (args[0].equals("experts")){
 				try {
+					System.out.println("Outputting Experts Data");
 					outputExpertsData(prop);
 				} catch (SQLException e) {
 					// TODO Auto-generated catch block
@@ -89,6 +96,17 @@ public class Migrate {
 		String handle = "";
 
 		int facultyID;
+		
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+	
+			
+			// root elements
+		Document doc = docBuilder.newDocument();
+		doc.setXmlStandalone(true);
+		Element root = doc.createElement("experts");
+		doc.appendChild(root);
 		while (rs.next()) {
 			handle = rs.getString("handle");
 			Expert expert = new Expert(handle);
@@ -100,9 +118,17 @@ public class Migrate {
 				expert.handle = handle;
 				expert.categoryOne = experts.getString("expertise_category_1");
 				expert.categoryTwo = experts.getString("expertise_category_2");
+				expert.contactForSpeaking = experts.getInt("contact_for_speaking") == 1;
+				expert.contactForResearch = experts.getInt("contact_for_research") == 1;
+				expert.contactByMedia = experts.getInt("contact_by_media") == 1;
 				expert.summary = experts.getString("expertise_summary");
 			}
+			root.appendChild(expert.createXml(doc));
 		}
+		System.out.println(XmlHelper.getStringFromDoc(doc));
+	} catch(ParserConfigurationException pce){
+		pce.printStackTrace();
+	}
 		rs.close();
 		stmt.close();
 		conn.close();
