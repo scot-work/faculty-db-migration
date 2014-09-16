@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?pcf-stylesheet path="/xsl/faculty-profile.xsl" site="_resources" extension="html"?>
+
+<!DOCTYPE document SYSTEM "http://commons.omniupdate.com/dtd/standard.dtd">
+
+<document xmlns:ouc="http://omniupdate.com/XSL/Variables">
+    <headcode></headcode>
+    <bodycode></bodycode>
+    <footcode></footcode>
+    
+    <ouc:properties label="metadata">
+        <title>Tony Stark</title>
+        <meta name="Description" content="Tony Stark, CEO of Stark Enterprises" />
+        <meta name="Keywords" content="tony stark, stark enterprises, iron man" />
+        <meta name="Author" content="" />
+    </ouc:properties>
+    
+    <parameter name="pagetype">facultyprofile</parameter>
+    <parameter name="layout">
+    <option value="1col" selected="true">One Column</option>
+    </parameter>
+    
+    <ouc:properties label="config">
+        <parameter name="hide" group="Everyone" type="radio" prompt="Hide Page?" alt="Prevent the page from publishing and hide it from navigation menus and index pages.">
+            <option value="true" selected="false">Disable the page</option>
+            <option value="false" selected="true">Publish the page</option>
+        </parameter>
+        <parameter name="nav_order" group="Everyone" prompt="Nav Order" alt="Enter a number from 1 to 99 to control the order in which a link to this page appears in either the main navigation menu or sidebar navigation menus. Optionally, leave it blank to keep the page off navigation menus.">1</parameter>
+    </ouc:properties>
+
+    <ouc:div label="photo" group="Everyone" button="hide">
+        <ouc:multiedit type="image" prompt="Profile Photo" alt="Do you want to share a photo? (Max width 138 pixels)"/>
+        <img src="http://www.sjsu.edu/_resources/img/sjsu-spartan.jpg" alt="" />
+    </ouc:div>
+    
+    <ouc:div label="namefirst" group="Everyone" button="hide">
+        <ouc:multiedit type="text" prompt="First Name" alt="What's your first name?" />
+        Tony
+    </ouc:div>
+
+    <ouc:div label="namemiddle" group="Everyone" button="hide">
+        <ouc:multiedit type="text" prompt="Middle Name" alt="Do you have any middle names?" />
+        Edward
+    </ouc:div>    
+
+    <ouc:div label="namelast" group="Everyone" button="hide">
+        <ouc:multiedit type="text" prompt="Last Name" alt="What's your family name / last name?" />
+        Stark
+    </ouc:div>
+
+    <ouc:div label="preferredemail" group="Everyone" button="hide">
+        <ouc:multiedit type="text" prompt="Email" alt="What's your preferred email address?" />
+        tony@starkenterprises.com
+    </ouc:div>    
+
+    <ouc:div label="alternateemail" group="Everyone" button="hide">
+        <ouc:multiedit type="text" prompt="Alternate Email" alt="Do you have an alternate email address?" />
+        ironman@shield.gov
+    </ouc:div>
+
+    <ouc:div label="preferredphone" group="Everyone" button="hide">
+        <ouc:multiedit type="text" prompt="Phone" alt="What's your preferred phone number?" />
+        408-924-0000
+    </ouc:div>     
+
+    <ouc:div label="alternatephone" group="Everyone" button="hide">
+        <ouc:multiedit type="text" prompt="Alternate Phone" alt="Do you have an alternate phone number?" />
+        310-555-8669
+    </ouc:div>     
+
+    <ouc:div label="personaltitle" group="Everyone" button="hide">
+        <ouc:multiedit type="text" prompt="Title" alt="What is your working title?" />
+        CEO
+    </ouc:div>
+
+    <ouc:div label="department" group="Everyone" button="hide">
+        <ouc:multiedit type="text" prompt="Department" alt="What is your department name?" />
+        Avengers
+    </ouc:div>     
+
+    <ouc:div label="additionalinfo" group="Everyone" button="hide">
+        <ouc:multiedit type="textarea" prompt="Additional Info" alt="Any additional info you want to share?" rows="10" editor="yes"/>
+        I am Iron Man.
+    </ouc:div>
+
+    <ouc:div label="additionalinfotitle" group="Everyone" button="hide">
+        <ouc:multiedit type="text" prompt="Custom Title" alt="Enter a custom title for your Additional Info (default just says 'Additional Info')" />
+        Who am I?
+    </ouc:div>         
+
+    <ouc:div label="eduinfo" group="Everyone" button-class="oucEditButton" button-text="Edit Educational Info" break="break">
+        <ouc:editor csspath="/_resources/ou/editor/sjsu-wysiwyg.css" cssmenu="/_resources/ou/editor/styles.txt" width="1040" wysiwyg-class="eduinfo"/>
+        MIT, Master's of Electrical Engineering
+        MIT, Master's of Metallurgical Inventionification
+    </ouc:div>
+
+    <ouc:div label="licenses" group="Everyone" button-class="oucEditButton" button-text="Edit Licenses &amp; Certificates" break="break">
+        <ouc:editor csspath="/_resources/ou/editor/sjsu-wysiwyg.css" cssmenu="/_resources/ou/editor/styles.txt" width="1040" wysiwyg-class="licenses"/>
+        Driving, flying, science.
+    </ouc:div>
+
+    <ouc:div label="bioinfo" group="Everyone" button-class="oucEditButton" button-text="Edit Biographical Info" break="break">
+        <ouc:editor csspath="/_resources/ou/editor/sjsu-wysiwyg.css" cssmenu="/_resources/ou/editor/styles.txt" width="1040" wysiwyg-class="bioinfo"/>
+        Backstory stuff
+    </ouc:div>
+
+    <ouc:div label="links" group="Everyone" button-class="oucEditButton" button-text="Edit Additional Links" break="break">
+    <ouc:editor csspath="/_resources/ou/editor/sjsu-wysiwyg.css" cssmenu="/_resources/ou/editor/styles.txt" width="1040" wysiwyg-class="links"/>
+        <a href="http://en.wikipedia.org/wiki/S.H.I.E.L.D.">SHIELD</a>
+    </ouc:div>
+
+</document>
