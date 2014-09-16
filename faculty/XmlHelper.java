@@ -11,7 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-//import javax.xml.transform.TransformerConfigurationException;
+
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -85,7 +85,7 @@ public class XmlHelper {
 	 */
 	
 	static void toXml(Faculty faculty, String content, String path){
-		Document doc = XmlHelper.getXmlOutline("interior");
+		Document doc = XmlHelper.getBasicOutline();
 		// Get empty DOM
 		// insert data into doc
 
@@ -123,7 +123,7 @@ public class XmlHelper {
 			String outputDir = Migrate.outputDirectory + directory;
 			new File(outputDir).mkdirs();
 			String outputFile = outputDir + "/index.pcf";
-			PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
+			PrintWriter writer = new PrintWriter(outputFile, "utf-8");
 			writer.println(content);
 			writer.close();
 		} catch (FileNotFoundException | UnsupportedEncodingException e){
@@ -148,13 +148,112 @@ public class XmlHelper {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Create minimum viable XML content for the basic faculty file
+	 * <!DOCTYPE document SYSTEM "http://commons.omniupdate.com/dtd/standard.dtd">
+	 * @return
+	 */
+	static Document getBasicOutline() {
+		Document doc = null;
+		try {
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			docFactory.setNamespaceAware(true);
+			
+			// root elements
+			doc = docBuilder.newDocument();
+			doc.setXmlStandalone(true);
+			// Set stylesheet type
+			ProcessingInstruction pi = doc.createProcessingInstruction("pcf-stylesheet", 
+					StringConstants.STYLESHEET_DECLARATION);
+			
+			// create root element
+			
+			Element document = doc.createElement("document");
+			document.setAttribute("xmlns:ouc", StringConstants.NAMESPACE);
+			// create other elements
+			Element headcode = doc.createElement("headcode");
+			Element bodycode = doc.createElement("bodycode");
+			Element footcode = doc.createElement("footcode");
+			Element properties = doc.createElementNS(StringConstants.NAMESPACE,"ouc:properties");
+			
+			Element mainContent = doc.createElement("maincontent");
+			Element metadata = doc.createElement("metadata");
+			Element metaDescription = doc.createElement("meta");
+			Element metaKeywords = doc.createElement("meta");
+			Element metaAuthor = doc.createElement("meta");
+			Element optionOneCol = doc.createElement("option");
+			Element optionTwoCol = doc.createElement("option");
+			Element optionThreeCol = doc.createElement("option");
+			Element title = doc.createElement("title");
+			Element pageTypeParameter = doc.createElement("parameter");
+			Element columnsParameter = doc.createElement("parameter");
+
+			
+			// Static elements available to other classes as needed
+			openDivComment = doc.createComment(StringConstants.OMNIUPDATE_DIV_OPEN);
+			closeDivComment = doc.createComment(StringConstants.OMNIUPDATE_DIV_CLOSE);
+			editorComment = doc.createComment(StringConstants.OMNIUPDATE_EDITOR);
+			
+			// Add page template name
+			pageTypeParameter.setAttribute("name", "pagetype");
+			Text pageTemplateName = doc.createTextNode("facultybasic");
+			pageTypeParameter.appendChild(pageTemplateName);
+			
+			// columns
+			columnsParameter.setAttribute("name", "columns");
+			columnsParameter.setAttribute("type", "select");
+			columnsParameter.setAttribute("group", "Everyone");
+			columnsParameter.setAttribute("prompt", "Number of Columns");
+			columnsParameter.setAttribute("alt", "How many columns do you want your page to have?");
+			columnsParameter.appendChild(optionOneCol);
+			optionOneCol.setAttribute("value", "1col");
+			optionOneCol.setAttribute("selected", "true");
+			optionOneCol.appendChild(doc.createTextNode("One Column"));
+			
+			// Assemble DOM
+			doc.appendChild(document);
+			document.appendChild(headcode);
+			doc.insertBefore(pi, document);
+			document.appendChild(bodycode);
+			document.appendChild(footcode);
+			document.appendChild(properties);
+			properties.appendChild(title);
+			
+	
+			properties.appendChild(pageTypeParameter);
+			
+			properties.appendChild(columnsParameter);
+
+			document.appendChild(metadata);
+
+			metaDescription.setAttribute("content", "");
+			metaDescription.setAttribute("name", "description");
+			metaKeywords.setAttribute("content", "");
+			metaKeywords.setAttribute("name", "keywords");
+			metaAuthor.setAttribute("content", "");
+			metaAuthor.setAttribute("name", "author");
+			metadata.appendChild(metaDescription);
+			metadata.appendChild(metaKeywords);
+			metadata.appendChild(metaAuthor);
+
+			
+			document.appendChild(metadata);
+			document.appendChild(mainContent);
+
+		} catch (ParserConfigurationException pce){
+			pce.printStackTrace();
+		}
+		return doc;
+	}
 	
 	/**
 	 * Create minimum viable XML content for the pcf file
 	 * <!DOCTYPE document SYSTEM "http://commons.omniupdate.com/dtd/standard.dtd">
 	 * @return
 	 */
-	static Document getXmlOutline(String pageType) {
+	static Document getXmlOutlinex(String pageType) {
 		Document doc = null;
 		try {
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -186,8 +285,6 @@ public class XmlHelper {
 			Element title = doc.createElement("title");
 			Element pageTypeParameter = doc.createElement("parameter");
 			Element columnsParameter = doc.createElement("parameter");
-			openPropertiesComment = doc.createComment(StringConstants.OMNIUPDATE_PROPERTIES_OPEN);
-			closePropertiesComment = doc.createComment(StringConstants.OMNIUPDATE_PROPERTIES_CLOSE);
 			
 			// Static elements available to other classes as needed
 			openDivComment = doc.createComment(StringConstants.OMNIUPDATE_DIV_OPEN);
@@ -224,16 +321,16 @@ public class XmlHelper {
 			doc.insertBefore(pi, document);
 			document.appendChild(bodycode);
 			document.appendChild(footcode);
-			document.appendChild(doc.createComment(StringConstants.OMNIUPDATE_PROPERTIES_OPEN));
+
 			document.appendChild(title);
-			document.appendChild(doc.createComment(StringConstants.OMNIUPDATE_PROPERTIES_CLOSE));
+
 			document.appendChild(config);
 			config.appendChild(pageTypeParameter);
-			config.appendChild(doc.createComment(StringConstants.OMNIUPDATE_PROPERTIES_OPEN));
+
 			config.appendChild(columnsParameter);
-			config.appendChild(doc.createComment(StringConstants.OMNIUPDATE_PROPERTIES_CLOSE));
+
 			document.appendChild(metadata);
-			metadata.appendChild(doc.createComment(StringConstants.OMNIUPDATE_PROPERTIES_OPEN));
+
 			metaDescription.setAttribute("content", "");
 			metaDescription.setAttribute("name", "description");
 			metaKeywords.setAttribute("content", "");
@@ -243,7 +340,7 @@ public class XmlHelper {
 			metadata.appendChild(metaDescription);
 			metadata.appendChild(metaKeywords);
 			metadata.appendChild(metaAuthor);
-			metadata.appendChild(doc.createComment(StringConstants.OMNIUPDATE_PROPERTIES_CLOSE));
+
 			
 			document.appendChild(metadata);
 			document.appendChild(mainContent);

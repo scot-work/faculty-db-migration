@@ -77,7 +77,7 @@ class Faculty {
 	 */
 	void outputXml(){
 		// Get empty DOM
-		Document doc = XmlHelper.getXmlOutline("interior");
+		Document doc = XmlHelper.getBasicOutline();
 
 		// insert data into doc
 		

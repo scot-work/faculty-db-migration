@@ -38,37 +38,6 @@ class Course {
 		XmlHelper.toXml(faculty, content, path);
 	}
 	
-/**
- * write as a pcf file
- * TODO move this to XmlHelper
- */
-	void toXmlx(){
-		Document doc = XmlHelper.getXmlOutline("interior");
-		// Get empty DOM
-		// insert data into doc
-
-		// Add title
-		Text titleText = doc.createTextNode(faculty.fullName());
-		Element titleNode = (Element) (doc.getElementsByTagName("title")).item(0);
-		titleNode.appendChild(titleText);
-		// Editable areas
-		Element bodyNode = (Element) (doc.getElementsByTagName("maincontent")).item(0);
-		Element columnTwo = doc.createElement("column_two");
-		bodyNode.appendChild(columnTwo);
-		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_DIV_OPEN));
-		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_EDITOR));
-
-		// Add content
-		CDATASection bodyText = doc.createCDATASection(getContentAsHtml());
-		columnTwo.appendChild(bodyText);
-		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_DIV_CLOSE));
-		String xml = XmlHelper.getStringFromDoc(doc);
-
-		// Remove CDATA tag before writing file
-		xml = xml.replaceAll("<!\\[CDATA\\[", "");
-		xml = xml.replaceAll("\\]\\]>", "");
-		XmlHelper.outputPcf(faculty.handle + "/courses/" + this.name, xml);
-	}
 
 	/**
 	 * Return an html string with the course content
