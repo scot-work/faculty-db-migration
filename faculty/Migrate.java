@@ -76,7 +76,7 @@ public class Migrate {
 		}
 	}
 private static void outputEmptyPcfs() {
-        Document doc = XmlHelper.getBasicOutline();
+        Document doc = XmlHelper.getProfileOutline();
         String xml = XmlHelper.getStringFromDoc(doc);
         XmlHelper.outputPcf("people", xml);
     }
