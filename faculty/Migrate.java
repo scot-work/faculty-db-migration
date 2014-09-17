@@ -70,9 +70,16 @@ public class Migrate {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			} else if  (args[0].equals("pcf")){
+			    outputEmptyPcfs();
 			}
 		}
 	}
+private static void outputEmptyPcfs() {
+        Document doc = XmlHelper.getBasicOutline();
+        String xml = XmlHelper.getStringFromDoc(doc);
+        XmlHelper.outputPcf("people", xml);
+    }
 /**
 * Output experts data as XML
 */
