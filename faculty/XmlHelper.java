@@ -57,7 +57,6 @@ static Element getElementByAttribute(Document doc, String path){
         } catch (XPathExpressionException e) {
             e.printStackTrace();
         }
-        System.out.println("Found " + nl.getLength() + " items.");
         return (Element) nl.item(0);
 }
 
@@ -108,7 +107,7 @@ static Element getElementByAttribute(Document doc, String path){
     /**
     * Output a file based on the basic PCF template
     */
-    static void outputBasicFile(Faculty faculty, String title, String content, String path) {
+    static void outputBasicFile(Faculty faculty, String title, String content, String path, Boolean active) {
     	Document doc = XmlHelper.getBasicOutline();
 
         // Add title
@@ -119,6 +118,15 @@ static Element getElementByAttribute(Document doc, String path){
         // Editable area
         Element maincontentDiv = getElementByAttribute(doc, "//*[@label='maincontent']");
         maincontentDiv.appendChild(doc.createCDATASection(content));
+        
+        if (!active){
+			Element hide = XmlHelper.getElementByAttribute(doc, "//*[@value='true']");
+			Element show = XmlHelper.getElementByAttribute(doc, "//*[@value='false']");
+			hide.setAttribute("selected", "true");
+			show.setAttribute("selected", "false");
+		}
+
+        // convert XML to a String
         String xml = XmlHelper.getStringFromDoc(doc);
         outputPcf(path, xml);
     }

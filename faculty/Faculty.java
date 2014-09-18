@@ -92,7 +92,7 @@ class Faculty {
 				}
 				publicationContent += ("</ul>");
 		}
-		XmlHelper.outputBasicFile(this, fullName() + " Publications", publicationContent, this.handle + "/publications/");
+		XmlHelper.outputBasicFile(this, fullName() + " Publications", publicationContent, this.handle + "/publications/", publicationsActive);
 
 		// Output research page
 		String researchContent = "";
@@ -103,13 +103,13 @@ class Faculty {
 			researchContent += (r.getContentAsHtml());
 		}
 		researchContent += ("</ul>");
-		XmlHelper.outputBasicFile(this, fullName() + "Research", researchContent, this.handle + "/research/");
+		XmlHelper.outputBasicFile(this, fullName() + "Research", researchContent, this.handle + "/research/", researchActive);
 
 		// Output custom pages
 		String customContent = "";
 		for (CustomPage p : customPages){
 			customContent = p.getContentAsHtml();
-			XmlHelper.outputBasicFile(this, p.name, customContent, this.handle + "/" + p.name);
+			XmlHelper.outputBasicFile(this, p.name, customContent, this.handle + "/" + p.name, true);
 		}
 
 		// save photo
@@ -143,7 +143,7 @@ class Faculty {
 			courseContent += "</ul>";
 			// XmlHelper.toXml(this, courseContent, this.handle + "/courses/");
 			//XmlHelper.outputPcf(this.handle + "/courses/", xml);
-			XmlHelper.outputBasicFile(this, "Courses", courseContent, this.handle + "/courses" );
+			XmlHelper.outputBasicFile(this, "Courses", courseContent, this.handle + "/courses", true );
 		}
 		
 		for (Course c : courses) {

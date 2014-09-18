@@ -41,37 +41,15 @@ class Course {
 		XmlHelper.toXml(faculty, content, path());
 	}
 	
+	/**
+	* Output this course as an XML (pcf) file
+	*/
 	void output(){
-		Document doc = XmlHelper.getBasicOutline();
+		System.out.println("Outputting " + title);
 
-		// insert data into doc
 		
-		// Add title
-		Text titleText = doc.createTextNode(faculty.fullName());
-		Element titleNode = (Element) (doc.getElementsByTagName("title")).item(0);
-		titleNode.appendChild(titleText);
-		
-		Element maincontentDiv = XmlHelper.getElementByAttribute(doc, "//*[@label='maincontent']");
-		
-		// Add content
-		CDATASection bodyText = doc.createCDATASection(getContentAsHtml());
-		maincontentDiv.appendChild(bodyText);
-		String xml = XmlHelper.getStringFromDoc(doc);
-
-		if (!active){
-			System.out.println("Course inactive: " + this.title);
-			Element hide = XmlHelper.getElementByAttribute(doc, "//*[@selected='false']");
-			if (hide != null){
-				System.out.println("found hide element");
-			}
-		} else {
-			System.out.println("Course active: " + this.title);
-		}
-		
-		// Remove CDATA tag before writing file
-		xml = xml.replaceAll("<!\\[CDATA\\[", "");
-		xml = xml.replaceAll("\\]\\]>", "");
-		XmlHelper.outputPcf(faculty.handle, xml);
+		XmlHelper.outputBasicFile(faculty, title, getContentAsHtml(), path(), active);
+		// XmlHelper.outputPcf(faculty.handle, xml);
 	}
 
 	/**
