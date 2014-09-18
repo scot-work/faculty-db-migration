@@ -91,7 +91,6 @@ public class Migrate {
      */
     private static void outputExpertsData(Properties prop) throws java.sql.SQLException {
         Connection conn = null;
-        String outputDirectory = "";
         try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException e) {

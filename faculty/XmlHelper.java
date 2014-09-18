@@ -24,13 +24,9 @@ import javax.xml.xpath.XPathFactory;
 
 
 import org.w3c.dom.CDATASection;
-//import org.w3c.dom.Attr;
-import org.w3c.dom.Comment;
-//import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 //import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
@@ -40,25 +36,20 @@ public class XmlHelper {
     protected static final String DEFAULT_PHOTO = "http://www.sjsu.edu/_resources/img/sjsu-spartan.jpg";
     protected static final String CSS_MENU = "/_resources/ou/editor/styles.txt";
     protected static final String CSS_PATH = "/_resources/editor/sjsu-wysiwyg.css";
-    //static Comment openDivComment;
-    //static Comment closeDivComment;
-    //static Comment editorComment;
-    //static Comment openPropertiesComment;
-    //static Comment closePropertiesComment;
 
-static Element getElementByAttribute(Document doc, String path){
+    static Element getElementByAttribute(Document doc, String xPath){
         XPathFactory xPathfactory = XPathFactory.newInstance();
         XPath xpath = xPathfactory.newXPath();
         XPathExpression expr = null;
         NodeList nl = null;
         try {
-            expr = xpath.compile(path);
+            expr = xpath.compile(xPath);
             nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             e.printStackTrace();
         }
         return (Element) nl.item(0);
-}
+    }
 
     /**
      * Get DOM as a string
@@ -105,10 +96,10 @@ static Element getElementByAttribute(Document doc, String path){
     }
 
     /**
-    * Output a file based on the basic PCF template
-    */
+     * Output a file based on the basic PCF template
+     */
     static void outputBasicFile(Faculty faculty, String title, String content, String path, Boolean active) {
-    	Document doc = XmlHelper.getBasicOutline();
+        Document doc = XmlHelper.getBasicOutline();
 
         // Add title
         Text titleText = doc.createTextNode(title);
@@ -118,13 +109,13 @@ static Element getElementByAttribute(Document doc, String path){
         // Editable area
         Element maincontentDiv = getElementByAttribute(doc, "//*[@label='maincontent']");
         maincontentDiv.appendChild(doc.createCDATASection(content));
-        
+
         if (!active){
-			Element hide = XmlHelper.getElementByAttribute(doc, "//*[@value='true']");
-			Element show = XmlHelper.getElementByAttribute(doc, "//*[@value='false']");
-			hide.setAttribute("selected", "true");
-			show.setAttribute("selected", "false");
-		}
+            Element hide = XmlHelper.getElementByAttribute(doc, "//*[@value='true']");
+            Element show = XmlHelper.getElementByAttribute(doc, "//*[@value='false']");
+            hide.setAttribute("selected", "true");
+            show.setAttribute("selected", "false");
+        }
 
         // convert XML to a String
         String xml = XmlHelper.getStringFromDoc(doc);
@@ -657,5 +648,81 @@ static Element getElementByAttribute(Document doc, String path){
             pce.printStackTrace();
         }
         return doc;
+    }
+    /**
+     * Output faculty home page
+     * @param faculty
+     */
+    protected static void outputProfilePage(Faculty faculty) {
+        Document doc = getProfileOutline();
+        // Photo
+        Element photoDiv = getElementByAttribute(doc, "//*[@label='photo']");
+        // TODO Use default photo if no custom photo
+        photoDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.photoUrl()));
+        
+        // First
+        Element firstNameDiv = getElementByAttribute(doc, "//*[@label='namefirst']");
+        firstNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.firstName));
+        
+        // Middle
+        Element middleNameDiv = getElementByAttribute(doc, "//*[@label='namemiddle']");
+        middleNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.middleName));
+        
+        // Last
+        Element lastNameDiv = getElementByAttribute(doc, "//*[@label='namelast']");
+        lastNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.lastName));
+        
+        // Email
+        Element emailDiv = getElementByAttribute(doc, "//*[@label='preferredemail']");
+        emailDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.emails.toString()));
+        
+        // Alternate Email
+        Element altEmailDiv = getElementByAttribute(doc, "//*[@label='alternateemail']");
+        // altEmailDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.firstName));
+        
+        // Phone
+        Element phoneDiv = getElementByAttribute(doc, "//*[@label='preferredphone']");
+        phoneDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.firstName));
+        
+        // Alternate Phone
+        Element altPhoneDiv = getElementByAttribute(doc, "//*[@label='alternatephone']");
+        // altPhoneDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.));
+        
+        // Title
+        Element titleDiv = getElementByAttribute(doc, "//*[@label='personaltitle']");
+        titleDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.titles));
+        
+        // Department
+        Element departmentDiv = getElementByAttribute(doc, "//*[@label='department']");
+        // departmentDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.???));
+        
+        // Additional Info
+        Element additionalInfoDiv = getElementByAttribute(doc, "//*[@label='additionalinfo']");
+        additionalInfoDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.additionalInfo));
+        
+        // Info Title
+        Element additionalInfoTitleDiv = getElementByAttribute(doc, "//*[@label='additionalinfotitle']");
+        additionalInfoTitleDiv.getChildNodes().item(0).appendChild(doc.createTextNode("Additional Information"));
+        
+        // Education
+        Element educationDiv = getElementByAttribute(doc, "//*[@label='eduinfo']");
+        educationDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.education.toString()));
+        
+        // Licenses
+        Element licensesDiv = getElementByAttribute(doc, "//*[@label='licenses']");
+        licensesDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.licenses.toString()));
+        
+        // Bio
+        Element bioDiv = getElementByAttribute(doc, "//*[@label='bioinfo']");
+        bioDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.bio));
+        
+        // Links
+        Element linksDiv = getElementByAttribute(doc, "//*[@label='links']");
+        linksDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.firstName));
+        
+        String path = faculty.handle;
+        String xml = getStringFromDoc(doc);
+        outputPcf(path , xml);
+
     }
 }
