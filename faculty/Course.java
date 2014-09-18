@@ -16,7 +16,7 @@ class Course {
 	String location;
 	String dayAndTime;
 	String description;
-	String url;
+	String supplementalUrl;
 	String photoDescription;
 	int photoSetting;
 	List<Section> sections; 
@@ -28,16 +28,51 @@ class Course {
 	Course(String title) {
 		this.title = title;
 	}
+
+	String path() {
+		return faculty.handle + "/courses/" + this.name;
+	}
 	
 	/**
 	 * Output as a pcf page
 	 */
 	void writePcf(){
 		String content = getContentAsHtml();
-		String path = faculty.handle + "/courses/" + this.name;
-		XmlHelper.toXml(faculty, content, path);
+		XmlHelper.toXml(faculty, content, path());
 	}
 	
+	void output(){
+		Document doc = XmlHelper.getBasicOutline();
+
+		// insert data into doc
+		
+		// Add title
+		Text titleText = doc.createTextNode(faculty.fullName());
+		Element titleNode = (Element) (doc.getElementsByTagName("title")).item(0);
+		titleNode.appendChild(titleText);
+		
+		Element maincontentDiv = XmlHelper.getElementByAttribute(doc, "//*[@label='maincontent']");
+		
+		// Add content
+		CDATASection bodyText = doc.createCDATASection(getContentAsHtml());
+		maincontentDiv.appendChild(bodyText);
+		String xml = XmlHelper.getStringFromDoc(doc);
+
+		if (!active){
+			System.out.println("Course inactive: " + this.title);
+			Element hide = XmlHelper.getElementByAttribute(doc, "//*[@selected='false']");
+			if (hide != null){
+				System.out.println("found hide element");
+			}
+		} else {
+			System.out.println("Course active: " + this.title);
+		}
+		
+		// Remove CDATA tag before writing file
+		xml = xml.replaceAll("<!\\[CDATA\\[", "");
+		xml = xml.replaceAll("\\]\\]>", "");
+		XmlHelper.outputPcf(faculty.handle, xml);
+	}
 
 	/**
 	 * Return an html string with the course content
@@ -45,18 +80,14 @@ class Course {
 	 */
 	private String getContentAsHtml() {
 		String content = "<h2>" + title + "</h2>";
-		content += "<img src=\"" + url +  name + ".jpg\" alt=\"" + photoDescription + "\"/>";
-		if (active) {
-			content += ("<em>active</em>");
-		} else {
-			content += ("<em>inactive/hidden</em>");
-		}
+		content += "<img src=\"" + url() +  name + ".jpg\" alt=\"" + photoDescription + "\"/>";
+		
 		// time
 		content += ("<p><strong>Time:</strong> " + dayAndTime + " </p>");
 		// location
 		content += ("<p><strong>Location:</strong> " + location + " </p>");
 		// Supplemental URL
-		content += ("<p><strong>Supplemental URL:</strong> <a href=\"" + url + "\">" + url + "</a></p>");
+		content += ("<p><strong>Supplemental URL:</strong> <a href=\"" + supplementalUrl + "\">" + supplementalUrl + "</a></p>");
 		content += ("<h2>Description</h2>");
 		content += ("<p>" + description + "</p>");
 		for (Section s : sections){

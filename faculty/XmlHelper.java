@@ -16,7 +16,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 
 import org.w3c.dom.CDATASection;
@@ -27,6 +31,7 @@ import org.w3c.dom.Document;
 //import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
 
@@ -40,6 +45,22 @@ public class XmlHelper {
     //static Comment editorComment;
     //static Comment openPropertiesComment;
     //static Comment closePropertiesComment;
+
+static Element getElementByAttribute(Document doc, String path){
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
+        XPathExpression expr = null;
+        NodeList nl = null;
+        try {
+            expr = xpath.compile(path);
+            nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Found " + nl.getLength() + " items.");
+        return (Element) nl.item(0);
+}
+
     /**
      * Get DOM as a string
      * @param doc
@@ -82,6 +103,24 @@ public class XmlHelper {
         out = out.replaceAll("<br>", "<br />"); 
         out = out.replaceAll("<p>\\s*?</li>", "</p>\n</li>"); 
         return out;
+    }
+
+    /**
+    * Output a file based on the basic PCF template
+    */
+    static void outputBasicFile(Faculty faculty, String title, String content, String path) {
+    	Document doc = XmlHelper.getBasicOutline();
+
+        // Add title
+        Text titleText = doc.createTextNode(title);
+        Element titleNode = (Element) (doc.getElementsByTagName("title")).item(0);
+        titleNode.appendChild(titleText);
+
+        // Editable area
+        Element maincontentDiv = getElementByAttribute(doc, "//*[@label='maincontent']");
+        maincontentDiv.appendChild(doc.createCDATASection(content));
+        String xml = XmlHelper.getStringFromDoc(doc);
+        outputPcf(path, xml);
     }
 
     /**

@@ -52,7 +52,7 @@ class Faculty {
 	boolean expertActive;
 
 	/**
-	 * 
+	 * Create a new Faculty object
 	 * @param facultyID internal id number
 	 */
 	Faculty(int facultyID) {
@@ -61,7 +61,7 @@ class Faculty {
 
 	/**
 	 * Full name
-	 * @return
+	 * @return Full name of the faculty 
 	 */
 	String fullName(){
 		String result = firstName;
@@ -72,10 +72,91 @@ class Faculty {
 		return result;
 	}
 
+	/**
+	* Output faculty information as a series of XML (.pcf) files
+	*/
+	void output() {
+		// Output publications page
+		String publicationContent = "";
+		if ((useFormEntryForPublications && (publications.size() > 0)) 
+				|| Migrate.isValid(publicationsText)) {
+				publicationContent = ("<h2>" + fullName() + "</h2>"); 
+				publicationContent += ("<h3>Publications &amp; Presentations</h3>");
+				publicationContent += ("<ul>");
+				if (useFormEntryForPublications && (publications.size() > 0)) {
+					for (Publication p : publications) {
+						publicationContent += (p.getContentAsHtml());
+					}
+				} else {
+					publicationContent += ("<li>" + publicationsText + "</li>");
+				}
+				publicationContent += ("</ul>");
+		}
+		XmlHelper.outputBasicFile(this, fullName() + " Publications", publicationContent, this.handle + "/publications/");
+
+		// Output research page
+		String researchContent = "";
+		researchContent += ("<h2>" + fullName() + "</h2>"); 
+		researchContent += ("\n<h3>Research &amp; Scholarly Activity</h3>");
+		researchContent += ("\n<ul>");
+		for (Research r : research) {
+			researchContent += (r.getContentAsHtml());
+		}
+		researchContent += ("</ul>");
+		XmlHelper.outputBasicFile(this, fullName() + "Research", researchContent, this.handle + "/research/");
+
+		// Output custom pages
+		String customContent = "";
+		for (CustomPage p : customPages){
+			customContent = p.getContentAsHtml();
+			XmlHelper.outputBasicFile(this, p.name, customContent, this.handle + "/" + p.name);
+		}
+
+		// save photo
+		if (photoSetting == 2){
+			try {
+				Migrate.saveImage(Migrate.liveSiteBaseDir + handle + "/" + handle + ".jpg", 
+						Migrate.outputDirectory + handle + "/" + handle + ".jpg");
+			} catch (IOException e){
+				e.printStackTrace();
+			}
+		}
+
+		// write sidenav.inc	
+		String sidenav = "";
+		sidenav += coursesActive?"\n<li><a href=\"" + Migrate.baseURL + this.handle + "/" +  "courses/\">Courses" + "</a></li>":"";
+		sidenav += publicationsActive?"\n<li><a href=\"" + Migrate.baseURL + this.handle + "/" +  "publications/\">Publications &amp; Presentations" 
+				+ "</a></li>":"";
+		sidenav += researchActive?"\n<li><a href=\"" + Migrate.baseURL + this.handle + "/" +  "research/\">Research &amp; Scholarly Activity" 
+				+ "</a></li>":"";
+		sidenav += professionalServicesActive?"\n<li><a href=\"" + Migrate.baseURL + this.handle + "/" +  "professional_service/\">Professional &amp; Service Activity" 
+				+ "</a></li>":"";
+		XmlHelper.outputSidenav(this.handle, sidenav);
+
+		// courses
+		if (courses.size() > 0) {
+			// Output course page
+			String courseContent = "\n<ul>";
+			for (Course c : courses) {
+				courseContent += "\n<li><a href=/people/" + c.path() + "\">" + c.title + "</a></li>";
+			}
+			courseContent += "</ul>";
+			// XmlHelper.toXml(this, courseContent, this.handle + "/courses/");
+			//XmlHelper.outputPcf(this.handle + "/courses/", xml);
+			XmlHelper.outputBasicFile(this, "Courses", courseContent, this.handle + "/courses" );
+		}
+		
+		for (Course c : courses) {
+			// Course object has its own output method
+			c.output();
+		}
+
+	}
+
 	/** 
 	 * Output as XML (pcf)
 	 */
-	void outputXml(){
+	void outputBasicXml(){
 		// Get empty DOM
 		Document doc = XmlHelper.getBasicOutline();
 
@@ -85,17 +166,12 @@ class Faculty {
 		Text titleText = doc.createTextNode(fullName());
 		Element titleNode = (Element) (doc.getElementsByTagName("title")).item(0);
 		titleNode.appendChild(titleText);
-		// Editable areas
-		Element bodyNode = (Element) (doc.getElementsByTagName("maincontent")).item(0);
-		Element columnTwo = doc.createElement("column_two");
-		bodyNode.appendChild(columnTwo);
-		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_DIV_OPEN));
-		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_EDITOR));
+		
+		Element maincontentDiv = XmlHelper.getElementByAttribute(doc, "//*[@label='maincontent']");
 		
 		// Add content
 		CDATASection bodyText = doc.createCDATASection(getContentAsHtml());
-		columnTwo.appendChild(bodyText);
-		columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_DIV_CLOSE));
+		maincontentDiv.appendChild(bodyText);
 		String xml = XmlHelper.getStringFromDoc(doc);
 		
 		// Remove CDATA tag before writing file
@@ -109,15 +185,18 @@ class Faculty {
 			// Output course page
 			String courseContent = "\n<ul>";
 			for (Course c : courses) {
-				courseContent += "\n<li><a href=\"" + c.url + "\">" + c.title + "</a></li>";
+				courseContent += "\n<li><a href=\"" + c.url() + "\">" + c.title + "</a></li>";
 			}
 			courseContent += "</ul>";
-			XmlHelper.toXml(this, courseContent, this.handle + "/courses/");
+			// XmlHelper.toXml(this, courseContent, this.handle + "/courses/");
+			XmlHelper.outputPcf(this.handle + "/courses/", xml);
 		}
 		
 		for (Course c : courses) {
 			c.writePcf();
+
 		}
+
 		// Output publications page
 		String publicationContent = "";
 		if ((useFormEntryForPublications && (publications.size() > 0)) 

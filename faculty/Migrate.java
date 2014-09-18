@@ -70,18 +70,24 @@ public class Migrate {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                // Output outline files for testing
             } else if  (args[0].equals("pcf")){
                 outputEmptyPcfs();
             }
         }
     }
+
+    /**
+    * Output PCF files without any content (for testing only)
+    */
     private static void outputEmptyPcfs() {
         Document doc = XmlHelper.getProfileOutline();
         String xml = XmlHelper.getStringFromDoc(doc);
         XmlHelper.outputPcf("people", xml);
     }
+
     /**
-     * Output experts data as XML
+     * Output experts data as XML file for use later
      */
     private static void outputExpertsData(Properties prop) throws java.sql.SQLException {
         Connection conn = null;
@@ -181,6 +187,7 @@ public class Migrate {
      * @throws java.sql.SQLException
      */
     static void processAllFacultyPages(Properties prop) throws java.sql.SQLException {
+        // Get database connection
         Connection conn = null;
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -194,6 +201,8 @@ public class Migrate {
             System.out.println("SQLState: " + ex.getSQLState());
             System.out.println("VendorError: " + ex.getErrorCode());
         }
+
+        // Get list of all published faculty sites
         PreparedStatement stmt = conn.prepareStatement(Queries.PublishedQuery);
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
@@ -204,7 +213,8 @@ public class Migrate {
             faculty.handle = rs.getString("handle");
             processFacultySite(conn, faculty);
             if (faculty.isActive){
-                faculty.outputXml();
+                // faculty.outputXml();
+                faculty.output();
             }
         }
         rs.close();
@@ -533,7 +543,7 @@ public class Migrate {
             course.id = rs.getInt("id");
             course.active = rs.getInt("status") == 1?true:false;
             course.description = rs.getString("description");
-            course.url = rs.getString("url");
+            course.supplementalUrl = rs.getString("url");
             course.photoSetting = rs.getInt("photo_setting");
             course.photoDescription = rs.getString("photo_description");
             courses.add(course);
