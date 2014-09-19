@@ -674,11 +674,11 @@ public class XmlHelper {
         
         // Email
         Element emailDiv = getElementByAttribute(doc, "//*[@label='preferredemail']");
-        emailDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.emails.toString()));
+        emailDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.sjsuEmail));
         
         // Alternate Email
         Element altEmailDiv = getElementByAttribute(doc, "//*[@label='alternateemail']");
-        // altEmailDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.firstName));
+        altEmailDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.alternateEmail));
         
         // Phone
         Element phoneDiv = getElementByAttribute(doc, "//*[@label='preferredphone']");
@@ -686,14 +686,14 @@ public class XmlHelper {
         
         // Alternate Phone
         Element altPhoneDiv = getElementByAttribute(doc, "//*[@label='alternatephone']");
-        // altPhoneDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.));
+        altPhoneDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.alternatePhone));
         
         // Title
         Element titleDiv = getElementByAttribute(doc, "//*[@label='personaltitle']");
         titleDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.titles));
         
         // Department
-        Element departmentDiv = getElementByAttribute(doc, "//*[@label='department']");
+        // Element departmentDiv = getElementByAttribute(doc, "//*[@label='department']");
         // departmentDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.???));
         
         // Additional Info

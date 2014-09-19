@@ -250,9 +250,7 @@ public class Migrate {
         currentFaculty.isActive = false;
         while(rs.next()) {
             currentFaculty.isActive = true;
-            List<String> emails = new ArrayList<String>();
-            emails.add(rs.getString("email_addr"));
-            currentFaculty.emails = emails;
+            currentFaculty.sjsuEmail = rs.getString("email_addr");
             currentFaculty.firstName = rs.getString("first_name");
             currentFaculty.middleName = rs.getString("middle_name");
             currentFaculty.lastName = rs.getString("last_name");
@@ -260,8 +258,8 @@ public class Migrate {
         }
         rs.close();
         stmt.close();
-
-        // Get self-entered info 
+        
+        // Self-entered information
         stmt = conn.prepareStatement(Queries.DetailsQuery);
         stmt.setInt(1, currentFaculty.facultyID);
         rs = stmt.executeQuery();
@@ -272,20 +270,26 @@ public class Migrate {
             currentFaculty.photoSetting = rs.getInt("photo_setting");
             currentFaculty.photoDescription = rs.getString("photo_description");
             if (isValid(rs.getString("phone"))) {
-                currentFaculty.phone = rs.getString("phone");
+                currentFaculty.alternatePhone = rs.getString("phone");
             }
+            currentFaculty.alternatePhonePreferred = rs.getInt("phone_preferred") == 1;
+           
             // This is the preferred first name
-            if (isValid(rs.getString("first_name"))) {
+            if (isValid(rs.getString("first_name")) && rs.getInt("first_name_preferred") == 1) {
                 currentFaculty.firstName = rs.getString("first_name");
             }
+            
             // This is the preferred middle name
-            if (isValid(rs.getString("middle_name"))) {
+            if (isValid(rs.getString("middle_name")) && rs.getInt("middle_name_preferred") == 1) {
                 currentFaculty.middleName = rs.getString("middle_name");
             }
-            // This is an additional middle name 
+            
+            // This is an additional email 
             if (isValid(rs.getString("email"))) {
-                currentFaculty.emails.add(rs.getString("email"));
+                currentFaculty.alternateEmail = rs.getString("email");
             }
+            currentFaculty.alternateEmailPreferred = rs.getInt("first_name_preferred") == 1;
+            
             currentFaculty.titles = rs.getString("titles");
             currentFaculty.handle = rs.getString("published_handle");
             currentFaculty.useFormEntryForPublications = (rs.getInt("publications_use_form_entry") == 1)? true : false;
@@ -350,11 +354,11 @@ public class Migrate {
             } else {
                 currentFaculty.researchActive = true;
             }
-            if (rs.getInt("expert_active") == 0) {
+            /*if (rs.getInt("expert_active") == 0) {
                 currentFaculty.expertActive = false;
             } else {
                 currentFaculty.expertActive = true;
-            }
+            }*/
         }
         rs.close();
         stmt.close();

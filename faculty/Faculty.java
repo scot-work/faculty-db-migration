@@ -1,7 +1,6 @@
 package faculty;
 
 import faculty.Education;
-import faculty.Degree;
 
 import java.io.IOException;
 import java.util.*;
@@ -13,11 +12,16 @@ class Faculty {
     int facultyID;
     int towerID;
     boolean isActive;
-    List<String> emails;
+    // List<String> emails;
+    String sjsuEmail;
+    String alternateEmail;
+    Boolean alternateEmailPreferred;
     Education education;
     String bio;
     String officeHours;
     String phone;
+    String alternatePhone;
+    Boolean alternatePhonePreferred;
     String additionalInfo;
     String photoDescription;
     String middleName;
@@ -32,8 +36,6 @@ class Faculty {
     List<Publication> publications;
     List<Research> research;
     String publicationsText;
-
-    // module settings
 
     boolean active; // inactive faculty will not be in sjsu_people_details_master.towerid
     boolean bioActive;
@@ -146,87 +148,6 @@ class Faculty {
             //c.output();
             XmlHelper.outputBasicFile(c.faculty, c.title, c.getContentAsHtml(), c.path(), c.active);
         }
-    }
-
-    /**
-     * Convert to HTML string
-     * @return
-     */
-    String getContentAsHtml(){
-        String content = "";	
-
-        content += ("\n<h2>" + fullName() + "</h2>"); 
-        if (photoSetting == 2){
-            String photoURL = Migrate.baseURL + handle + "/" + handle + ".jpg";
-            content += ("<img src=\"" + photoURL + "\" alt=\"" + photoDescription + "\" />");
-        }
-        content += ("\n<p>");
-        for(Position p : positions){
-            content += (p.toHTML() + "<br />");
-        }
-        if (Migrate.isValid(titles)){
-            content += ("\n<em>" + titles + "</em><br />");
-        }
-        content += ("</p>");
-        content += ("<h4>Email</h4>");
-        for(String email : emails){
-            content += ("<p><a href=\"mailto:" + email + "\">" + email + "</a></p>");
-        }
-        content += ("<h4>Phone Number(s)</h4>");
-        content += ("<p>" + phone + "</p>");
-        if (Migrate.isValid(officeHours)){
-            content += ("<h4>Office Hours</h4>");
-            content += ("<p>" + officeHours + "</p>");
-        }
-        // Courses
-        content += (coursesActive?"":"<div style=\"background-color: yellow;\">");
-        content += ("<hr /><h3>Courses</h3>");
-        content += ("<ul>");
-        String courseNav = "";
-        for(Course c : courses) {
-            if(c.active){
-                courseNav += ("\n<li><a href=\"" + c.url() + "\">" + c.title + "</a></li>");
-            }
-        }
-        XmlHelper.outputSidenav(this.handle + "/courses/", courseNav);
-        content += courseNav;
-        content += ("</ul>");
-        content += (coursesActive?"":"</div>");
-
-        // Education
-        content += (educationActive?"":"<div style=\"background-color: yellow;\">");
-        content += ("<hr /><h3>Education</h3>");
-        content += ("<ul>");  
-        for (Degree d : education.degrees) {
-            content += ("<li>" + d + "</li>");
-        }
-        content += ("</ul>");
-        content += (educationActive?"":"</div>");
-
-        // Licenses and Certificates
-        content += (licensesCertificatesActive?"":"<div style=\"background-color: yellow;\">");
-        content += ("<hr /><h3>Licenses &amp; Certificates</h3>");
-        content += ("<ul>");
-        for (License l : licenses){
-            content += ("<li>" + l + "</li>");
-        }
-        content += ("</ul>");
-        content += (licensesCertificatesActive?"":"</div>");
-
-        // Bio
-        if (Migrate.isValid(bio)){
-            content += (bioActive?"":"<div style=\"background-color: yellow;\">");
-            content += ("<hr /><h3>Bio</h3>");
-            content += (bio);
-            content += (bioActive?"":"</div>");
-        }
-        content += ("<hr /><h3>Links</h3>");
-        content += ("<ul>");
-        for (Link l : links ){
-            content += ("<li><a href=\"" + l.url + "\">" + l.label + "</a></li>");
-        }
-        content += ("</ul>");
-        return content;
     }
 
     /**
