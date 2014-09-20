@@ -58,7 +58,7 @@ class Education {
 		degrees = new ArrayList<Degree>();
 
 		// Get officially listed degree (should return one row per faculty)
-		PreparedStatement stmt = conn.prepareStatement(Queries.OfficialDegreeQuery);
+		PreparedStatement stmt = conn.prepareStatement(Queries.GetOfficialDegree);
 		// SELECT * FROM sjsu_people_education_last_degree_on_file_master WHERE emplid=?
 		stmt.setInt(1, towerID);
 		ResultSet rs = stmt.executeQuery();
@@ -106,7 +106,7 @@ class Education {
 
 		// Look for additional degrees
 		Degree additionalDegree = null;
-		stmt = conn.prepareStatement(Queries.AdditionalDegreeQuery);
+		stmt = conn.prepareStatement(Queries.GetAdditionalDegree);
 		stmt.setInt(1, facultyID);
 		rs = stmt.executeQuery();
 		while(rs.next()) {

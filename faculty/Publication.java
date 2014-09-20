@@ -1,6 +1,7 @@
 package faculty;
 
 public class Publication {
+	Faculty faculty;
 	String title;
 	String name;
 	String publisher;
@@ -23,13 +24,12 @@ public class Publication {
 	public Publication() {
 
 	}
-
-
+	
 	/**
 	 * Return as formatted HTML
 	 * @return
 	 */
-	public String toHTML(){
+	public String getContentAsHtml(){
 		String result = "<li>";
 		if (Migrate.isValid(authors)) {
 			result += authors + ". ";

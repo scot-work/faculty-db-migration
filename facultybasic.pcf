@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?pcf-stylesheet path="/xsl/faculty-profile.xsl" site="_resources" extension="html"?>
+
+<!DOCTYPE document SYSTEM "http://commons.omniupdate.com/dtd/standard.dtd">
+
+<document xmlns:ouc="http://omniupdate.com/XSL/Variables">
+    <headcode></headcode>
+    <bodycode></bodycode>
+    <footcode></footcode>
+    
+    <ouc:properties label="metadata">
+        <title>Tony Stark Research and Scholarly Activity</title>
+        <meta name="Description" content="Information about the research done by Tony Stark, CEO Stark Enterprises." />
+        <meta name="Keywords" content="tony stark, stark enterprises, arc reactor" />
+        <meta name="Author" content="" />
+    </ouc:properties>
+    
+    <parameter name="pagetype">facultybasic</parameter>
+    <parameter name="layout">
+    <option value="1col" selected="true">One Column</option>
+    </parameter>
+    
+    <ouc:properties label="config">
+        <parameter name="photo" group="Everyone" type="filechooser" prompt="Default Photo" alt="Choose a default image to show for the page.">http://www.sjsu.edu/_resources/img/sjsu-spartan.jpg</parameter>
+        <parameter name="hide" group="Everyone" type="radio" prompt="Hide Page?" alt="Prevent the page from pulishing and hide it from navigation menus and index pages.">
+            <option value="true" selected="false">Disable the page</option>
+            <option value="false" selected="true">Publish the page</option>
+        </parameter>
+        <parameter name="nav_order" group="Everyone" prompt="Nav Order" alt="Enter a number from 1 to 99 to control the order in which a link to this page appears in either the main navigation menu or sidebar navigation menus. Optionally, leave it blank to keep the page off navigation menus.">02</parameter>
+    </ouc:properties>
+    
+    <ouc:div label="maincontent" group="Everyone" button-class="oucEditButton" button-text="Edit Content" break="break">
+    <ouc:editor csspath="/_resources/ou/editor/sjsu-wysiwyg.css" cssmenu="/_resources/ou/editor/styles.txt" width="1040" wysiwyg-class="maincontent"/>
+    </ouc:div>
+
+</document>

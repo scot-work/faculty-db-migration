@@ -5,7 +5,7 @@ import java.util.*;
 class Section {
 	String description;
 	String name;
-	List<Document> docs; 
+	List<Doc> docs; 
 	List<Link> links;
 	String url;
 	int id;
@@ -33,7 +33,7 @@ class Section {
 	}
 	if (docs.size() > 0) {
 		result += "\nDocuments: ";
-		for (Document d : docs){
+		for (Doc d : docs){
 			//result += "\n" + d.label + ", " + d.url;
 			result += "\n" + d.toHTML();
 		}
@@ -65,7 +65,7 @@ class Section {
 	}
 	if (docs.size() > 0) {
 		result += "<h3>Documents</h3><ul>";
-		for (Document d : docs){
+		for (Doc d : docs){
 			//result += "\n" + d.label + ", " + d.url;
 			result += d.toHTML();
 		}

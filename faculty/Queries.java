@@ -2,12 +2,12 @@ package faculty;
 
 class Queries {
 	// Get official degree for one faculty
-	public static String OfficialDegreeQuery = "SELECT * " +
+	public static String GetOfficialDegree = "SELECT * " +
 			"FROM sjsu_people_education_last_degree_on_file_master " +
 			"WHERE emplid=?";
 	
 	// Get all self-entered degrees for one faculty
-	public static String AdditionalDegreeQuery = "SELECT * FROM sjsu_people_education " +
+	public static String GetAdditionalDegree = "SELECT * FROM sjsu_people_education " +
 			"WHERE faculty_id=?";
 	
 	// Get display name for a major
@@ -112,4 +112,8 @@ class Queries {
 	public static String GetCustomPageDocs = "SELECT spd.label, spd.path "
 			+ "FROM sjsu_people_page_docs sppd, sjsu_people_documents spd "
 			+ "WHERE sppd.page_id=? AND sppd.document_id = spd.id ORDER BY sppd.position";
+	
+	// Get experts data
+	public static String GetExpertsData = "SELECT * FROM sjsu_experts_published " +
+			"WHERE faculty_id=?";
 }
