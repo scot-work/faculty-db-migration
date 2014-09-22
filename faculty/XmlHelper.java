@@ -682,7 +682,7 @@ public class XmlHelper {
         
         // Phone
         Element phoneDiv = getElementByAttribute(doc, "//*[@label='preferredphone']");
-        phoneDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.firstName));
+        phoneDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.phone()));
         
         // Alternate Phone
         Element altPhoneDiv = getElementByAttribute(doc, "//*[@label='alternatephone']");

@@ -68,6 +68,20 @@ class Faculty {
         result += " " + lastName;
         return result;
     }
+    
+    /**
+     * Return formatted official phone number
+     * @return
+     */
+    String phone(){
+    	String result = "(";
+    	result += this.phone.substring(0, 3);
+    	result += ") ";
+    	result += this.phone.substring(3, 6);
+    	result += "-";
+    	result += this.phone.substring(6, 10);
+    	return result;
+    }
 
     /**
      * Output faculty information as a series of XML (.pcf) files
