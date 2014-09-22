@@ -74,6 +74,7 @@ class Faculty {
      * @return
      */
     String phone(){
+        if (this.phone.length() == 9){
     	String result = "(";
     	result += this.phone.substring(0, 3);
     	result += ") ";
@@ -81,6 +82,9 @@ class Faculty {
     	result += "-";
     	result += this.phone.substring(6, 10);
     	return result;
+    } else {
+        return this.phone;
+    }
     }
 
     /**
@@ -123,7 +127,7 @@ class Faculty {
         XmlHelper.outputBasicFile(this, fullName() + " Publications", publicationContent, this.handle + "/publications/", publicationsActive);
 
         // Output empty sidenav
-            XmlHelper.outputSidenav(this.handle + "/publications/", "");
+        XmlHelper.outputSidenav(this.handle + "/publications/", "");
 
         // Output research page
         String researchContent = "";
@@ -175,7 +179,9 @@ class Faculty {
             // Output course page
             String courseList = "";
             for (Course c : courses) {
-                courseList += "\n<li><a href=/people/" + c.path() + "\">" + c.title + "</a></li>";
+                if (c.active) {
+                    courseList += "\n<li><a href=/people/" + c.path() + "\">" + c.title + "</a></li>";
+                }
             }
             XmlHelper.outputBasicFile(this, "Courses", "<ul>" + courseList + "</ul>", this.handle + "/courses", true );
 

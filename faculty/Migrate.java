@@ -41,7 +41,7 @@ public class Migrate {
     public static void main(String[] args) {
         Properties prop = new Properties();
         ClassLoader loader = Thread.currentThread().getContextClassLoader();         
-        InputStream stream = loader.getResourceAsStream("dev.properties");
+        InputStream stream = loader.getResourceAsStream("live.properties");
         try {
             prop.load(stream);
         } catch (IOException e ) {
@@ -245,6 +245,7 @@ public class Migrate {
 
         // Get official info
         stmt = conn.prepareStatement(Queries.OfficialInfoQuery);
+        // SELECT * FROM sjsu_people_details_master WHERE towerid=?
         stmt.setInt(1, currentFaculty.towerID);
         rs = stmt.executeQuery();
         // NOTE: if faculty not found, faculty is not active
@@ -635,20 +636,24 @@ public class Migrate {
      */
     static void saveImage(String imageUrl, String destinationFile) throws IOException {
         if (!Migrate.suppressFileOutput){
-        URL url = new URL(imageUrl);
-        InputStream is = url.openStream();
-        OutputStream os = new FileOutputStream(destinationFile);
+            try {
+                URL url = new URL(imageUrl);
+                InputStream is = url.openStream();
+                OutputStream os = new FileOutputStream(destinationFile);
 
-        byte[] b = new byte[2048];
-        int length;
+                byte[] b = new byte[2048];
+                int length;
 
-        while ((length = is.read(b)) != -1) {
-            os.write(b, 0, length);
+                while ((length = is.read(b)) != -1) {
+                    os.write(b, 0, length);
+                }
+
+                is.close();
+                os.close();
+            } catch (java.io.FileNotFoundException fnfe){
+                System.out.println("Photo not found: " + imageUrl);
+            }
         }
-
-        is.close();
-        os.close();
-    }
     }
 }
 

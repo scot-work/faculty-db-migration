@@ -1,10 +1,12 @@
 package faculty;
 
 class Queries {
+
+    // Get list of all published faculty sites
+	public static String PublishedQuery = "SELECT * FROM sjsu_people_published LIMIT 10";
+
 	// Get official degree for one faculty
-	public static String GetOfficialDegree = "SELECT * " +
-			"FROM sjsu_people_education_last_degree_on_file_master " +
-			"WHERE emplid=?";
+	public static String GetOfficialDegree = "SELECT * FROM sjsu_people_education_last_degree_on_file_master a LEFT JOIN sjsu_degrees_master b ON a.degree = b.degree WHERE emplid=?";
 	
 	// Get all self-entered degrees for one faculty
 	public static String GetAdditionalDegree = "SELECT * FROM sjsu_people_education " +
@@ -29,9 +31,6 @@ class Queries {
 	// Get display name for a state
 	public static String GetStateFromCode = "SELECT descr FROM sjsu_states_master " +
 			"WHERE country=? AND state=?";
-	
-	// Get list of all published faculty sites
-	public static String PublishedQuery = "SELECT * FROM sjsu_people_published";
 	
 	// Get SJSU ID from internal ID
 	public static String TowerIDQuery = "SELECT towerid FROM sjsu_people_users " +

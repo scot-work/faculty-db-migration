@@ -43,11 +43,13 @@ class Education {
 
 		// Get officially listed degree (should return one row per faculty)
 		PreparedStatement stmt = conn.prepareStatement(Queries.GetOfficialDegree);
+		// "SELECT * FROM sjsu_people_education_last_degree_on_file_master WHERE emplid=?
+
 		stmt.setInt(1, towerID);
 		ResultSet rs = stmt.executeQuery();
 
 		while(rs.next()) {
-			degree = rs.getString("degree");
+			degree = rs.getString("descr");
 			majorCode = rs.getString("major_code");
 			major = rs.getString("major");
 			schoolCode = rs.getString("school_code");
@@ -58,7 +60,9 @@ class Education {
 		stmt.close();
 
 		Degree officialDegree = new Degree(degree);
-		if (year != null) officialDegree.year = year;
+		if (year != null) {
+			officialDegree.year = year;
+		}
 		
 		// major
 		if (majorCode == null && major != null) {
