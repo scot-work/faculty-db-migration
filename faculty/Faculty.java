@@ -84,6 +84,21 @@ class Faculty {
     }
 
     /**
+    * Out put list of links
+    */
+    String links() {
+        String result = "";
+        if (links.size() > 0) {
+            result += "<ul>";
+            for (Link l : links){
+                result += l.toHTML();
+            }
+            result += "</ul>";
+        }
+        return result;
+    }
+
+    /**
      * Output faculty information as a series of XML (.pcf) files
      */
     void output() {

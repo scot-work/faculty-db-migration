@@ -654,75 +654,103 @@ public class XmlHelper {
      * @param faculty
      */
     protected static void outputProfilePage(Faculty faculty) {
-        Document doc = getProfileOutline();
-        // Photo
-        Element photoDiv = getElementByAttribute(doc, "//*[@label='photo']");
-        // TODO Use default photo if no custom photo
-        photoDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.photoUrl()));
-        
-        // First
-        Element firstNameDiv = getElementByAttribute(doc, "//*[@label='namefirst']");
-        firstNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.firstName));
-        
-        // Middle
-        Element middleNameDiv = getElementByAttribute(doc, "//*[@label='namemiddle']");
-        middleNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.middleName));
-        
-        // Last
-        Element lastNameDiv = getElementByAttribute(doc, "//*[@label='namelast']");
-        lastNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.lastName));
-        
-        // Email
-        Element emailDiv = getElementByAttribute(doc, "//*[@label='preferredemail']");
-        emailDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.sjsuEmail));
-        
-        // Alternate Email
-        Element altEmailDiv = getElementByAttribute(doc, "//*[@label='alternateemail']");
-        altEmailDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.alternateEmail));
-        
-        // Phone
-        Element phoneDiv = getElementByAttribute(doc, "//*[@label='preferredphone']");
-        phoneDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.phone()));
-        
-        // Alternate Phone
-        Element altPhoneDiv = getElementByAttribute(doc, "//*[@label='alternatephone']");
-        altPhoneDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.alternatePhone));
-        
-        // Title
-        Element titleDiv = getElementByAttribute(doc, "//*[@label='personaltitle']");
-        titleDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.titles));
-        
-        // Department
-        // Element departmentDiv = getElementByAttribute(doc, "//*[@label='department']");
-        // departmentDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.???));
-        
-        // Additional Info
-        Element additionalInfoDiv = getElementByAttribute(doc, "//*[@label='additionalinfo']");
-        additionalInfoDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.additionalInfo));
-        
-        // Info Title
-        Element additionalInfoTitleDiv = getElementByAttribute(doc, "//*[@label='additionalinfotitle']");
-        additionalInfoTitleDiv.getChildNodes().item(0).appendChild(doc.createTextNode("Additional Information"));
-        
-        // Education
-        Element educationDiv = getElementByAttribute(doc, "//*[@label='eduinfo']");
-        educationDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.education.output()));
-        
-        // Licenses
-        Element licensesDiv = getElementByAttribute(doc, "//*[@label='licenses']");
-        licensesDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.licenses.toString()));
-        
-        // Bio
-        Element bioDiv = getElementByAttribute(doc, "//*[@label='bioinfo']");
-        bioDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.bio));
-        
-        // Links
-        Element linksDiv = getElementByAttribute(doc, "//*[@label='links']");
-        linksDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.firstName));
-        
-        String path = faculty.handle;
-        String xml = getStringFromDoc(doc);
-        outputPcf(path , xml);
+         Document doc = getProfileOutline();
+         // Photo
+         if (Migrate.isValid(faculty.photoUrl())){
+             Element photoDiv = getElementByAttribute(doc, "//*[@label='photo']");
+             // TODO Use default photo if no custom photo
+             photoDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.photoUrl()));
+         }
+
+         // First
+         if (Migrate.isValid(faculty.firstName)){
+         Element firstNameDiv = getElementByAttribute(doc, "//*[@label='namefirst']");
+         firstNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.firstName));
+     }
+
+         // Middle
+         if (Migrate.isValid(faculty.middleName)){
+         Element middleNameDiv = getElementByAttribute(doc, "//*[@label='namemiddle']");
+         middleNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.middleName));
+     }
+
+         // Last
+         if (Migrate.isValid(faculty.lastName)){
+         Element lastNameDiv = getElementByAttribute(doc, "//*[@label='namelast']");
+         lastNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.lastName));
+     }
+
+         // Email
+         if (Migrate.isValid(faculty.sjsuEmail)){
+         Element emailDiv = getElementByAttribute(doc, "//*[@label='preferredemail']");
+         emailDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.sjsuEmail));
+     }
+
+         // Alternate Email
+         if (Migrate.isValid(faculty.alternateEmail)){
+         Element altEmailDiv = getElementByAttribute(doc, "//*[@label='alternateemail']");
+         altEmailDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.alternateEmail));
+     }
+
+         // Phone
+         if (Migrate.isValid(faculty.phone())){
+         Element phoneDiv = getElementByAttribute(doc, "//*[@label='preferredphone']");
+         phoneDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.phone()));
+     }
+
+         // Alternate Phone
+         if (Migrate.isValid(faculty.alternatePhone)){
+         Element altPhoneDiv = getElementByAttribute(doc, "//*[@label='alternatephone']");
+         altPhoneDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.alternatePhone));
+     }
+
+         // Title
+         if (Migrate.isValid(faculty.titles)){
+         Element titleDiv = getElementByAttribute(doc, "//*[@label='personaltitle']");
+         titleDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.titles));
+     }
+
+         // Department
+         // Element departmentDiv = getElementByAttribute(doc, "//*[@label='department']");
+         // departmentDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.???));
+
+         // Additional Info
+         if (Migrate.isValid(faculty.additionalInfo)){
+         Element additionalInfoDiv = getElementByAttribute(doc, "//*[@label='additionalinfo']");
+         additionalInfoDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.additionalInfo));
+     }
+
+         // Info Title
+         Element additionalInfoTitleDiv = getElementByAttribute(doc, "//*[@label='additionalinfotitle']");
+         additionalInfoTitleDiv.getChildNodes().item(0).appendChild(doc.createCDATASection("Additional Information"));
+
+         // Education
+         if (Migrate.isValid(faculty.education.output())){
+         Element educationDiv = getElementByAttribute(doc, "//*[@label='eduinfo']");
+         educationDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.education.output()));
+     }
+
+         // Licenses
+         if (Migrate.isValid(faculty.licenses.toString())){
+         Element licensesDiv = getElementByAttribute(doc, "//*[@label='licenses']");
+         licensesDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.licenses.toString()));
+     }
+
+         // Bio
+         if (Migrate.isValid(faculty.bio)){
+         Element bioDiv = getElementByAttribute(doc, "//*[@label='bioinfo']");
+         bioDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.bio));
+     }
+
+         // Links
+         if (Migrate.isValid(faculty.links())){
+         Element linksDiv = getElementByAttribute(doc, "//*[@label='links']");
+         linksDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.links()));
+     }
+
+         String path = faculty.handle;
+         String xml = getStringFromDoc(doc);
+         outputPcf(path , xml);
 
     }
 }
