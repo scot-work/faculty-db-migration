@@ -122,6 +122,9 @@ class Faculty {
         }
         XmlHelper.outputBasicFile(this, fullName() + " Publications", publicationContent, this.handle + "/publications/", publicationsActive);
 
+        // Output empty sidenav
+            XmlHelper.outputSidenav(this.handle + "/publications/", "");
+
         // Output research page
         String researchContent = "";
         researchContent += ("<h2>" + fullName() + "</h2>"); 
@@ -133,11 +136,17 @@ class Faculty {
         researchContent += ("</ul>");
         XmlHelper.outputBasicFile(this, fullName() + "Research", researchContent, this.handle + "/research/", researchActive);
 
+        // Output empty sidenav
+            XmlHelper.outputSidenav(this.handle + "/research/" , "");
+
         // Output custom pages
         String customContent = "";
-        for (CustomPage p : customPages){
-            customContent = p.getContentAsHtml();
-            XmlHelper.outputBasicFile(this, p.name, customContent, this.handle + "/" + p.name, true);
+        for (CustomPage cp : customPages){
+            customContent = cp.getContentAsHtml();
+            XmlHelper.outputBasicFile(this, cp.name, customContent, this.handle + "/" + cp.name, true);
+
+            // Output empty sidenav
+            XmlHelper.outputSidenav(this.handle + "/" + cp.name, "");
         }
 
         // save photo
@@ -164,18 +173,23 @@ class Faculty {
         // courses
         if (courses.size() > 0) {
             // Output course page
-            String courseContent = "\n<ul>";
+            String courseList = "";
             for (Course c : courses) {
-                courseContent += "\n<li><a href=/people/" + c.path() + "\">" + c.title + "</a></li>";
+                courseList += "\n<li><a href=/people/" + c.path() + "\">" + c.title + "</a></li>";
             }
-            courseContent += "</ul>";
-            XmlHelper.outputBasicFile(this, "Courses", courseContent, this.handle + "/courses", true );
+            XmlHelper.outputBasicFile(this, "Courses", "<ul>" + courseList + "</ul>", this.handle + "/courses", true );
+
+            // Output sidenav.inc
+            XmlHelper.outputSidenav(this.handle + "/courses", courseList);
         }
 
         for (Course c : courses) {
             // Course object has its own output method
             //c.output();
             XmlHelper.outputBasicFile(c.faculty, c.title, c.getContentAsHtml(), c.path(), c.active);
+
+            // Output empty sidenav
+            XmlHelper.outputSidenav(c.path(), "");
         }
     }
 

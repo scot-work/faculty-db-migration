@@ -32,6 +32,7 @@ public class Migrate {
     public static String baseURL;
     public static String outputDirectory;
     public static String liveSiteBaseDir;
+    static Boolean suppressFileOutput = false;
 
     /**
      * 
@@ -608,26 +609,17 @@ public class Migrate {
                 rs.close();
                 stmt.close();
             } 
-
-            // get photo
-            /*if (currentFaculty.photoSetting == 2){
-				try {
-					Migrate.saveImage(Migrate.liveSiteBaseDir + currentFaculty.handle + "/" + currentFaculty.handle + ".jpg", 
-							Migrate.outputDirectory + currentFaculty.handle + "/" + currentFaculty.handle + ".jpg");
-				} catch (IOException e){
-					e.printStackTrace();
-				}
-			}*/
         } 
+        System.out.println("Finished " + currentFaculty.fullName());
     }
 
     /**
-     * Find out if a string should be printed
+     * Find out if a string contains valid content
      * @param s Input string
      * @return True if it should be printed
      */
     static boolean isValid(String s) {
-        if (s == null || s.equals("null")) {
+        if (s == null || s.equals("null") || s.trim().equals("")) {
             return false;
         } else if (s.length() < 1) {
             return false;
@@ -642,6 +634,7 @@ public class Migrate {
      * @throws IOException
      */
     static void saveImage(String imageUrl, String destinationFile) throws IOException {
+        if (!Migrate.suppressFileOutput){
         URL url = new URL(imageUrl);
         InputStream is = url.openStream();
         OutputStream os = new FileOutputStream(destinationFile);
@@ -656,6 +649,8 @@ public class Migrate {
         is.close();
         os.close();
     }
+    }
 }
+
 
 

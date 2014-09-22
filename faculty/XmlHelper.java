@@ -163,6 +163,7 @@ public class XmlHelper {
      */
     static void outputPcf(String directory, String content) {
         content = cleanup(content);
+        if ( !Migrate.suppressFileOutput){
         try {
             String outputDir = Migrate.outputDirectory + directory;
             new File(outputDir).mkdirs();
@@ -176,13 +177,14 @@ public class XmlHelper {
             uee.printStackTrace();
         }
     }
+    }
 
     /**
      * Write a sidenav.inc page
      * @param content
      */
     static void outputSidenav(String directory, String content) {
-        // content = cleanup(content);
+       if (!Migrate.suppressFileOutput){
         try {
             String outputDir = Migrate.outputDirectory + directory;
             new File(outputDir).mkdirs();
@@ -195,6 +197,7 @@ public class XmlHelper {
         } catch (UnsupportedEncodingException uee) {
             uee.printStackTrace();
         }
+    }
     }
 
     /**
