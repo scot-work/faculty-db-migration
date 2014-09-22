@@ -706,7 +706,7 @@ public class XmlHelper {
         
         // Education
         Element educationDiv = getElementByAttribute(doc, "//*[@label='eduinfo']");
-        educationDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.education.toString()));
+        educationDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.education.output()));
         
         // Licenses
         Element licensesDiv = getElementByAttribute(doc, "//*[@label='licenses']");

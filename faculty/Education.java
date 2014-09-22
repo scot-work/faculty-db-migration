@@ -22,13 +22,6 @@ import java.sql.*;
  */
 
 class Education {
-	/* public static String OfficialDegreeQuery = "SELECT * FROM sjsu_people_education_last_degree_on_file_master WHERE emplid=?";
-  public static String AdditionalDegreeQuery = "SELECT * FROM sjsu_people_education WHERE faculty_id=?";
-  public static String GetMajorFromCode = "SELECT descr FROM sjsu_majors_master WHERE major_code=?";
-  public static String GetSchoolFromCode = "SELECT descr FROM sjsu_schools_master WHERE school_code=?";
-  public static String GetDegreeFromCode = "SELECT descr FROM sjsu_degrees_master WHERE degree=?";
-  public static String GetCountryFromCode = "SELECT descr FROM sjsu_countries_master WHERE country=?";
-  public static String GetStateFromCode = "SELECT descr FROM sjsu_states_master WHERE country=? AND state=?"; */
 
 	List<Degree> degrees;
 
@@ -40,26 +33,16 @@ class Education {
  * @throws java.sql.SQLException
  */
 	public Education(int towerID, int facultyID, Connection conn) throws java.sql.SQLException {
-		// System.out.println("Getting education for " + towerID);
-		// get list of degrees SELECT * FROM sjsu_people_education_last_degree_on_file_master WHERE emplid=?
 		String degree = "";
 		String major = "";
 		String schoolName = "";
-		//String country = "";
 		String year = "";
-		//String degreeCode = "";
-		//String degreeName = "";
 		String schoolCode = "";
 		String majorCode = "";
-		//String majorName = "";
-		//String countryCode = "";
-		//String stateCode = "";
-		//String stateName = "";
 		degrees = new ArrayList<Degree>();
 
 		// Get officially listed degree (should return one row per faculty)
 		PreparedStatement stmt = conn.prepareStatement(Queries.GetOfficialDegree);
-		// SELECT * FROM sjsu_people_education_last_degree_on_file_master WHERE emplid=?
 		stmt.setInt(1, towerID);
 		ResultSet rs = stmt.executeQuery();
 
@@ -76,6 +59,7 @@ class Education {
 
 		Degree officialDegree = new Degree(degree);
 		if (year != null) officialDegree.year = year;
+		
 		// major
 		if (majorCode == null && major != null) {
 			officialDegree.major = major; 
@@ -88,6 +72,7 @@ class Education {
 			}
 			officialDegree.major = major;
 		}
+		
 		// school
 		if (schoolCode == null && schoolName != null){
 			officialDegree.school = schoolName;
@@ -196,5 +181,18 @@ class Education {
 				stmt.close();
 			}
 		} 
+	}
+	
+	/**
+	 * Output degrees as an unordered list
+	 * @return Ordered list with all degrees
+	 */
+	String output(){
+		String result = "<ul>";
+		for (Degree d : degrees){
+			result += "<li>" + d.toString() + "</li>";
+		}
+		result += "</ul>";
+		return result;
 	}
 }
