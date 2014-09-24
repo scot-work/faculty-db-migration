@@ -12,4 +12,5 @@ public class StringConstants {
 	static final String STYLESHEET_DECLARATION = "path=\"/xsl/faculty-profile.xsl\" "
 			+ "site=\"_resources\" extension=\"html\"";
 	static final String NAMESPACE = "http://omniupdate.com/XSL/Variables";
+	static final String SIDENAV_HEADER = "<!-- ouc:editor csspath=\"/includes/ou/editor/sidenav.css\" cssmenu=\"/includes/ou/editor/sidenav.txt\" width=\"180\"/ -->";
 }

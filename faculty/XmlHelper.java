@@ -190,6 +190,7 @@ public class XmlHelper {
             new File(outputDir).mkdirs();
             String outputFile = outputDir + "/sidenav.inc";
             PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
+            writer.println(StringConstants.SIDENAV_HEADER);
             writer.println(content);
             writer.close();
         } catch (FileNotFoundException fnfe){
