@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -30,6 +31,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
+
 
 public class XmlHelper {
 
@@ -165,7 +167,7 @@ public class XmlHelper {
         content = cleanup(content);
         if ( !Migrate.suppressFileOutput){
         try {
-            String outputDir = Migrate.outputDirectory + directory;
+            String outputDir = Migrate.outputDirectory + Migrate.baseURL + directory;
             new File(outputDir).mkdirs();
             String outputFile = outputDir + "/index.pcf";
             PrintWriter writer = new PrintWriter(outputFile, "utf-8");
@@ -186,7 +188,7 @@ public class XmlHelper {
     static void outputSidenav(String directory, String content) {
        if (!Migrate.suppressFileOutput){
         try {
-            String outputDir = Migrate.outputDirectory + directory;
+            String outputDir = Migrate.outputDirectory + Migrate.baseURL + directory;
             new File(outputDir).mkdirs();
             String outputFile = outputDir + "/sidenav.inc";
             PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
@@ -752,7 +754,7 @@ public class XmlHelper {
          linksDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.links()));
      }
 
-         String path = faculty.handle;
+         String path = "/" + faculty.handle;
          String xml = getStringFromDoc(doc);
          outputPcf(path , xml);
 

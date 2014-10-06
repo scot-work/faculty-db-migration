@@ -3,7 +3,7 @@ package faculty;
 class Queries {
 
     // Get list of all published faculty sites
-	public static String PublishedQuery = "SELECT * FROM sjsu_people_published LIMIT 10";
+	public static String PublishedQuery = "SELECT * FROM sjsu_people_published";
 
 	// Get official degree for one faculty
 	public static String GetOfficialDegree = "SELECT * FROM sjsu_people_education_last_degree_on_file_master a LEFT JOIN sjsu_degrees_master b ON a.degree = b.degree WHERE emplid=?";

@@ -18,37 +18,6 @@ class Section {
 }
 
 /**
-* Create a string describing this Section
-* @param
-* @return String
-*/
- public String toString() {
-
-	String result = "\n";
-	if (Migrate.isValid(name)){
-		result += name + " ";
-	}
-	if (Migrate.isValid(description)){
-		result += description;
-	}
-	if (docs.size() > 0) {
-		result += "\nDocuments: ";
-		for (Doc d : docs){
-			//result += "\n" + d.label + ", " + d.url;
-			result += "\n" + d.toHTML();
-		}
-	}
-	if (links.size() > 0) {
-		result += "\nLinks: ";
-		for (Link l : links){
-			//result += "\n" + l.label + ", " + l.url;
-			result += "\n" + l.toHTML();
-		}
-	}
-	return result;
-}
-
-/**
 * Return an HTML chunk for displaying this section
 * 
 * @return HTML string

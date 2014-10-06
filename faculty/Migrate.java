@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.net.HttpURLConnection;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -40,8 +43,10 @@ public class Migrate {
      */
     public static void main(String[] args) {
         Properties prop = new Properties();
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();         
-        InputStream stream = loader.getResourceAsStream("live.properties");
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+
+        // Choose live.properties or dev.properties  
+        InputStream stream = loader.getResourceAsStream("dev.properties");
         try {
             prop.load(stream);
         } catch (IOException e ) {
@@ -74,7 +79,7 @@ public class Migrate {
                 // Output outline files for testing
             } else if  (args[0].equals("pcf")){
                 outputEmptyPcfs();
-            }
+            } 
         }
     }
 
@@ -212,8 +217,7 @@ public class Migrate {
             faculty.firstName = rs.getString("first_name");
             faculty.handle = rs.getString("handle");
             processFacultySite(conn, faculty);
-            if (faculty.isActive){
-                // faculty.outputXml();
+            if (faculty.isActive) {
                 faculty.output();
             }
         }
@@ -479,7 +483,8 @@ public class Migrate {
             p.name = rs.getString("name");
             p.title = rs.getString("title");
             p.content = rs.getString("content");
-            p.url = baseURL + currentFaculty.handle + "/" + p.name;
+            //p.url = baseURL + currentFaculty.handle + "/" + p.name;
+            p.url = currentFaculty.handle + "/" + p.name;
             p.active = rs.getInt("status") == 1?true:false;
             customPages.add(p);
         }
@@ -563,6 +568,7 @@ public class Migrate {
         for (Course c : currentFaculty.courses) {
             List<Section> sections = new ArrayList<Section>();
             stmt = conn.prepareStatement(Queries.CourseSectionsQuery);
+            // SELECT * FROM sjsu_people_course_section WHERE course_id=? ORDER BY position"
             stmt.setInt(1, c.id);
             rs = stmt.executeQuery();
             while(rs.next()) {
@@ -573,10 +579,12 @@ public class Migrate {
                 if (rs.getInt("status") == 0) {
                     section.active = false;
                     c.active = false;
+                    System.out.println("Section " + section.name + " is inactive, deactivating course " + c.title);
                 } else {
                     section.active = true;
                 }
-                section.url = c.url() + "/s" + rs.getString("position");
+                //section.url = c.url() + "/s" + rs.getString("position");
+                section.url = c.url() + "/s1";
                 sections.add(section);
             }
             c.sections = sections;
@@ -590,9 +598,24 @@ public class Migrate {
                 stmt.setInt(1, s.id);
                 rs = stmt.executeQuery();
                 while(rs.next()) {
-                    Doc d = new Doc(rs.getString("label"), s.url + "/" 
-                            + rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1));
+                    String label = rs.getString("label");
+                    String filename = "";
+                    try {
+                        filename = URLEncoder.encode(rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1), "UTF-8");
+                    } catch (java.io.UnsupportedEncodingException e){
+                        e.printStackTrace();
+                    }   
+                    Doc d = new Doc(rs.getString("label"), s.url + "/"  + filename);
+                    //Doc d = new Doc(label, s.url + "/" 
+                    //        + rs.getString("path").URLEncoder.encode(substring(rs.getString("path").lastIndexOf('/') + 1), "UTF-8"));
                     documents.add(d);
+                    String sourceURL = liveSiteBaseDir + d.url;
+                    String destURL = outputDirectory + d.url;
+                    try {
+                       saveDocument(sourceURL, destURL);
+                    } catch(java.io.IOException e) {
+                        e.printStackTrace();
+                    }
                 }
                 s.docs = documents;
                 rs.close();
@@ -610,7 +633,8 @@ public class Migrate {
                 rs.close();
                 stmt.close();
             } 
-        } 
+        }
+
         System.out.println("Finished " + currentFaculty.fullName());
     }
 
@@ -630,28 +654,39 @@ public class Migrate {
 
     /**
      * Read an image from the Web, save as file
-     * @param imageUrl
+     * @param documentUrl
      * @param destinationFile
      * @throws IOException
      */
-    static void saveImage(String imageUrl, String destinationFile) throws IOException {
+    static void saveDocument(String documentUrl, String destinationFile) throws IOException {
         if (!Migrate.suppressFileOutput){
             try {
-                URL url = new URL(imageUrl);
-                InputStream is = url.openStream();
-                OutputStream os = new FileOutputStream(destinationFile);
+                URL url = new URL(documentUrl);
 
+                URLConnection connection = url.openConnection();
+                connection.connect();
+               // Cast to a HttpURLConnection
+                if ( connection instanceof HttpURLConnection) {
+                    HttpURLConnection httpConnection = (HttpURLConnection) connection;
+                    if (httpConnection.getResponseCode() == 404) {
+                        System.out.println("Failed to download " + documentUrl);
+                    }
+                }
+
+                InputStream is = url.openStream();
+                String dir = destinationFile.substring(0, destinationFile.lastIndexOf('/'));
+                // Create local directories to write to
+                new File(dir).mkdirs();
+                OutputStream os = new FileOutputStream(destinationFile);
                 byte[] b = new byte[2048];
                 int length;
-
                 while ((length = is.read(b)) != -1) {
                     os.write(b, 0, length);
                 }
-
                 is.close();
                 os.close();
             } catch (java.io.FileNotFoundException fnfe){
-                System.out.println("Photo not found: " + imageUrl);
+                fnfe.printStackTrace();
             }
         }
     }

@@ -29,7 +29,7 @@ class Course {
      * @return Path for the course
      */
     String path() {
-        return faculty.handle + "/courses/" + this.name;
+        return "/" + faculty.handle + "/courses/" + this.name;
     }
 
 
@@ -61,23 +61,6 @@ class Course {
         }
         return content;
     }
-
-    /**
-     * Output course content as a formatted string
-     */
-    /*public String toStringx() {
-		String result = title + ", " + name + ", " + location + ", " + dayAndTime;
-		if (description != null){
-			result += "\n" + description;
-		}
-		if (sections != null) {
-			result += "\nSections:";
-			for (Section s : sections) {
-				result += s;
-			}
-		}
-		return result;
-	}*/
 
 
     /**
