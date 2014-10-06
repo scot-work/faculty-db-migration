@@ -598,7 +598,7 @@ public class Migrate {
                 stmt.setInt(1, s.id);
                 rs = stmt.executeQuery();
                 while(rs.next()) {
-                    String label = rs.getString("label");
+                    //String label = rs.getString("label");
                     String filename = "";
                     try {
                         filename = URLEncoder.encode(rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1), "UTF-8");
@@ -666,27 +666,27 @@ public class Migrate {
                 URLConnection connection = url.openConnection();
                 connection.connect();
                // Cast to a HttpURLConnection
-                if ( connection instanceof HttpURLConnection) {
+                if (connection instanceof HttpURLConnection) {
                     HttpURLConnection httpConnection = (HttpURLConnection) connection;
                     if (httpConnection.getResponseCode() == 404) {
                         System.out.println("Failed to download " + documentUrl);
+                    } else {
+                        InputStream is = url.openStream();
+                        String dir = destinationFile.substring(0, destinationFile.lastIndexOf('/'));
+                        // Create local directories to write to
+                        new File(dir).mkdirs();
+                        OutputStream os = new FileOutputStream(destinationFile);
+                        byte[] b = new byte[2048];
+                        int length;
+                        while ((length = is.read(b)) != -1) {
+                            os.write(b, 0, length);
+                        }
+                        is.close();
+                        os.close();
                     }
                 }
-
-                InputStream is = url.openStream();
-                String dir = destinationFile.substring(0, destinationFile.lastIndexOf('/'));
-                // Create local directories to write to
-                new File(dir).mkdirs();
-                OutputStream os = new FileOutputStream(destinationFile);
-                byte[] b = new byte[2048];
-                int length;
-                while ((length = is.read(b)) != -1) {
-                    os.write(b, 0, length);
-                }
-                is.close();
-                os.close();
             } catch (java.io.FileNotFoundException fnfe){
-                fnfe.printStackTrace();
+                System.out.println("Failed to download " + documentUrl);
             }
         }
     }
