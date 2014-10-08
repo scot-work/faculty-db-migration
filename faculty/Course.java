@@ -29,7 +29,7 @@ class Course {
      * @return Path for the course
      */
     String path() {
-        return "/" + faculty.handle + "/courses/" + this.name;
+        return "/" + faculty.handle() + "/courses/" + this.name;
     }
 
 
@@ -68,7 +68,7 @@ class Course {
      * @return URL
      */
     String url() {
-        return "/people/" + faculty.handle + "/courses/" + name;
+        return "/people/" + faculty.handle() + "/courses/" + name;
     }
 
 }

@@ -40,7 +40,7 @@ class Research {
 	 */
 	void writePcf(){
 		String content = getContentAsHtml();
-		String path = faculty.handle + "/research/";
+		String path = faculty.handle() + "/research/";
 		XmlHelper.toXml(faculty, content, path);
 	}
 }

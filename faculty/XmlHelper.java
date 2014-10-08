@@ -661,6 +661,15 @@ public class XmlHelper {
      */
     protected static void outputProfilePage(Faculty faculty) {
          Document doc = getProfileOutline();
+
+         // Is page activated?
+
+        if (faculty.isActive){
+            System.out.println("Writing " + faculty.fullName());
+        } else {
+            System.out.println("Inactive Faculty " + faculty.fullName());
+        }
+
          // Photo
          if (Migrate.isValid(faculty.photoUrl())){
              Element photoDiv = getElementByAttribute(doc, "//*[@label='photo']");
@@ -754,7 +763,7 @@ public class XmlHelper {
          linksDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.links()));
      }
 
-         String path = "/" + faculty.handle;
+         String path = "/" + faculty.handle();
          String xml = getStringFromDoc(doc);
          outputPcf(path , xml);
 

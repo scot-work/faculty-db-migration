@@ -8,7 +8,7 @@ import java.util.*;
 class Faculty {
     String lastName;
     String firstName;
-    String handle;
+    //String handle;
     int facultyID;
     int towerID;
     boolean isActive;
@@ -37,8 +37,9 @@ class Faculty {
     List<Research> research;
     String publicationsText;
 
-    boolean active; // inactive faculty will not be in sjsu_people_details_master.towerid
+    boolean active; // inactive = valid account that has chosen to be hidden
     boolean bioActive;
+    boolean isValid; // invalid = not found in PeopleSoft tables
     boolean coursesActive;
     boolean educationActive;
     boolean licensesCertificatesActive;
@@ -70,11 +71,24 @@ class Faculty {
     }
     
     /**
+    * Return the handle (everything up to the @ in the email)
+    */
+    String handle() {
+        String handle = "invalid";
+        if (Migrate.isValid(sjsuEmail)) {
+           handle = sjsuEmail.substring(0, sjsuEmail.lastIndexOf('@'));
+        } else {
+            System.out.println("invalid email for faculty ID " + facultyID + ", " + fullName());
+        }
+        return handle;
+    }
+
+    /**
      * Return formatted official phone number
      * @return
      */
     String phone() {
-        if (this.phone.length() == 9){
+        if (Migrate.isValid(this.phone) && this.phone.length() == 9){
     	String result = "(";
     	result += this.phone.substring(0, 3);
     	result += ") ";
@@ -106,8 +120,11 @@ class Faculty {
      * Output faculty information as a series of XML (.pcf) files
      */
     void output() {
-        XmlHelper.outputProfilePage(this);
+        if (!isValid) {
+            return;
+        }
         
+        XmlHelper.outputProfilePage(this);
         // Output publications page
         String publicationContent = "";
         if ((useFormEntryForPublications && (publications.size() > 0)) 
@@ -124,10 +141,10 @@ class Faculty {
             }
             publicationContent += ("</ul>");
         }
-        XmlHelper.outputBasicFile(this, fullName() + " Publications", publicationContent, "/" + this.handle + "/publications/", publicationsActive);
+        XmlHelper.outputBasicFile(this, fullName() + " Publications", publicationContent, "/" + this.handle() + "/publications/", publicationsActive);
 
         // Output empty sidenav
-        XmlHelper.outputSidenav("/" + this.handle + "/publications/", "");
+        XmlHelper.outputSidenav("/" + this.handle() + "/publications/", "");
 
         // Output research page
         String researchContent = "";
@@ -138,26 +155,26 @@ class Faculty {
             researchContent += (r.getContentAsHtml());
         }
         researchContent += ("</ul>");
-        XmlHelper.outputBasicFile(this, fullName() + "Research", researchContent, "/" + this.handle + "/research/", researchActive);
+        XmlHelper.outputBasicFile(this, fullName() + "Research", researchContent, "/" + this.handle() + "/research/", researchActive);
 
         // Output empty sidenav
-            XmlHelper.outputSidenav("/" + this.handle + "/research/" , "");
+            XmlHelper.outputSidenav("/" + this.handle() + "/research/" , "");
 
         // Output custom pages
         String customContent = "";
         for (CustomPage cp : customPages) {
             customContent = cp.getContentAsHtml();
-            XmlHelper.outputBasicFile(this, cp.name, customContent, "/" + this.handle + "/" + cp.name, true);
+            XmlHelper.outputBasicFile(this, cp.name, customContent, "/" + this.handle() + "/" + cp.name, true);
 
             // Output empty sidenav
-            XmlHelper.outputSidenav("/" + this.handle + "/" + cp.name, "");
+            XmlHelper.outputSidenav("/" + this.handle() + "/" + cp.name, "");
         }
 
         // save photo
         if (photoSetting == 2) {
             try {
-                Migrate.saveDocument(Migrate.liveSiteBaseDir + "/people/" + handle + "/" + handle + ".jpg", 
-                        Migrate.outputDirectory + "/people/" + this.handle + "/" + handle + ".jpg");
+                Migrate.saveDocument(Migrate.liveSiteBaseDir + "/people/" + handle() + "/" + handle() + ".jpg", 
+                        Migrate.outputDirectory + "/people/" + this.handle() + "/" + handle() + ".jpg");
             } catch (IOException e){
                 e.printStackTrace();
             }
@@ -165,14 +182,14 @@ class Faculty {
 
         // write sidenav.inc	
         String sidenav = "";
-        sidenav += coursesActive?"\n<li><a href=\"" + Migrate.baseURL + "/" + this.handle + "/" +  "courses/\">Courses" + "</a></li>":"";
-        sidenav += publicationsActive?"\n<li><a href=\"" + Migrate.baseURL + "/" + this.handle + "/" +  "publications/\">Publications &amp; Presentations" 
+        sidenav += coursesActive?"\n<li><a href=\"" + Migrate.baseURL + "/" + this.handle() + "/" +  "courses/\">Courses" + "</a></li>":"";
+        sidenav += publicationsActive?"\n<li><a href=\"" + Migrate.baseURL + "/" + this.handle() + "/" +  "publications/\">Publications &amp; Presentations" 
                 + "</a></li>":"";
-        sidenav += researchActive?"\n<li><a href=\"" + Migrate.baseURL + "/" + this.handle + "/" +  "research/\">Research &amp; Scholarly Activity" 
+        sidenav += researchActive?"\n<li><a href=\"" + Migrate.baseURL + "/" + this.handle() + "/" +  "research/\">Research &amp; Scholarly Activity" 
                 + "</a></li>":"";
-        sidenav += professionalServicesActive?"\n<li><a href=\"" + Migrate.baseURL + "/" + this.handle + "/" +  "professional_service/\">Professional &amp; Service Activity" 
+        sidenav += professionalServicesActive?"\n<li><a href=\"" + Migrate.baseURL + "/" + this.handle() + "/" +  "professional_service/\">Professional &amp; Service Activity" 
                 + "</a></li>":"";
-        XmlHelper.outputSidenav("/" + this.handle, sidenav);
+        XmlHelper.outputSidenav("/" + this.handle(), sidenav);
 
         // Create list of course links
         if (courses.size() > 0) {
@@ -184,10 +201,10 @@ class Faculty {
                     System.out.println("Course not active: " + c.title);
                 }
             }
-            XmlHelper.outputBasicFile(this, "Courses", "<ul>" + courseList + "</ul>", "/" + this.handle + "/courses", true );
+            XmlHelper.outputBasicFile(this, "Courses", "<ul>" + courseList + "</ul>", "/" + this.handle() + "/courses", true );
 
             // Output sidenav.inc
-            XmlHelper.outputSidenav("/" + this.handle + "/courses", courseList);
+            XmlHelper.outputSidenav("/" + this.handle() + "/courses", courseList);
         }
 
         for (Course c : courses) {
@@ -205,8 +222,8 @@ class Faculty {
      * @return
      */
     public String photoUrl() {
-        if (this.photoSetting == 2){
-            return Migrate.outputDirectory + "/" + handle + "/" + handle + ".jpg";
+        if (this.photoSetting == 2) {
+            return Migrate.outputDirectory + "/" + handle() + "/" + handle() + ".jpg";
         } else {
             return null;
         }

@@ -208,18 +208,20 @@ public class Migrate {
         }
 
         // Get list of all published faculty sites
-        PreparedStatement stmt = conn.prepareStatement(Queries.PublishedQuery);
+        // PreparedStatement stmt = conn.prepareStatement(Queries.PublishedQuery);
+        PreparedStatement stmt = conn.prepareStatement(Queries.FacultyListQuery);
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
             // Create a new Faculty object and output pages
-            Faculty faculty = new Faculty(rs.getInt("faculty_id"));
-            faculty.lastName = rs.getString("last_name");
+            // Faculty faculty = new Faculty(rs.getInt("faculty_id"));
+            Faculty faculty = new Faculty(rs.getInt("id"));
+            // faculty.lastName = rs.getString("last_name");
             faculty.firstName = rs.getString("first_name");
-            faculty.handle = rs.getString("handle");
+            // faculty.handle = rs.getString("handle");
+            // faculty.handle = rs.getString("published_handle");
+            faculty.isActive = (rs.getInt("website_live") == 1);
             processFacultySite(conn, faculty);
-            if (faculty.isActive) {
-                faculty.output();
-            }
+            faculty.output(); 
         }
         rs.close();
         stmt.close();
@@ -237,11 +239,18 @@ public class Migrate {
 
         // Get SJSU ID from Faculty ID
         PreparedStatement stmt = conn.prepareStatement(Queries.TowerIDQuery);
+        // SELECT towerid FROM sjsu_people_users WHERE faculty_id=?";
         stmt.setInt(1, currentFaculty.facultyID);
         ResultSet rs = stmt.executeQuery();
         int id = 0;
+        // Need to check for demo users without valid ID
         while (rs.next()) {
-            id = rs.getInt("towerid");
+            try {
+                id = rs.getInt("towerid");
+            } catch (java.sql.SQLException e) {
+                // invalid account, skip
+                return;
+            }
         }
         rs.close();
         stmt.close();
@@ -253,9 +262,9 @@ public class Migrate {
         stmt.setInt(1, currentFaculty.towerID);
         rs = stmt.executeQuery();
         // NOTE: if faculty not found, faculty is not active
-        currentFaculty.isActive = false;
+        currentFaculty.isValid = false;
         while(rs.next()) {
-            currentFaculty.isActive = true;
+            currentFaculty.isValid = true;
             currentFaculty.sjsuEmail = rs.getString("email_addr");
             currentFaculty.firstName = rs.getString("first_name");
             currentFaculty.middleName = rs.getString("middle_name");
@@ -297,7 +306,7 @@ public class Migrate {
             currentFaculty.alternateEmailPreferred = rs.getInt("first_name_preferred") == 1;
             
             currentFaculty.titles = rs.getString("titles");
-            currentFaculty.handle = rs.getString("published_handle");
+            //currentFaculty.handle = rs.getString("published_handle");
             currentFaculty.useFormEntryForPublications = (rs.getInt("publications_use_form_entry") == 1)? true : false;
             if (!(currentFaculty.useFormEntryForPublications)) {
                 currentFaculty.publicationsText = rs.getString("publications_freeform");
@@ -484,7 +493,7 @@ public class Migrate {
             p.title = rs.getString("title");
             p.content = rs.getString("content");
             //p.url = baseURL + currentFaculty.handle + "/" + p.name;
-            p.url = currentFaculty.handle + "/" + p.name;
+            p.url = currentFaculty.handle() + "/" + p.name;
             p.active = rs.getInt("status") == 1?true:false;
             customPages.add(p);
         }
