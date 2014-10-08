@@ -39,6 +39,9 @@ public class XmlHelper {
     protected static final String CSS_MENU = "/_resources/ou/editor/styles.txt";
     protected static final String CSS_PATH = "/_resources/editor/sjsu-wysiwyg.css";
 
+    /**
+    * Return one element based on xPath
+    */
     static Element getElementByAttribute(Document doc, String xPath){
         XPathFactory xPathfactory = XPathFactory.newInstance();
         XPath xpath = xPathfactory.newXPath();
@@ -51,6 +54,23 @@ public class XmlHelper {
             e.printStackTrace();
         }
         return (Element) nl.item(0);
+    }
+
+/**
+* Return a list of elements based on xPath
+*/
+        static NodeList getElementsByAttribute(Document doc, String xPath){
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
+        XPathExpression expr = null;
+        NodeList nl = null;
+        try {
+            expr = xpath.compile(xPath);
+            nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            e.printStackTrace();
+        }
+        return nl;
     }
 
     /**
@@ -660,14 +680,21 @@ public class XmlHelper {
      * @param faculty
      */
     protected static void outputProfilePage(Faculty faculty) {
-         Document doc = getProfileOutline();
+        Document doc = getProfileOutline();
 
-         // Is page activated?
-
-        if (faculty.isActive){
+        NodeList hide = XmlHelper.getElementsByAttribute(doc, "//*[@name='hide']/*");
+        if (faculty.isActive) {
             System.out.println("Writing " + faculty.fullName());
+            // option value="true" -- disable
+            ((Element) hide.item(0)).setAttribute("selected", "false");
+            // option value="false" -- publish
+            ((Element) hide.item(1)).setAttribute("selected", "true");
         } else {
             System.out.println("Inactive Faculty " + faculty.fullName());
+            // option value="true" -- disable
+            ((Element) hide.item(0)).setAttribute("selected", "true");
+            // option value="false" -- publish
+            ((Element) hide.item(1)).setAttribute("selected", "false");
         }
 
          // Photo

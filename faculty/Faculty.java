@@ -77,9 +77,7 @@ class Faculty {
         String handle = "invalid";
         if (Migrate.isValid(sjsuEmail)) {
            handle = sjsuEmail.substring(0, sjsuEmail.lastIndexOf('@'));
-        } else {
-            System.out.println("invalid email for faculty ID " + facultyID + ", " + fullName());
-        }
+        } 
         return handle;
     }
 
@@ -123,7 +121,7 @@ class Faculty {
         if (!isValid) {
             return;
         }
-        
+
         XmlHelper.outputProfilePage(this);
         // Output publications page
         String publicationContent = "";
