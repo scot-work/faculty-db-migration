@@ -144,41 +144,7 @@ public class XmlHelper {
         outputPcf(path, xml);
     }
 
-    /**
-     * Write a page
-     * @param faculty The Faculty whose information is being written
-     * @param content The content of the page
-     * @param path The directory path of the page 
-     */
-    static void toXml(Faculty faculty, String content, String path){
-        // Get empty DOM
-        Document doc = XmlHelper.getBasicOutline();
-
-        // insert data into doc
-
-        // Add title
-        Text titleText = doc.createTextNode(faculty.fullName());
-        Element titleNode = (Element) (doc.getElementsByTagName("title")).item(0);
-        titleNode.appendChild(titleText);
-        // Editable areas
-        Element bodyNode = (Element) (doc.getElementsByTagName("maincontent")).item(0);
-        Element columnTwo = doc.createElement("column_two");
-        bodyNode.appendChild(columnTwo);
-        columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_DIV_OPEN));
-        columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_EDITOR));
-
-        // Add content
-        CDATASection bodyText = doc.createCDATASection(content);
-        columnTwo.appendChild(bodyText);
-        columnTwo.appendChild(doc.createComment(StringConstants.OMNIUPDATE_DIV_CLOSE));
-        String xml = XmlHelper.getStringFromDoc(doc);
-
-        // Remove CDATA tag before writing file
-        xml = xml.replaceAll("<!\\[CDATA\\[", "");
-        xml = xml.replaceAll("\\]\\]>", "");
-        outputPcf(path, xml);
-    }
-
+  
     /**
      * Write an index.pcf page
      * @param content
@@ -305,19 +271,14 @@ public class XmlHelper {
             Element hideParameter = doc.createElement("parameter");
             hideParameter.setAttribute("name", "hide");
             hideParameter.setAttribute("group", "Everyone");
-            hideParameter.setAttribute("type", "radio");
+            hideParameter.setAttribute("type", "checkbox");
             hideParameter.setAttribute("prompt", "Hide Page?");
             hideParameter.setAttribute("alt", "Prevent the page from publishing and hide it from navigation menus and index pages.");
             Element disableOption = doc.createElement("option");
             disableOption.setAttribute("value", "true");
             disableOption.setAttribute("selected", "false");
-            disableOption.appendChild(doc.createTextNode("Disable the page"));
+            disableOption.appendChild(doc.createTextNode("Hide this page"));
             hideParameter.appendChild(disableOption);
-            Element publishOption = doc.createElement("option");
-            publishOption.setAttribute("value", "false");
-            publishOption.setAttribute("selected", "true");
-            publishOption.appendChild(doc.createTextNode("Publish the page"));
-            hideParameter.appendChild(publishOption);
             configProperties.appendChild(hideParameter);
 
             // Navigation Order
@@ -340,11 +301,11 @@ public class XmlHelper {
             photo.setAttribute("type", "image");
             photo.setAttribute("prompt", "Profile Photo");
             photo.setAttribute("alt", "Do you want to share a photo? (Max width 138 pixels)");
-            photo.appendChild(doc.createCDATASection("<img src=\"" + DEFAULT_PHOTO + "\" alt=\"\" />"));
+            // photo.appendChild(doc.createCDATASection("<img src=\"" + DEFAULT_PHOTO + "\" alt=\"\" />"));
             photoDiv.appendChild(photo);
             document.appendChild(photoDiv);
 
-            // First Name
+            /* // First Name
             Element firstNameDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
             firstNameDiv.setAttribute("label", "namefirst");
             firstNameDiv.setAttribute("group", "Everyone");
@@ -357,6 +318,7 @@ public class XmlHelper {
             firstNameDiv.appendChild(firstName);
             document.appendChild(firstNameDiv);
 
+            
             // Middle Name
             Element middleNameDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
             middleNameDiv.setAttribute("label", "namemiddle");
@@ -382,6 +344,7 @@ public class XmlHelper {
             lastName.setAttribute("alt", "What's your family name / last name?");
             lastNameDiv.appendChild(lastName);
             document.appendChild(lastNameDiv);
+            */
 
             // Email
             Element emailDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
@@ -431,19 +394,21 @@ public class XmlHelper {
             altPhoneDiv.appendChild(altPhone);
             document.appendChild(altPhoneDiv);
 
-            // Job Title
+            // Job Title(s) and Department(s)
             Element titleDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
-            titleDiv.setAttribute("label", "personaltitle");
+            titleDiv.setAttribute("label", "titledepartment");
             titleDiv.setAttribute("group", "Everyone");
             titleDiv.setAttribute("button", "hide");
             Element workingTitle = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
-            workingTitle.setAttribute("type", "text");
-            workingTitle.setAttribute("prompt", "Title");
-            workingTitle.setAttribute("alt", "What is your working title?");
+            workingTitle.setAttribute("type", "textarea");
+            workingTitle.setAttribute("prompt", "Title(s) and Department(s)");
+            workingTitle.setAttribute("rows", "6"); 
+            workingTitle.setAttribute("editor", "yes");
+            workingTitle.setAttribute("alt", "What are your working titles and which departments do you work in?");
             titleDiv.appendChild(workingTitle);
             document.appendChild(titleDiv);
 
-            // Department
+            /* // Department
             Element departmentDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
             departmentDiv.setAttribute("label", "department");
             departmentDiv.setAttribute("group", "Everyone");
@@ -454,6 +419,7 @@ public class XmlHelper {
             department.setAttribute("alt", "What is your department name?");
             departmentDiv.appendChild(department);
             document.appendChild(departmentDiv);
+            */
 
             // Additional Information
             Element additionalInfoDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
@@ -685,72 +651,72 @@ public class XmlHelper {
         NodeList hide = XmlHelper.getElementsByAttribute(doc, "//*[@name='hide']/*");
         if (faculty.isActive) {
             System.out.println("Writing " + faculty.fullName());
-            // option value="true" -- disable
             ((Element) hide.item(0)).setAttribute("selected", "false");
-            // option value="false" -- publish
-            ((Element) hide.item(1)).setAttribute("selected", "true");
         } else {
             System.out.println("Inactive Faculty " + faculty.fullName());
-            // option value="true" -- disable
             ((Element) hide.item(0)).setAttribute("selected", "true");
-            // option value="false" -- publish
-            ((Element) hide.item(1)).setAttribute("selected", "false");
         }
 
+        Text titleText = doc.createTextNode(faculty.fullName());
+        Element titleNode = (Element) (doc.getElementsByTagName("title")).item(0);
+        titleNode.appendChild(titleText);
+
          // Photo
+        Element photoDiv = getElementByAttribute(doc, "//*[@label='photo']");
          if (Migrate.isValid(faculty.photoUrl())){
-             Element photoDiv = getElementByAttribute(doc, "//*[@label='photo']");
-             // TODO Use default photo if no custom photo
-             photoDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.photoUrl()));
+           photoDiv.getChildNodes().item(0).appendChild(doc.createCDATASection("<img src=\"" + faculty.photoUrl() + "\" alt=\"" + faculty.fullName() + "\" />"));
+         } else {
+            photoDiv.getChildNodes().item(0).appendChild(doc.createCDATASection("<img src=\"" + DEFAULT_PHOTO + "\" alt=\"\" />"));
          }
 
-         // First
+         /* // First
          if (Migrate.isValid(faculty.firstName)){
          Element firstNameDiv = getElementByAttribute(doc, "//*[@label='namefirst']");
          firstNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.firstName));
-     }
+        }
 
          // Middle
          if (Migrate.isValid(faculty.middleName)){
          Element middleNameDiv = getElementByAttribute(doc, "//*[@label='namemiddle']");
          middleNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.middleName));
-     }
+        }
 
          // Last
          if (Migrate.isValid(faculty.lastName)){
          Element lastNameDiv = getElementByAttribute(doc, "//*[@label='namelast']");
          lastNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.lastName));
-     }
+        }
+        */
 
          // Email
          if (Migrate.isValid(faculty.sjsuEmail)){
          Element emailDiv = getElementByAttribute(doc, "//*[@label='preferredemail']");
          emailDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.sjsuEmail));
-     }
+        }
 
          // Alternate Email
          if (Migrate.isValid(faculty.alternateEmail)){
          Element altEmailDiv = getElementByAttribute(doc, "//*[@label='alternateemail']");
          altEmailDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.alternateEmail));
-     }
+        }
 
          // Phone
          if (Migrate.isValid(faculty.phone())){
          Element phoneDiv = getElementByAttribute(doc, "//*[@label='preferredphone']");
          phoneDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.phone()));
-     }
+        }
 
          // Alternate Phone
          if (Migrate.isValid(faculty.alternatePhone)){
          Element altPhoneDiv = getElementByAttribute(doc, "//*[@label='alternatephone']");
          altPhoneDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.alternatePhone));
-     }
+        }
 
-         // Title
+         // Title(s) and Department(s)
          if (Migrate.isValid(faculty.titles)){
-         Element titleDiv = getElementByAttribute(doc, "//*[@label='personaltitle']");
-         titleDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.titles));
-     }
+         Element titleDiv = getElementByAttribute(doc, "//*[@label='titledepartment']");
+         titleDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.jobTitles()));
+        }
 
          // Department
          // Element departmentDiv = getElementByAttribute(doc, "//*[@label='department']");
@@ -760,7 +726,7 @@ public class XmlHelper {
          if (Migrate.isValid(faculty.additionalInfo)){
          Element additionalInfoDiv = getElementByAttribute(doc, "//*[@label='additionalinfo']");
          additionalInfoDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.additionalInfo));
-     }
+        }
 
          // Info Title
          Element additionalInfoTitleDiv = getElementByAttribute(doc, "//*[@label='additionalinfotitle']");
@@ -770,25 +736,25 @@ public class XmlHelper {
          if (Migrate.isValid(faculty.education.output())){
          Element educationDiv = getElementByAttribute(doc, "//*[@label='eduinfo']");
          educationDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.education.output()));
-     }
+        }
 
          // Licenses
          if (Migrate.isValid(faculty.licenses.toString())){
          Element licensesDiv = getElementByAttribute(doc, "//*[@label='licenses']");
          licensesDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.licenses.toString()));
-     }
+        }
 
          // Bio
          if (Migrate.isValid(faculty.bio)){
          Element bioDiv = getElementByAttribute(doc, "//*[@label='bioinfo']");
          bioDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.bio));
-     }
+        }
 
          // Links
          if (Migrate.isValid(faculty.links())){
          Element linksDiv = getElementByAttribute(doc, "//*[@label='links']");
          linksDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.links()));
-     }
+        }
 
          String path = "/" + faculty.handle();
          String xml = getStringFromDoc(doc);

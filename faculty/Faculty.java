@@ -69,6 +69,17 @@ class Faculty {
         result += " " + lastName;
         return result;
     }
+
+    String jobTitles() {
+        String result = "";
+        for (Position p : this.positions){
+            result += p.toHTML();
+        }
+        if (Migrate.isValid(titles)){
+            result += titles;
+        }
+        return result;
+    }
     
     /**
     * Return the handle (everything up to the @ in the email)
@@ -221,7 +232,7 @@ class Faculty {
      */
     public String photoUrl() {
         if (this.photoSetting == 2) {
-            return Migrate.outputDirectory + "/" + handle() + "/" + handle() + ".jpg";
+            return "/people/" + handle() + "/" + handle() + ".jpg";
         } else {
             return null;
         }

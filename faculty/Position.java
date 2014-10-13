@@ -12,7 +12,7 @@ String department;
  * @return
  */
  String toHTML(){
-	 return "<em>" + positionDescription + ", " + department + "</em>";
+	 return positionDescription + ", " + department + "<br />";
  }
 
 }

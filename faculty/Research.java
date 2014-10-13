@@ -35,12 +35,4 @@ class Research {
 		return result;
 		
 	}
-	/**
-	 * Output as a pcf page
-	 */
-	void writePcf(){
-		String content = getContentAsHtml();
-		String path = faculty.handle() + "/research/";
-		XmlHelper.toXml(faculty, content, path);
-	}
 }
