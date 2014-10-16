@@ -224,6 +224,9 @@ class Faculty {
             // Output empty sidenav
             XmlHelper.outputSidenav(c.path(), "");
         }
+
+        // Copy primarynav.pcf file to faculty directory
+        XmlHelper.outputPcf("/" + this.handle(), StringConstants.PRIMARYNAV, "primarynav.pcf");
     }
 
     /**

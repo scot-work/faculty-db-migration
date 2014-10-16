@@ -144,18 +144,24 @@ public class XmlHelper {
         outputPcf(path, xml);
     }
 
-  
+    /*
+    * output default file
+    */
+    static void outputPcf(String directory, String content) {
+        outputPcf(directory, content, "index.pcf");
+     }
+
     /**
      * Write an index.pcf page
      * @param content
      */
-    static void outputPcf(String directory, String content) {
+    static void outputPcf(String directory, String content, String title) {
         content = cleanup(content);
         if ( !Migrate.suppressFileOutput){
         try {
             String outputDir = Migrate.outputDirectory + Migrate.baseURL + directory;
             new File(outputDir).mkdirs();
-            String outputFile = outputDir + "/index.pcf";
+            String outputFile = outputDir + "/" + title;
             PrintWriter writer = new PrintWriter(outputFile, "utf-8");
             writer.println(content);
             writer.close();
@@ -292,6 +298,8 @@ public class XmlHelper {
 
             document.appendChild(configProperties);
 
+            Element profile = doc.createElement("profile");
+
             // Photo
             Element photoDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
             photoDiv.setAttribute("label", "photo");
@@ -302,49 +310,8 @@ public class XmlHelper {
             photo.setAttribute("prompt", "Profile Photo");
             photo.setAttribute("alt", "Do you want to share a photo? (Max width 138 pixels)");
             // photo.appendChild(doc.createCDATASection("<img src=\"" + DEFAULT_PHOTO + "\" alt=\"\" />"));
-            photoDiv.appendChild(photo);
-            document.appendChild(photoDiv);
-
-            /* // First Name
-            Element firstNameDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
-            firstNameDiv.setAttribute("label", "namefirst");
-            firstNameDiv.setAttribute("group", "Everyone");
-            firstNameDiv.setAttribute("button", "hide");
-            document.appendChild(firstNameDiv);
-            Element firstName = doc.createElementNS(StringConstants.NAMESPACE,"ouc:multiedit");
-            firstName.setAttribute("type", "text");
-            firstName.setAttribute("prompt", "First Name");
-            firstName.setAttribute("alt", "What's your first name?");
-            firstNameDiv.appendChild(firstName);
-            document.appendChild(firstNameDiv);
-
-            
-            // Middle Name
-            Element middleNameDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
-            middleNameDiv.setAttribute("label", "namemiddle");
-            middleNameDiv.setAttribute("group", "Everyone");
-            middleNameDiv.setAttribute("button", "hide");
-            document.appendChild(middleNameDiv);
-            Element middleName = doc.createElementNS(StringConstants.NAMESPACE,"ouc:multiedit");
-            middleName.setAttribute("type", "text");
-            middleName.setAttribute("prompt", "Middle Name");
-            middleName.setAttribute("alt", "Do you have any middle names?");
-            middleNameDiv.appendChild(middleName);
-            document.appendChild(middleNameDiv);
-
-            // Last Name
-            Element lastNameDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
-            lastNameDiv.setAttribute("label", "namelast");
-            lastNameDiv.setAttribute("group", "Everyone");
-            lastNameDiv.setAttribute("button", "hide");
-            document.appendChild(lastNameDiv);
-            Element lastName = doc.createElementNS(StringConstants.NAMESPACE,"ouc:multiedit");
-            lastName.setAttribute("type", "text");
-            lastName.setAttribute("prompt", "Last Name");
-            lastName.setAttribute("alt", "What's your family name / last name?");
-            lastNameDiv.appendChild(lastName);
-            document.appendChild(lastNameDiv);
-            */
+            profile.appendChild(photo);
+            profile.appendChild(photoDiv);
 
             // Email
             Element emailDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
@@ -356,7 +323,7 @@ public class XmlHelper {
             preferredEmail.setAttribute("prompt", "Email");
             preferredEmail.setAttribute("alt", "What's your preferred email address?");
             emailDiv.appendChild(preferredEmail);
-            document.appendChild(emailDiv);
+            profile.appendChild(emailDiv);
 
             // Alternate Email
             Element altEmailDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
@@ -368,7 +335,7 @@ public class XmlHelper {
             altEmail.setAttribute("prompt", "Alternate Email");
             altEmail.setAttribute("alt", "Do you have an alternate email address?");
             altEmailDiv.appendChild(altEmail);
-            document.appendChild(altEmailDiv);
+            profile.appendChild(altEmailDiv);
 
             // Phone
             Element phoneDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
@@ -380,7 +347,7 @@ public class XmlHelper {
             phone.setAttribute("prompt", "Phone");
             phone.setAttribute("alt", "What's your preferred phone number?");
             phoneDiv.appendChild(phone);
-            document.appendChild(phoneDiv);
+            profile.appendChild(phoneDiv);
 
             // Alternate Phone
             Element altPhoneDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
@@ -392,7 +359,7 @@ public class XmlHelper {
             altPhone.setAttribute("prompt", "Alternate Phone");
             altPhone.setAttribute("alt", "Do you have an alternate phone number?");
             altPhoneDiv.appendChild(altPhone);
-            document.appendChild(altPhoneDiv);
+            profile.appendChild(altPhoneDiv);
 
             // Job Title(s) and Department(s)
             Element titleDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
@@ -406,7 +373,7 @@ public class XmlHelper {
             workingTitle.setAttribute("editor", "yes");
             workingTitle.setAttribute("alt", "What are your working titles and which departments do you work in?");
             titleDiv.appendChild(workingTitle);
-            document.appendChild(titleDiv);
+            profile.appendChild(titleDiv);
 
             /* // Department
             Element departmentDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
@@ -431,7 +398,7 @@ public class XmlHelper {
             additionalInfo.setAttribute("prompt", "Additional Info");
             additionalInfo.setAttribute("alt", "Any additional info you want to share?");
             additionalInfoDiv.appendChild(additionalInfo);
-            document.appendChild(additionalInfoDiv);
+            profile.appendChild(additionalInfoDiv);
 
             // Additional Info Label
             Element additionalInfoTitleDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
@@ -443,7 +410,9 @@ public class XmlHelper {
             additionalInfoTitle.setAttribute("prompt", "Custom Title");
             additionalInfoTitle.setAttribute("alt", "Enter a custom title for your Additional Info (default just says 'Additional Info')");
             additionalInfoTitleDiv.appendChild(additionalInfoTitle);
-            document.appendChild(additionalInfoTitleDiv);
+            profile.appendChild(additionalInfoTitleDiv);
+
+            document.appendChild(profile);
 
             // Education
             Element educationDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
@@ -538,7 +507,6 @@ public class XmlHelper {
             document.appendChild(bodycode);
             Element footcode = doc.createElement("footcode");
             document.appendChild(footcode);
-
 
             Element metaProperties = doc.createElementNS(StringConstants.NAMESPACE,"ouc:properties");
             metaProperties.setAttribute("label", "metadata");
@@ -664,9 +632,11 @@ public class XmlHelper {
          // Photo
         Element photoDiv = getElementByAttribute(doc, "//*[@label='photo']");
          if (Migrate.isValid(faculty.photoUrl())){
-           photoDiv.getChildNodes().item(0).appendChild(doc.createCDATASection("<img src=\"" + faculty.photoUrl() + "\" alt=\"" + faculty.fullName() + "\" />"));
+           // photoDiv.getChildNodes().item(1).appendChild(doc.createCDATASection("<img src=\"" + faculty.photoUrl() + "\" alt=\"" + faculty.fullName() + "\" />"));
+            photoDiv.appendChild(doc.createCDATASection("<img src=\"" + faculty.photoUrl() + "\" alt=\"" + faculty.fullName() + "\" />"));
          } else {
-            photoDiv.getChildNodes().item(0).appendChild(doc.createCDATASection("<img src=\"" + DEFAULT_PHOTO + "\" alt=\"\" />"));
+            // photoDiv.getChildNodes().item(1).appendChild(doc.createCDATASection("<img src=\"" + DEFAULT_PHOTO + "\" alt=\"\" />"));
+            photoDiv.appendChild(doc.createCDATASection("<img src=\"" + DEFAULT_PHOTO + "\" alt=\"\" />"));
          }
 
          /* // First
