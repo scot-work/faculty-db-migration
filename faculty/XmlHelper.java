@@ -134,9 +134,7 @@ public class XmlHelper {
 
         if (!active){
             Element hide = XmlHelper.getElementByAttribute(doc, "//*[@value='true']");
-            Element show = XmlHelper.getElementByAttribute(doc, "//*[@value='false']");
             hide.setAttribute("selected", "true");
-            show.setAttribute("selected", "false");
         }
 
         // convert XML to a String
@@ -298,6 +296,7 @@ public class XmlHelper {
 
             document.appendChild(configProperties);
 
+            // Start profile 
             Element profile = doc.createElement("profile");
 
             // Photo
@@ -305,12 +304,12 @@ public class XmlHelper {
             photoDiv.setAttribute("label", "photo");
             photoDiv.setAttribute("group", "Everyone");
             photoDiv.setAttribute("button", "hide");
-            Element photo = doc.createElementNS(StringConstants.NAMESPACE,"ouc:multiedit");
-            photo.setAttribute("type", "image");
-            photo.setAttribute("prompt", "Profile Photo");
-            photo.setAttribute("alt", "Do you want to share a photo? (Max width 138 pixels)");
+            Element photoMulti = doc.createElementNS(StringConstants.NAMESPACE,"ouc:multiedit");
+            photoMulti.setAttribute("type", "image");
+            photoMulti.setAttribute("prompt", "Profile Photo");
+            photoMulti.setAttribute("alt", "Do you want to share a photo? (Max width 138 pixels)");
             // photo.appendChild(doc.createCDATASection("<img src=\"" + DEFAULT_PHOTO + "\" alt=\"\" />"));
-            profile.appendChild(photo);
+            photoDiv.appendChild(photoMulti);
             profile.appendChild(photoDiv);
 
             // Email
@@ -318,11 +317,11 @@ public class XmlHelper {
             emailDiv.setAttribute("label", "preferredemail");
             emailDiv.setAttribute("group", "Everyone");
             emailDiv.setAttribute("button", "hide");
-            Element preferredEmail = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
-            preferredEmail.setAttribute("type", "text");
-            preferredEmail.setAttribute("prompt", "Email");
-            preferredEmail.setAttribute("alt", "What's your preferred email address?");
-            emailDiv.appendChild(preferredEmail);
+            Element preferredEmailMulti = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
+            preferredEmailMulti.setAttribute("type", "text");
+            preferredEmailMulti.setAttribute("prompt", "Email");
+            preferredEmailMulti.setAttribute("alt", "What's your preferred email address?");
+            emailDiv.appendChild(preferredEmailMulti);
             profile.appendChild(emailDiv);
 
             // Alternate Email
@@ -330,11 +329,11 @@ public class XmlHelper {
             altEmailDiv.setAttribute("label", "alternateemail");
             altEmailDiv.setAttribute("group", "Everyone");
             altEmailDiv.setAttribute("button", "hide");
-            Element altEmail = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
-            altEmail.setAttribute("type", "text");
-            altEmail.setAttribute("prompt", "Alternate Email");
-            altEmail.setAttribute("alt", "Do you have an alternate email address?");
-            altEmailDiv.appendChild(altEmail);
+            Element altEmailMulti = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
+            altEmailMulti.setAttribute("type", "text");
+            altEmailMulti.setAttribute("prompt", "Alternate Email");
+            altEmailMulti.setAttribute("alt", "Do you have an alternate email address?");
+            altEmailDiv.appendChild(altEmailMulti);
             profile.appendChild(altEmailDiv);
 
             // Phone
@@ -342,11 +341,11 @@ public class XmlHelper {
             phoneDiv.setAttribute("label", "preferredphone");
             phoneDiv.setAttribute("group", "Everyone");
             phoneDiv.setAttribute("button", "hide");
-            Element phone = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
-            phone.setAttribute("type", "text");
-            phone.setAttribute("prompt", "Phone");
-            phone.setAttribute("alt", "What's your preferred phone number?");
-            phoneDiv.appendChild(phone);
+            Element phoneMulti = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
+            phoneMulti.setAttribute("type", "text");
+            phoneMulti.setAttribute("prompt", "Phone");
+            phoneMulti.setAttribute("alt", "What's your preferred phone number?");
+            phoneDiv.appendChild(phoneMulti);
             profile.appendChild(phoneDiv);
 
             // Alternate Phone
@@ -354,11 +353,11 @@ public class XmlHelper {
             altPhoneDiv.setAttribute("label", "alternatephone");
             altPhoneDiv.setAttribute("group", "Everyone");
             altPhoneDiv.setAttribute("button", "hide");
-            Element altPhone = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
-            altPhone.setAttribute("type", "text");
-            altPhone.setAttribute("prompt", "Alternate Phone");
-            altPhone.setAttribute("alt", "Do you have an alternate phone number?");
-            altPhoneDiv.appendChild(altPhone);
+            Element altPhoneMulti = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
+            altPhoneMulti.setAttribute("type", "text");
+            altPhoneMulti.setAttribute("prompt", "Alternate Phone");
+            altPhoneMulti.setAttribute("alt", "Do you have an alternate phone number?");
+            altPhoneDiv.appendChild(altPhoneMulti);
             profile.appendChild(altPhoneDiv);
 
             // Job Title(s) and Department(s)
@@ -366,13 +365,13 @@ public class XmlHelper {
             titleDiv.setAttribute("label", "titledepartment");
             titleDiv.setAttribute("group", "Everyone");
             titleDiv.setAttribute("button", "hide");
-            Element workingTitle = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
-            workingTitle.setAttribute("type", "textarea");
-            workingTitle.setAttribute("prompt", "Title(s) and Department(s)");
-            workingTitle.setAttribute("rows", "6"); 
-            workingTitle.setAttribute("editor", "yes");
-            workingTitle.setAttribute("alt", "What are your working titles and which departments do you work in?");
-            titleDiv.appendChild(workingTitle);
+            Element workingTitleMulti = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
+            workingTitleMulti.setAttribute("type", "textarea");
+            workingTitleMulti.setAttribute("prompt", "Title(s) and Department(s)");
+            workingTitleMulti.setAttribute("rows", "6"); 
+            workingTitleMulti.setAttribute("editor", "yes");
+            workingTitleMulti.setAttribute("alt", "What are your working titles and which departments do you work in?");
+            titleDiv.appendChild(workingTitleMulti);
             profile.appendChild(titleDiv);
 
             /* // Department
@@ -393,11 +392,11 @@ public class XmlHelper {
             additionalInfoDiv.setAttribute("label", "additionalinfo");
             additionalInfoDiv.setAttribute("group", "Everyone");
             additionalInfoDiv.setAttribute("button", "hide");
-            Element additionalInfo = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
-            additionalInfo.setAttribute("type", "text");
-            additionalInfo.setAttribute("prompt", "Additional Info");
-            additionalInfo.setAttribute("alt", "Any additional info you want to share?");
-            additionalInfoDiv.appendChild(additionalInfo);
+            Element additionalInfoMulti = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
+            additionalInfoMulti.setAttribute("type", "text");
+            additionalInfoMulti.setAttribute("prompt", "Additional Info");
+            additionalInfoMulti.setAttribute("alt", "Any additional info you want to share?");
+            additionalInfoDiv.appendChild(additionalInfoMulti);
             profile.appendChild(additionalInfoDiv);
 
             // Additional Info Label
@@ -405,11 +404,11 @@ public class XmlHelper {
             additionalInfoTitleDiv.setAttribute("label", "additionalinfotitle");
             additionalInfoTitleDiv.setAttribute("group", "Everyone");
             additionalInfoTitleDiv.setAttribute("button", "hide");
-            Element additionalInfoTitle = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
-            additionalInfoTitle.setAttribute("type", "text");
-            additionalInfoTitle.setAttribute("prompt", "Custom Title");
-            additionalInfoTitle.setAttribute("alt", "Enter a custom title for your Additional Info (default just says 'Additional Info')");
-            additionalInfoTitleDiv.appendChild(additionalInfoTitle);
+            Element additionalInfoTitleMulti = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
+            additionalInfoTitleMulti.setAttribute("type", "text");
+            additionalInfoTitleMulti.setAttribute("prompt", "Custom Title");
+            additionalInfoTitleMulti.setAttribute("alt", "Enter a custom title for your Additional Info (default just says 'Additional Info')");
+            additionalInfoTitleDiv.appendChild(additionalInfoTitleMulti);
             profile.appendChild(additionalInfoTitleDiv);
 
             document.appendChild(profile);
@@ -548,6 +547,7 @@ public class XmlHelper {
             Element configProperties = doc.createElementNS(StringConstants.NAMESPACE,"ouc:properties");
             configProperties.setAttribute("label", "config");
 
+            Element profile = doc.createElement("profile");
             // Photo
             Element photoParameter = doc.createElement("parameter");
             photoParameter.setAttribute("name", "photo");
@@ -556,27 +556,24 @@ public class XmlHelper {
             photoParameter.setAttribute("prompt", "Default Photo");
             photoParameter.setAttribute("alt", "Choose a default image to show for the page.");
             photoParameter.appendChild(doc.createTextNode(DEFAULT_PHOTO));
-            configProperties.appendChild(photoParameter);
+            profile.appendChild(photoParameter);
 
             // Enable/hide
             Element hideParameter = doc.createElement("parameter");
             hideParameter.setAttribute("name", "hide");
             hideParameter.setAttribute("group", "Everyone");
-            hideParameter.setAttribute("type", "radio");
+            hideParameter.setAttribute("type", "checkbox");
             hideParameter.setAttribute("prompt", "Hide Page?");
             hideParameter.setAttribute("alt", "Prevent the page from publishing and hide it from navigation menus and index pages.");
-            Element disableOption = doc.createElement("option");
-            disableOption.setAttribute("value", "true");
-            disableOption.setAttribute("selected", "false");
-            disableOption.appendChild(doc.createTextNode("Disable the page"));
-            hideParameter.appendChild(disableOption);
-            Element publishOption = doc.createElement("option");
-            publishOption.setAttribute("value", "false");
-            publishOption.setAttribute("selected", "true");
-            publishOption.appendChild(doc.createTextNode("Publish the page"));
-            hideParameter.appendChild(publishOption);
-            configProperties.appendChild(hideParameter);
+            Element hideOption = doc.createElement("option");
+            hideOption.setAttribute("value", "true");
+            hideOption.setAttribute("selected", "false");
+            hideOption.appendChild(doc.createTextNode("Hide this page"));
+            hideParameter.appendChild(hideOption);
+            
+            profile.appendChild(hideParameter);
             document.appendChild(configProperties);
+            document.appendChild(profile);
 
             // Navigation Order
             Element navOrderParameter = doc.createElement("parameter");
@@ -661,31 +658,31 @@ public class XmlHelper {
          // Email
          if (Migrate.isValid(faculty.sjsuEmail)){
          Element emailDiv = getElementByAttribute(doc, "//*[@label='preferredemail']");
-         emailDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.sjsuEmail));
+         emailDiv.appendChild(doc.createTextNode(faculty.sjsuEmail));
         }
 
          // Alternate Email
          if (Migrate.isValid(faculty.alternateEmail)){
          Element altEmailDiv = getElementByAttribute(doc, "//*[@label='alternateemail']");
-         altEmailDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.alternateEmail));
+         altEmailDiv.appendChild(doc.createTextNode(faculty.alternateEmail));
         }
 
          // Phone
          if (Migrate.isValid(faculty.phone())){
          Element phoneDiv = getElementByAttribute(doc, "//*[@label='preferredphone']");
-         phoneDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.phone()));
+         phoneDiv.appendChild(doc.createTextNode(faculty.phone()));
         }
 
          // Alternate Phone
          if (Migrate.isValid(faculty.alternatePhone)){
          Element altPhoneDiv = getElementByAttribute(doc, "//*[@label='alternatephone']");
-         altPhoneDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.alternatePhone));
+         altPhoneDiv.appendChild(doc.createTextNode(faculty.alternatePhone));
         }
 
          // Title(s) and Department(s)
          if (Migrate.isValid(faculty.titles)){
          Element titleDiv = getElementByAttribute(doc, "//*[@label='titledepartment']");
-         titleDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.jobTitles()));
+         titleDiv.appendChild(doc.createCDATASection(faculty.jobTitles()));
         }
 
          // Department
@@ -695,12 +692,12 @@ public class XmlHelper {
          // Additional Info
          if (Migrate.isValid(faculty.additionalInfo)){
          Element additionalInfoDiv = getElementByAttribute(doc, "//*[@label='additionalinfo']");
-         additionalInfoDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.additionalInfo));
+         additionalInfoDiv.appendChild(doc.createCDATASection(faculty.additionalInfo));
         }
 
          // Info Title
          Element additionalInfoTitleDiv = getElementByAttribute(doc, "//*[@label='additionalinfotitle']");
-         additionalInfoTitleDiv.getChildNodes().item(0).appendChild(doc.createCDATASection("Additional Information"));
+         additionalInfoTitleDiv.appendChild(doc.createCDATASection("Additional Information"));
 
          // Education
          if (Migrate.isValid(faculty.education.output())){
