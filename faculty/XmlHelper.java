@@ -360,6 +360,18 @@ public class XmlHelper {
             altPhoneDiv.appendChild(altPhoneMulti);
             profile.appendChild(altPhoneDiv);
 
+            // Office Hours
+            Element officeHoursDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
+            officeHoursDiv.setAttribute("label", "officehours");
+            officeHoursDiv.setAttribute("group", "Everyone");
+            officeHoursDiv.setAttribute("button", "hide");
+            Element officeHoursMulti = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
+            officeHoursMulti.setAttribute("type", "text");
+            officeHoursMulti.setAttribute("prompt", "Office Hours");
+            officeHoursMulti.setAttribute("alt", "What are your office hours?");
+            officeHoursDiv.appendChild(officeHoursMulti);
+            profile.appendChild(officeHoursDiv);
+
             // Job Title(s) and Department(s)
             Element titleDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
             titleDiv.setAttribute("label", "titledepartment");
@@ -373,19 +385,6 @@ public class XmlHelper {
             workingTitleMulti.setAttribute("alt", "What are your working titles and which departments do you work in?");
             titleDiv.appendChild(workingTitleMulti);
             profile.appendChild(titleDiv);
-
-            /* // Department
-            Element departmentDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
-            departmentDiv.setAttribute("label", "department");
-            departmentDiv.setAttribute("group", "Everyone");
-            departmentDiv.setAttribute("button", "hide");
-            Element department = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
-            department.setAttribute("type", "text");
-            department.setAttribute("prompt", "Department");
-            department.setAttribute("alt", "What is your department name?");
-            departmentDiv.appendChild(department);
-            document.appendChild(departmentDiv);
-            */
 
             // Additional Information
             Element additionalInfoDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
@@ -677,6 +676,12 @@ public class XmlHelper {
          if (Migrate.isValid(faculty.alternatePhone)){
          Element altPhoneDiv = getElementByAttribute(doc, "//*[@label='alternatephone']");
          altPhoneDiv.appendChild(doc.createTextNode(faculty.alternatePhone));
+        }
+
+         // Office Hours
+         if (Migrate.isValid(faculty.officeHours)){
+         Element officeHoursDiv = getElementByAttribute(doc, "//*[@label='officehours']");
+         officeHoursDiv.appendChild(doc.createTextNode(faculty.officeHours));
         }
 
          // Title(s) and Department(s)
