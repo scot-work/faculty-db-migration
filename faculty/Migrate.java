@@ -295,7 +295,9 @@ public class Migrate {
             }
             
             // This is the preferred middle name
-            if (isValid(rs.getString("middle_name")) && rs.getInt("middle_name_preferred") == 1) {
+            // Need to allow empty middle name
+            // if (isValid(rs.getString("middle_name")) && rs.getInt("middle_name_preferred") == 1) {
+            if (rs.getInt("middle_name_preferred") == 1 ) {
                 currentFaculty.middleName = rs.getString("middle_name");
             }
             
