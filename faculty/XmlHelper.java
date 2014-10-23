@@ -546,17 +546,6 @@ public class XmlHelper {
             Element configProperties = doc.createElementNS(StringConstants.NAMESPACE,"ouc:properties");
             configProperties.setAttribute("label", "config");
 
-            Element profile = doc.createElement("profile");
-            // Photo
-            Element photoParameter = doc.createElement("parameter");
-            photoParameter.setAttribute("name", "photo");
-            photoParameter.setAttribute("group", "Everyone");
-            photoParameter.setAttribute("type", "filechooser");
-            photoParameter.setAttribute("prompt", "Default Photo");
-            photoParameter.setAttribute("alt", "Choose a default image to show for the page.");
-            photoParameter.appendChild(doc.createTextNode(DEFAULT_PHOTO));
-            profile.appendChild(photoParameter);
-
             // Enable/hide
             Element hideParameter = doc.createElement("parameter");
             hideParameter.setAttribute("name", "hide");
@@ -569,10 +558,7 @@ public class XmlHelper {
             hideOption.setAttribute("selected", "false");
             hideOption.appendChild(doc.createTextNode("Hide this page"));
             hideParameter.appendChild(hideOption);
-            
-            profile.appendChild(hideParameter);
-            document.appendChild(configProperties);
-            document.appendChild(profile);
+            configProperties.appendChild(hideParameter);
 
             // Navigation Order
             Element navOrderParameter = doc.createElement("parameter");
@@ -582,6 +568,21 @@ public class XmlHelper {
             navOrderParameter.setAttribute("alt", "Enter a number from 1 to 99 to control the order in which a link to this page appears in either the main navigation menu or sidebar navigation menus. Optionally, leave it blank to keep the page off navigation menus.");
             navOrderParameter.appendChild(doc.createTextNode("02"));
             configProperties.appendChild(navOrderParameter);
+
+            Element profile = doc.createElement("profile");
+            // Photo
+            Element photoParameter = doc.createElement("parameter");
+            photoParameter.setAttribute("name", "photo");
+            photoParameter.setAttribute("group", "Everyone");
+            photoParameter.setAttribute("type", "filechooser");
+            photoParameter.setAttribute("prompt", "Default Photo");
+            photoParameter.setAttribute("alt", "Choose a default image to show for the page.");
+            photoParameter.appendChild(doc.createTextNode(DEFAULT_PHOTO));
+            profile.appendChild(photoParameter);
+
+            // profile.appendChild(hideParameter);
+            document.appendChild(configProperties);
+            document.appendChild(profile);
 
             Element maincontentDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
             maincontentDiv.setAttribute("label", "maincontent");
@@ -614,10 +615,10 @@ public class XmlHelper {
 
         NodeList hide = XmlHelper.getElementsByAttribute(doc, "//*[@name='hide']/*");
         if (faculty.isActive) {
-            System.out.println("Writing " + faculty.fullName());
+            System.out.println("Writing " + faculty.fullName() + "\n");
             ((Element) hide.item(0)).setAttribute("selected", "false");
         } else {
-            System.out.println("Inactive Faculty " + faculty.fullName());
+            System.out.println("Inactive Faculty " + faculty.fullName() + "\n");
             ((Element) hide.item(0)).setAttribute("selected", "true");
         }
 

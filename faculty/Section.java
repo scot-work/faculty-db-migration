@@ -7,7 +7,7 @@ class Section {
 	String name;
 	List<Doc> docs; 
 	List<Link> links;
-	String url;
+	// String url;
 	int id;
 	int position;
 	boolean active;
@@ -18,14 +18,28 @@ class Section {
 }
 
 /**
+*   This is a hack that may or may not work
+*	I don't understand why most (but not all) document URLs use /s? where ? = section position - 1
+*   I can't just subtract 1 because sometimes position is 0
+*/
+String url() {
+	String result = "/s";
+	if (position > 0) {
+		result += String.valueOf(position - 1);
+	} else {
+		result += "0";
+	}
+	return result;
+}
+
+/**
 * Return an HTML chunk for displaying this section
 * 
 * @return HTML string
 */
  String toHTML() {
 		String result = "\n";
-		//if (!active){result += "<div style=\"background-color: yellow;\">";}
-	result += active?"":"<div style=\"background-color: yellow;\">";
+		// result += "<p>Debug: position is: " + String.valueOf(position) + "</p>";
 	if (Migrate.isValid(name)){
 		result += "<h2>" + name + "</h2>";
 	}
@@ -48,7 +62,6 @@ class Section {
 		}
 		result += "</ul>";
 	}
-	result += active?"":"</div>";
 	return result;
 }
 

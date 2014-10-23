@@ -276,6 +276,7 @@ public class Migrate {
         
         // Self-entered information
         stmt = conn.prepareStatement(Queries.DetailsQuery);
+        // SELECT * FROM sjsu_people_details WHERE id=?
         stmt.setInt(1, currentFaculty.facultyID);
         rs = stmt.executeQuery();
         while(rs.next()) {
@@ -553,6 +554,7 @@ public class Migrate {
         List<Course> courses = new ArrayList<Course>();
         Course course = null;
         stmt = conn.prepareStatement(Queries.CoursesQuery);
+        // SELECT * FROM sjsu_people_course_entry WHERE faculty_id=? ORDER BY position;
         stmt.setInt(1, currentFaculty.facultyID);
         rs = stmt.executeQuery();
         while(rs.next()) {
@@ -586,6 +588,7 @@ public class Migrate {
                 section = new Section(rs.getInt("id"));
                 section.name = rs.getString("name");
                 section.description = rs.getString("description");
+                section.position = rs.getInt("position");
                 // If any section is inactive, make the course inactive
                 if (rs.getInt("status") == 0) {
                     section.active = false;
@@ -594,18 +597,31 @@ public class Migrate {
                 } else {
                     section.active = true;
                 }
-                //section.url = c.url() + "/s" + rs.getString("position");
-                section.url = c.url() + "/s1";
+                // section.url = c.url() + "/s" + rs.getString("position");
+                // Each section has a directory within the course: /s0 /s1 /s2 etc.
+                // It's not clear if it is the same as the section or not
+                // section.url = c.url() + "/s" + String.valueOf(section.position - 1);
                 sections.add(section);
             }
             c.sections = sections;
             rs.close();
             stmt.close();
 
+            // Get course photo
+            if (c.photoSetting == 2) {
+                try {
+                       saveDocument(liveSiteBaseDir + "/people" + c.path() + "/" + c.name + ".jpg", outputDirectory + "/people" + c.path() + "/" + c.name + ".jpg");
+                    } catch(java.io.IOException e) {
+                        e.printStackTrace();
+                    }
+            }
+
             // get docs for section
             for (Section s : c.sections) {
                 List<Doc> documents = new ArrayList<Doc>();
                 stmt = conn.prepareStatement(Queries.SectionDocsQuery);
+                // SELECT spd.path, spd.label  FROM sjsu_people_course_section_docs spcsd, sjsu_people_documents spd 
+                // WHERE spd.id = spcsd.document_id AND spcsd.course_section_id=? ORDER BY spcsd.position
                 stmt.setInt(1, s.id);
                 rs = stmt.executeQuery();
                 while(rs.next()) {
@@ -613,15 +629,17 @@ public class Migrate {
                     String filename = "";
                     try {
                         filename = URLEncoder.encode(rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1), "UTF-8");
-                    } catch (java.io.UnsupportedEncodingException e){
+                        // this replaces spaces with + which does not work. Need to replace with %20
+                        filename = filename.replaceAll("\\+","%20");
+                    } catch (java.io.UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }   
-                    Doc d = new Doc(rs.getString("label"), s.url + "/"  + filename);
+                    Doc d = new Doc(rs.getString("label"), c.path() + s.url() + "/"  + filename);
                     //Doc d = new Doc(label, s.url + "/" 
                     //        + rs.getString("path").URLEncoder.encode(substring(rs.getString("path").lastIndexOf('/') + 1), "UTF-8"));
                     documents.add(d);
-                    String sourceURL = liveSiteBaseDir + d.url;
-                    String destURL = outputDirectory + d.url;
+                    String sourceURL = liveSiteBaseDir + "/people" + d.url;
+                    String destURL = outputDirectory + "/people" + d.url;
                     try {
                        saveDocument(sourceURL, destURL);
                     } catch(java.io.IOException e) {
@@ -645,8 +663,7 @@ public class Migrate {
                 stmt.close();
             } 
         }
-
-        System.out.println("Finished " + currentFaculty.fullName());
+        System.out.println("Finished " + currentFaculty.fullName() + "\n");
     }
 
     /**
@@ -670,7 +687,7 @@ public class Migrate {
      * @throws IOException
      */
     static void saveDocument(String documentUrl, String destinationFile) throws IOException {
-        if (!Migrate.suppressFileOutput){
+        if (!Migrate.suppressFileOutput) {
             try {
                 URL url = new URL(documentUrl);
 
@@ -680,8 +697,9 @@ public class Migrate {
                 if (connection instanceof HttpURLConnection) {
                     HttpURLConnection httpConnection = (HttpURLConnection) connection;
                     if (httpConnection.getResponseCode() == 404) {
-                        System.out.println("Failed to download " + documentUrl);
+                        System.out.println("Incorrect URL (404): " + documentUrl);
                     } else {
+                        System.out.println("Downloading: " + documentUrl);
                         InputStream is = url.openStream();
                         String dir = destinationFile.substring(0, destinationFile.lastIndexOf('/'));
                         // Create local directories to write to

@@ -46,7 +46,7 @@ class Course {
      */
     String getContentAsHtml() {
         String content = "<h2>" + title + "</h2>";
-        content += "<img src=\"" + url() +  name + ".jpg\" alt=\"" + photoDescription + "\"/>";
+        content += "<img src=\"" + url() +  "/" + name + ".jpg\" alt=\"" + photoDescription + "\"/>";
 
         // time
         content += ("<p><strong>Time:</strong> " + dayAndTime + " </p>");
