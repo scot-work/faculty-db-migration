@@ -157,7 +157,8 @@ public class XmlHelper {
         content = cleanup(content);
         if ( !Migrate.suppressFileOutput){
         try {
-            String outputDir = Migrate.outputDirectory + Migrate.baseURL + directory;
+            // String outputDir = Migrate.outputDirectory + Migrate.baseURL + directory;
+            String outputDir = Migrate.outputDirectory + directory;
             new File(outputDir).mkdirs();
             String outputFile = outputDir + "/" + title;
             PrintWriter writer = new PrintWriter(outputFile, "utf-8");
@@ -178,7 +179,7 @@ public class XmlHelper {
     static void outputSidenav(String directory, String content) {
        if (!Migrate.suppressFileOutput){
         try {
-            String outputDir = Migrate.outputDirectory + Migrate.baseURL + directory;
+            String outputDir = Migrate.outputDirectory + directory;
             new File(outputDir).mkdirs();
             String outputFile = outputDir + "/sidenav.inc";
             PrintWriter writer = new PrintWriter(outputFile, "UTF-8");
@@ -543,6 +544,7 @@ public class XmlHelper {
             layoutParameter.appendChild(columnOption);
             document.appendChild(layoutParameter);
 
+            // config properties
             Element configProperties = doc.createElementNS(StringConstants.NAMESPACE,"ouc:properties");
             configProperties.setAttribute("label", "config");
 
@@ -569,19 +571,24 @@ public class XmlHelper {
             navOrderParameter.appendChild(doc.createTextNode("02"));
             configProperties.appendChild(navOrderParameter);
 
-            Element profile = doc.createElement("profile");
-            // Photo
-            Element photoParameter = doc.createElement("parameter");
-            photoParameter.setAttribute("name", "photo");
-            photoParameter.setAttribute("group", "Everyone");
-            photoParameter.setAttribute("type", "filechooser");
-            photoParameter.setAttribute("prompt", "Default Photo");
-            photoParameter.setAttribute("alt", "Choose a default image to show for the page.");
-            photoParameter.appendChild(doc.createTextNode(DEFAULT_PHOTO));
-            profile.appendChild(photoParameter);
-
-            // profile.appendChild(hideParameter);
             document.appendChild(configProperties);
+
+            // Profile
+            Element profile = doc.createElement("profile");
+
+            // Photo
+            Element photoDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
+            photoDiv.setAttribute("label", "photo");
+            photoDiv.setAttribute("group", "Everyone");
+            photoDiv.setAttribute("button", "Hide");
+
+            Element photoMulti = doc.createElementNS(StringConstants.NAMESPACE,"ouc:multiedit");
+            photoMulti.setAttribute("type","image");
+            photoMulti.setAttribute("prompt","Profle Photo");
+            photoMulti.setAttribute("alt","Do you want to share a photo? (Max width 138 pixels)");
+
+            photoDiv.appendChild(photoMulti);
+            profile.appendChild(photoDiv);
             document.appendChild(profile);
 
             Element maincontentDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
@@ -636,25 +643,6 @@ public class XmlHelper {
             photoDiv.appendChild(doc.createCDATASection("<img src=\"" + DEFAULT_PHOTO + "\" alt=\"\" />"));
          }
 
-         /* // First
-         if (Migrate.isValid(faculty.firstName)){
-         Element firstNameDiv = getElementByAttribute(doc, "//*[@label='namefirst']");
-         firstNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.firstName));
-        }
-
-         // Middle
-         if (Migrate.isValid(faculty.middleName)){
-         Element middleNameDiv = getElementByAttribute(doc, "//*[@label='namemiddle']");
-         middleNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.middleName));
-        }
-
-         // Last
-         if (Migrate.isValid(faculty.lastName)){
-         Element lastNameDiv = getElementByAttribute(doc, "//*[@label='namelast']");
-         lastNameDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.lastName));
-        }
-        */
-
          // Email
          if (Migrate.isValid(faculty.sjsuEmail)){
          Element emailDiv = getElementByAttribute(doc, "//*[@label='preferredemail']");
@@ -691,14 +679,10 @@ public class XmlHelper {
          titleDiv.appendChild(doc.createCDATASection(faculty.jobTitles()));
         }
 
-         // Department
-         // Element departmentDiv = getElementByAttribute(doc, "//*[@label='department']");
-         // departmentDiv.getChildNodes().item(0).appendChild(doc.createTextNode(faculty.???));
-
          // Additional Info
          if (Migrate.isValid(faculty.additionalInfo)){
          Element additionalInfoDiv = getElementByAttribute(doc, "//*[@label='additionalinfo']");
-         additionalInfoDiv.appendChild(doc.createCDATASection(faculty.additionalInfo));
+         additionalInfoDiv.appendChild(doc.createCDATASection(faculty.additionalInfo()));
         }
 
          // Info Title
@@ -714,7 +698,7 @@ public class XmlHelper {
          // Licenses
          if (Migrate.isValid(faculty.licenses.toString())){
          Element licensesDiv = getElementByAttribute(doc, "//*[@label='licenses']");
-         licensesDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.licenses.toString()));
+         licensesDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.licenses()));
         }
 
          // Bio
@@ -729,7 +713,7 @@ public class XmlHelper {
          linksDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.links()));
         }
 
-         String path = "/" + faculty.handle();
+         String path = StringConstants.SITEROOT + faculty.handle();
          String xml = getStringFromDoc(doc);
          outputPcf(path , xml);
 

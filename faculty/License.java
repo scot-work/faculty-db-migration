@@ -19,14 +19,18 @@ class License {
 
 	}
 
+	public String toHTML() {
+		return "<li>" + this.toString() + "</li>";
+	}
+
 	/**
 	 * Return as a formatted string
 	 */
 	public String toString() {
 		String result = "";
-		if (Migrate.isValid(descr)){
+		if (Migrate.isValid(descr)) {
 			result += descr;
-		} else if (Migrate.isValid(licenseName)){
+		} else if (Migrate.isValid(licenseName)) {
 			result += licenseName;
 		}
 		if (state != null) {

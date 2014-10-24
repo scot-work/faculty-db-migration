@@ -32,7 +32,6 @@ import javax.xml.parsers.ParserConfigurationException;
  */
 public class Migrate {
 
-    public static String baseURL;
     public static String outputDirectory;
     public static String liveSiteBaseDir;
     static Boolean suppressFileOutput = false;
@@ -54,7 +53,6 @@ public class Migrate {
         }
         Migrate.outputDirectory = prop.getProperty("outputDirectory");
         Migrate.liveSiteBaseDir = prop.getProperty("liveSiteBaseDir");
-        Migrate.baseURL = prop.getProperty("baseURL");
         if (args.length == 0) {
             try {
                 processAllFacultyPages(prop);
@@ -359,7 +357,7 @@ public class Migrate {
                 currentFaculty.linksActive = true;
             }
             if (rs.getInt("professional_services_active") == 0) {
-                currentFaculty.professionalServicesActive = false;
+                currentFaculty.professionalActivityActive = false;
 
             } 
             if (rs.getInt("publications_active") == 0) {
@@ -449,12 +447,30 @@ public class Migrate {
             stmt.setString(1, l.countryCode);
             stmt.setString(2, l.stateCode);
             rs = stmt.executeQuery();
-            while(rs.next()) {
+            while (rs.next()) {
                 l.state = rs.getString("descr");
             }
             rs.close();
             stmt.close();
         }
+
+        // Get professional activities
+        stmt = conn.prepareStatement(Queries.GetProfessionalActivities);
+        // "SELECT * FROM sjsu_people_professional_activities WHERE faculty_id=? ORDER BY position";
+        stmt.setInt(1, currentFaculty.facultyID);
+        rs = stmt.executeQuery();
+        List<ProfessionalActivity> activities = new ArrayList<ProfessionalActivity>();
+        ProfessionalActivity activity = null;
+        while (rs.next()) {
+            activity = new ProfessionalActivity();
+            activity.title = rs.getString("title");
+            activity.startYear = rs.getInt("start_year");
+            activity.endYear = rs.getInt("end_year");
+            activity.description = rs.getString("description");
+            activity.positionTitle = rs.getString("position_title");
+            activities.add(activity);
+        }
+        currentFaculty.professionalActivities = activities;
 
         // Get job title(s)
         stmt = conn.prepareStatement(Queries.JobsQuery);
@@ -462,7 +478,7 @@ public class Migrate {
         rs = stmt.executeQuery();
         List<Position> positions = new ArrayList<Position>();
         Position position = null;
-        while(rs.next()) {
+        while (rs.next()) {
             position = new Position(rs.getString("position_descr"));
             position.department = rs.getString("deptid_descr");
             positions.add(position);
@@ -610,7 +626,7 @@ public class Migrate {
             // Get course photo
             if (c.photoSetting == 2) {
                 try {
-                       saveDocument(liveSiteBaseDir + "/people" + c.path() + "/" + c.name + ".jpg", outputDirectory + "/people" + c.path() + "/" + c.name + ".jpg");
+                       saveDocument(liveSiteBaseDir + c.path() + "/" + c.name + ".jpg", outputDirectory + c.path() + "/" + c.name + ".jpg");
                     } catch(java.io.IOException e) {
                         e.printStackTrace();
                     }
@@ -627,19 +643,15 @@ public class Migrate {
                 while(rs.next()) {
                     //String label = rs.getString("label");
                     String filename = "";
-                    try {
-                        filename = URLEncoder.encode(rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1), "UTF-8");
-                        // this replaces spaces with + which does not work. Need to replace with %20
-                        filename = filename.replaceAll("\\+","%20");
-                    } catch (java.io.UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }   
+                    //filename = URLEncoder.encode(rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1), "UTF-8");
+                    filename = rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1);
+                   
                     Doc d = new Doc(rs.getString("label"), c.path() + s.url() + "/"  + filename);
                     //Doc d = new Doc(label, s.url + "/" 
                     //        + rs.getString("path").URLEncoder.encode(substring(rs.getString("path").lastIndexOf('/') + 1), "UTF-8"));
                     documents.add(d);
-                    String sourceURL = liveSiteBaseDir + "/people" + d.url;
-                    String destURL = outputDirectory + "/people" + d.url;
+                    String sourceURL = liveSiteBaseDir + d.url;
+                    String destURL = outputDirectory + d.url;
                     try {
                        saveDocument(sourceURL, destURL);
                     } catch(java.io.IOException e) {
@@ -689,6 +701,8 @@ public class Migrate {
     static void saveDocument(String documentUrl, String destinationFile) throws IOException {
         if (!Migrate.suppressFileOutput) {
             try {
+                // Need to replace spaces with %20
+                documentUrl = documentUrl.replaceAll(" ","%20");
                 URL url = new URL(documentUrl);
 
                 URLConnection connection = url.openConnection();

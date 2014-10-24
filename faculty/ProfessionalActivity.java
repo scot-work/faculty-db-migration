@@ -17,7 +17,7 @@ public class ProfessionalActivity {
  * Return an HTML string
  * @return
  */
-	String toHTML(){
+	String toHTML() {
 		String result = "<li><strong>" + description + "</strong><br />";
 		if (Migrate.isValid(positionTitle)) {
 			result += positionTitle + ", ";

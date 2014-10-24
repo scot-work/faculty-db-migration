@@ -29,7 +29,7 @@ class Course {
      * @return Path for the course
      */
     String path() {
-        return "/" + faculty.handle() + "/courses/" + this.name;
+        return StringConstants.SITEROOT + faculty.handle() + "/courses/" + this.name;
     }
 
 
