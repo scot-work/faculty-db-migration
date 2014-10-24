@@ -35,6 +35,14 @@ class CustomPage {
 			}
 			result += "\n</ul>";
 		}
+		if (links.size() > 0) {
+			result += "\n<h3>Links</h3>";
+			result += "\n<ul>";
+			for (Link l : links){
+				result += l.toHTML();
+			}
+			result += "\n</ul>";
+		}
 		return result;
 	}
 

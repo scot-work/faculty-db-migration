@@ -358,8 +358,9 @@ public class Migrate {
             }
             if (rs.getInt("professional_services_active") == 0) {
                 currentFaculty.professionalActivityActive = false;
-
-            } 
+            } else {
+                currentFaculty.professionalActivityActive = true;
+            }
             if (rs.getInt("publications_active") == 0) {
                 currentFaculty.publicationsActive = false;
             } else {

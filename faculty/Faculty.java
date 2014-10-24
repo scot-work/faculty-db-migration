@@ -63,11 +63,12 @@ class Faculty {
      * @return Full name of the faculty 
      */
     String fullName() {
-        String result = firstName;
+        String result = lastName;
+        result += ", " + firstName;
         if (Migrate.isValid(middleName)){
             result += " " + middleName;
         }
-        result += " " + lastName;
+        
         return result;
     }
 
@@ -166,15 +167,17 @@ class Faculty {
                 || Migrate.isValid(publicationsText)) {
             publicationContent = ("<h2>" + fullName() + "</h2>"); 
             publicationContent += ("<h3>Publications &amp; Presentations</h3>");
-            publicationContent += ("<ul>");
+           
             if (useFormEntryForPublications && (publications.size() > 0)) {
+                publicationContent += ("<ul>");
                 for (Publication p : publications) {
                     publicationContent += p.getContentAsHtml();
                 }
+                publicationContent += ("</ul>");
             } else {
-                publicationContent += ("<li>" + publicationsText + "</li>");
+                publicationContent += (publicationsText);
             }
-            publicationContent += ("</ul>");
+            
         }
         XmlHelper.outputBasicFile(this, fullName() + " Publications", publicationContent, StringConstants.SITEROOT + this.handle() + "/publications/", publicationsActive);
 
@@ -203,7 +206,7 @@ class Faculty {
             professionalContent += pa.toHTML();
         }
         professionalContent += ("</ul>");
-        XmlHelper.outputBasicFile(this, "Professional &amp; Service Activity", professionalContent, StringConstants.SITEROOT + this.handle() + "/professional_service/", professionalActivityActive);
+        XmlHelper.outputBasicFile(this, "Professional & Service Activity", professionalContent, StringConstants.SITEROOT + this.handle() + "/professional_service/", professionalActivityActive);
         // Output empty sidenav
         XmlHelper.outputSidenav(StringConstants.SITEROOT + this.handle() + "/professional_service/" , "");
         

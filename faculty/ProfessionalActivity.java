@@ -18,12 +18,21 @@ public class ProfessionalActivity {
  * @return
  */
 	String toHTML() {
-		String result = "<li><strong>" + description + "</strong><br />";
+		String result = "<li>";
+		if (Migrate.isValid(title)) {
+			result += "<strong>" + title + "</strong><br />";
+		}	
 		if (Migrate.isValid(positionTitle)) {
 			result += positionTitle + ", ";
 		}
-		result += startYear + "-" + endYear;
-		result += "<p>Description: " + description + "</p></li>"; 
+		result += startYear + "-";
+		if (endYear > 0) { 
+			result += endYear;
+		}
+		if (Migrate.isValid(description)) {
+			result += "<p>Description: " + description + "</p>";
+		}	
+		result += "</li>"; 
 		return result;
 	}
 }
