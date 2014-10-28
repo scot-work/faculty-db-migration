@@ -46,6 +46,7 @@ public class Migrate {
 
         // Choose live.properties or dev.properties  
         InputStream stream = loader.getResourceAsStream("dev.properties");
+        // InputStream stream = loader.getResourceAsStream("live.properties");
         try {
             prop.load(stream);
         } catch (IOException e ) {
