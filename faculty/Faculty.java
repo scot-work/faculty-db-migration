@@ -124,7 +124,7 @@ class Faculty {
      * @return
      */
     String phone() {
-        if (Migrate.isValid(this.phone) && this.phone.length() == 9) {
+        if (Migrate.isValid(this.phone) && this.phone.length() == 10) {
         	String result = "(";
         	result += this.phone.substring(0, 3);
         	result += ") ";
