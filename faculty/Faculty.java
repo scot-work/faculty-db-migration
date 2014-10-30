@@ -183,7 +183,7 @@ class Faculty {
             }
             
         }
-        XmlHelper.outputBasicFile(this, "Publications", publicationContent, StringConstants.SITEROOT + this.handle() + "/publications/", publicationsActive);
+        XmlHelper.outputBasicFile(this, "Publications", publicationContent, StringConstants.SITEROOT + this.handle() + "/publications/", publicationsActive, "20");
 
         // Output empty sidenav
         XmlHelper.outputSidenav(StringConstants.SITEROOT + this.handle() + "/publications/", "");
@@ -197,7 +197,7 @@ class Faculty {
             researchContent += (r.getContentAsHtml());
         }
         researchContent += ("</ul>");
-        XmlHelper.outputBasicFile(this, "Research", researchContent, StringConstants.SITEROOT + this.handle() + "/research/", researchActive);
+        XmlHelper.outputBasicFile(this, "Research", researchContent, StringConstants.SITEROOT + this.handle() + "/research/", researchActive, "30");
         // Output empty sidenav
         XmlHelper.outputSidenav(StringConstants.SITEROOT + this.handle() + "/research/" , "");
 
@@ -210,7 +210,7 @@ class Faculty {
             professionalContent += pa.toHTML();
         }
         professionalContent += ("</ul>");
-        XmlHelper.outputBasicFile(this, "Professional and Service Activity", professionalContent, StringConstants.SITEROOT + this.handle() + "/professional_service/", professionalActivityActive);
+        XmlHelper.outputBasicFile(this, "Professional and Service Activity", professionalContent, StringConstants.SITEROOT + this.handle() + "/professional_service/", professionalActivityActive, "40");
         // Output empty sidenav
         XmlHelper.outputSidenav(StringConstants.SITEROOT + this.handle() + "/professional_service/" , "");
         
@@ -256,7 +256,7 @@ class Faculty {
                     System.out.println("Course not active: " + c.title);
                 }
             }
-            XmlHelper.outputBasicFile(this, "Courses", "<ul>" + courseList + "</ul>", StringConstants.SITEROOT + this.handle() + "/courses", true );
+            XmlHelper.outputBasicFile(this, "Courses", "<ul>" + courseList + "</ul>", StringConstants.SITEROOT + this.handle() + "/courses", true, "10" );
 
             // Output sidenav.inc
             XmlHelper.outputSidenav(StringConstants.SITEROOT + this.handle() + "/courses", courseList);

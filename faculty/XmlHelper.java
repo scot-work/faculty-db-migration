@@ -116,11 +116,15 @@ public class XmlHelper {
         return out;
     }
 
+    static void outputBasicFile(Faculty faculty, String title, String content, String path, Boolean active) {
+        outputBasicFile(faculty, title, content, path, active, "50");
+    }
+
     /**
      * Output a file based on the basic PCF template
      */
-    static void outputBasicFile(Faculty faculty, String title, String content, String path, Boolean active) {
-        Document doc = XmlHelper.getBasicOutline();
+    static void outputBasicFile(Faculty faculty, String title, String content, String path, Boolean active, String navOrder) {
+        Document doc = XmlHelper.getBasicOutline(navOrder);
 
         // Add title
         Text titleText = doc.createTextNode(title);
@@ -488,12 +492,17 @@ public class XmlHelper {
         return doc;
     }
 
+    static Document getBasicOutline() {
+        // Default position is 2
+        return getBasicOutline("50");
+    }
+
     /**
      * Create minimum viable XML content for the basic faculty file
      * <!DOCTYPE document SYSTEM "http://commons.omniupdate.com/dtd/standard.dtd">
      * @return
      */
-    static Document getBasicOutline() {
+    static Document getBasicOutline(String navOrder) {
         Document doc = null;
         try {
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -582,7 +591,7 @@ public class XmlHelper {
             navOrderParameter.setAttribute("group", "Everyone");
             navOrderParameter.setAttribute("prompt", "Nav Order");
             navOrderParameter.setAttribute("alt", "Enter a number from 1 to 99 to control the order in which a link to this page appears in either the main navigation menu or sidebar navigation menus. Optionally, leave it blank to keep the page off navigation menus.");
-            navOrderParameter.appendChild(doc.createTextNode("02"));
+            navOrderParameter.appendChild(doc.createTextNode(navOrder));
             configProperties.appendChild(navOrderParameter);
 
             document.appendChild(configProperties);
