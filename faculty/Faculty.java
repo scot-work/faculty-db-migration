@@ -115,6 +115,8 @@ class Faculty {
         String handle = "invalid";
         if (Migrate.isValid(sjsuEmail)) {
            handle = sjsuEmail.substring(0, sjsuEmail.lastIndexOf('@'));
+           // remove apostrophe
+           handle = handle.replace("'", "");
         } 
         return "/" + handle;
     }
@@ -160,7 +162,9 @@ class Faculty {
             return;
         }
 
+        // Output home page
         XmlHelper.outputProfilePage(this);
+
         // Output publications page
         String publicationContent = "";
         if ((useFormEntryForPublications && (publications.size() > 0)) 
@@ -233,14 +237,14 @@ class Faculty {
 
         // write sidenav.inc	
         String sidenav = "";
-        sidenav += coursesActive?"\n<li><a href=\"" + StringConstants.SITEROOT + "/" + this.handle() + "/" +  "courses/\">Courses" + "</a></li>":"";
-        sidenav += publicationsActive?"\n<li><a href=\"" + StringConstants.SITEROOT + "/" + this.handle() + "/" +  "publications/\">Publications &amp; Presentations" 
+        sidenav += coursesActive?"\n<li><a href=\"" + StringConstants.SITEROOT + this.handle() + "/" +  "courses/\">Courses" + "</a></li>":"";
+        sidenav += publicationsActive?"\n<li><a href=\"" + StringConstants.SITEROOT + this.handle() + "/" +  "publications/\">Publications &amp; Presentations" 
                 + "</a></li>":"";
-        sidenav += researchActive?"\n<li><a href=\"" + StringConstants.SITEROOT + "/" + this.handle() + "/" +  "research/\">Research &amp; Scholarly Activity" 
+        sidenav += researchActive?"\n<li><a href=\"" + StringConstants.SITEROOT + this.handle() + "/" +  "research/\">Research &amp; Scholarly Activity" 
                 + "</a></li>":"";
-        sidenav += professionalActivityActive?"\n<li><a href=\"" + StringConstants.SITEROOT + "/" + this.handle() + "/" +  "professional_service/\">Professional &amp; Service Activity" 
+        sidenav += professionalActivityActive?"\n<li><a href=\"" + StringConstants.SITEROOT + this.handle() + "/" +  "professional_service/\">Professional &amp; Service Activity" 
                 + "</a></li>":"";
-        XmlHelper.outputSidenav(StringConstants.SITEROOT + "/" + this.handle(), sidenav);
+        XmlHelper.outputSidenav(StringConstants.SITEROOT + this.handle(), sidenav);
 
         // Create list of course links
         if (courses.size() > 0) {
@@ -275,7 +279,7 @@ class Faculty {
      */
     public String photoUrl() {
         if (this.photoSetting == 2) {
-            return StringConstants.SITEROOT + handle() + "/" + handle() + ".jpg";
+            return StringConstants.SITEROOT + this.handle() + "/" + handle() + ".jpg";
         } else {
             return null;
         }

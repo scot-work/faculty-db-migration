@@ -209,15 +209,12 @@ public class Migrate {
         // Get list of all published faculty sites
         // PreparedStatement stmt = conn.prepareStatement(Queries.PublishedQuery);
         PreparedStatement stmt = conn.prepareStatement(Queries.FacultyListQuery);
+        // SELECT id, first_name, website_live FROM sjsu_people_details
         ResultSet rs = stmt.executeQuery();
         while (rs.next()) {
             // Create a new Faculty object and output pages
-            // Faculty faculty = new Faculty(rs.getInt("faculty_id"));
             Faculty faculty = new Faculty(rs.getInt("id"));
-            // faculty.lastName = rs.getString("last_name");
             faculty.firstName = rs.getString("first_name");
-            // faculty.handle = rs.getString("handle");
-            // faculty.handle = rs.getString("published_handle");
             faculty.isActive = (rs.getInt("website_live") == 1);
             processFacultySite(conn, faculty);
             faculty.output(); 
@@ -653,7 +650,8 @@ public class Migrate {
                     //        + rs.getString("path").URLEncoder.encode(substring(rs.getString("path").lastIndexOf('/') + 1), "UTF-8"));
                     documents.add(d);
                     String sourceURL = liveSiteBaseDir + d.url;
-                    String destURL = outputDirectory + d.url;
+                    // Save document without illegal characters
+                    String destURL = outputDirectory + d.legalURL();
                     try {
                        saveDocument(sourceURL, destURL);
                     } catch(java.io.IOException e) {
@@ -700,12 +698,12 @@ public class Migrate {
      * @param destinationFile
      * @throws IOException
      */
-    static void saveDocument(String documentUrl, String destinationFile) throws IOException {
+    static void saveDocument(String currentURL, String destinationFile) throws IOException {
         if (!Migrate.suppressFileOutput) {
             try {
                 // Need to replace spaces with %20
-                documentUrl = documentUrl.replaceAll(" ","%20");
-                URL url = new URL(documentUrl);
+                currentURL = currentURL.replaceAll(" ","%20");
+                URL url = new URL(currentURL);
 
                 URLConnection connection = url.openConnection();
                 connection.connect();
@@ -713,9 +711,9 @@ public class Migrate {
                 if (connection instanceof HttpURLConnection) {
                     HttpURLConnection httpConnection = (HttpURLConnection) connection;
                     if (httpConnection.getResponseCode() == 404) {
-                        System.out.println("Incorrect URL (404): " + documentUrl);
+                        System.out.println("Incorrect URL (404): " + currentURL);
                     } else {
-                        System.out.println("Downloading: " + documentUrl);
+                        System.out.println("Downloading: " + currentURL);
                         InputStream is = url.openStream();
                         String dir = destinationFile.substring(0, destinationFile.lastIndexOf('/'));
                         // Create local directories to write to
@@ -731,7 +729,7 @@ public class Migrate {
                     }
                 }
             } catch (java.io.FileNotFoundException fnfe){
-                System.out.println("Failed to download " + documentUrl);
+                System.out.println("Failed to download " + currentURL);
             }
         }
     }
