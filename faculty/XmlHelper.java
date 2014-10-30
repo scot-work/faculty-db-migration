@@ -26,7 +26,6 @@ import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
-//import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;
@@ -386,20 +385,18 @@ public class XmlHelper {
             workingTitleMulti.setAttribute("alt", "What are your working titles and which departments do you work in?");
             titleDiv.appendChild(workingTitleMulti);
             profile.appendChild(titleDiv);
-
-            // Additional Information
-            Element additionalInfoDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
-            additionalInfoDiv.setAttribute("label", "additionalinfo");
-            additionalInfoDiv.setAttribute("group", "Everyone");
-            additionalInfoDiv.setAttribute("button", "hide");
-            Element additionalInfoMulti = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
+            
+           
+           /* Element additionalInfoMulti = doc.createElementNS(StringConstants.NAMESPACE, "ouc:multiedit");
             additionalInfoMulti.setAttribute("type", "text");
             additionalInfoMulti.setAttribute("prompt", "Additional Info");
             additionalInfoMulti.setAttribute("alt", "Any additional info you want to share?");
             additionalInfoDiv.appendChild(additionalInfoMulti);
-            profile.appendChild(additionalInfoDiv);
+            */
+            // profile.appendChild(additionalInfoDiv);
 
             // Additional Info Label
+            /*
             Element additionalInfoTitleDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
             additionalInfoTitleDiv.setAttribute("label", "additionalinfotitle");
             additionalInfoTitleDiv.setAttribute("group", "Everyone");
@@ -408,10 +405,27 @@ public class XmlHelper {
             additionalInfoTitleMulti.setAttribute("type", "text");
             additionalInfoTitleMulti.setAttribute("prompt", "Custom Title");
             additionalInfoTitleMulti.setAttribute("alt", "Enter a custom title for your Additional Info (default just says 'Additional Info')");
-            additionalInfoTitleDiv.appendChild(additionalInfoTitleMulti);
-            profile.appendChild(additionalInfoTitleDiv);
+            additionalInfoTitleDiv.appendChild(additionalInfoTitleMulti); */
+
+             // Additional Information
+            Element additionalInfoDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
+            additionalInfoDiv.setAttribute("label", "addlinfo");
+            additionalInfoDiv.setAttribute("group", "Everyone");
+            additionalInfoDiv.setAttribute("button-class", "oucEditButton");
+            additionalInfoDiv.setAttribute("button-text", "Edit Additional Info");
+            additionalInfoDiv.setAttribute("break", "break");
+
+            Element additionalInfoEditor = doc.createElementNS(StringConstants.NAMESPACE,"ouc:editor");
+            additionalInfoEditor.setAttribute("cssspath", "/_resources/ou/editor/sjsu-wysiwyg.css");
+            additionalInfoEditor.setAttribute("csssmenu", "/_resources/ou/editor/content.txt");
+            additionalInfoEditor.setAttribute("width", "1040");
+            additionalInfoEditor.setAttribute("wysiwyg-class", "addlinfo");
+
+            additionalInfoDiv.appendChild(additionalInfoEditor);
+            
 
             document.appendChild(profile);
+            document.appendChild(additionalInfoDiv);
 
             // Education
             Element educationDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
@@ -584,8 +598,8 @@ public class XmlHelper {
 
             Element photoMulti = doc.createElementNS(StringConstants.NAMESPACE,"ouc:multiedit");
             photoMulti.setAttribute("type","image");
-            photoMulti.setAttribute("prompt","Profle Photo");
-            photoMulti.setAttribute("alt","Do you want to share a photo? (Max width 138 pixels)");
+            photoMulti.setAttribute("prompt","Image or Photo");
+            photoMulti.setAttribute("alt","Do you want to add an image or a photo? (Max width 138 pixels)");
 
             photoDiv.appendChild(photoMulti);
             profile.appendChild(photoDiv);
@@ -681,13 +695,14 @@ public class XmlHelper {
 
          // Additional Info
          if (Migrate.isValid(faculty.additionalInfo)){
-         Element additionalInfoDiv = getElementByAttribute(doc, "//*[@label='additionalinfo']");
+         Element additionalInfoDiv = getElementByAttribute(doc, "//*[@label='addlinfo']");
          additionalInfoDiv.appendChild(doc.createCDATASection(faculty.additionalInfo()));
         }
 
          // Info Title
+         /*
          Element additionalInfoTitleDiv = getElementByAttribute(doc, "//*[@label='additionalinfotitle']");
-         additionalInfoTitleDiv.appendChild(doc.createCDATASection("Additional Information"));
+         additionalInfoTitleDiv.appendChild(doc.createCDATASection("Additional Information")); */
 
          // Education
          if (Migrate.isValid(faculty.education.output())){

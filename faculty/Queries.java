@@ -118,4 +118,9 @@ class Queries {
 	// Get experts data
 	public static String GetExpertsData = "SELECT * FROM sjsu_experts_published " +
 			"WHERE faculty_id=?";
+
+	// Get one user based on email
+	public static String GetUserByEmail = "SELECT spdm.first_name, spu.faculty_id"
+			+ " FROM sjsu_people_details_master spdm, sjsu_people_users spu"
+			+ " WHERE spdm.towerid = spu.towerid AND spdm.email_addr=?";
 }

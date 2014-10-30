@@ -228,8 +228,8 @@ class Faculty {
         // save photo
         if (photoSetting == 2) {
             try {
-                Migrate.saveDocument(Migrate.liveSiteBaseDir + StringConstants.SITEROOT + handle() + "/" + handle() + ".jpg", 
-                        Migrate.outputDirectory + StringConstants.SITEROOT + handle() + "/" + handle() + ".jpg");
+                Migrate.saveDocument(Migrate.liveSiteBaseDir + StringConstants.SITEROOT + handle() + handle() + ".jpg", 
+                        Migrate.outputDirectory + StringConstants.SITEROOT + handle() + handle() + ".jpg");
             } catch (IOException e){
                 e.printStackTrace();
             }
@@ -279,7 +279,7 @@ class Faculty {
      */
     public String photoUrl() {
         if (this.photoSetting == 2) {
-            return StringConstants.SITEROOT + this.handle() + "/" + handle() + ".jpg";
+            return StringConstants.SITEROOT + this.handle() + handle() + ".jpg";
         } else {
             return null;
         }

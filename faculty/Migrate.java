@@ -23,8 +23,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-
-
 /**
  * 
  * @author Scot Close
@@ -34,6 +32,7 @@ public class Migrate {
 
     public static String outputDirectory;
     public static String liveSiteBaseDir;
+    // Set to true to process faculty without outputting any files
     static Boolean suppressFileOutput = false;
 
     /**
@@ -76,10 +75,49 @@ public class Migrate {
                     e.printStackTrace();
                 }
                 // Output outline files for testing
-            } else if  (args[0].equals("pcf")){
+            } else if  (args[0].equals("pcf")) {
                 outputEmptyPcfs();
-            } 
+            } else {
+                try {
+                    processIndividualFaculty(prop, args[0]);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+    }
+
+    /**
+    * Process one faculty based on email address
+    */
+    private static void processIndividualFaculty(Properties prop, String name) throws java.sql.SQLException {
+        System.out.println("Processing single faculty: " + name);
+        Connection conn = null;
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            conn = DriverManager.getConnection(prop.getProperty("ConnectionString"));
+        } catch (SQLException ex) {
+            System.out.println("SQLException: " + ex.getMessage());
+            System.out.println("SQLState: " + ex.getSQLState());
+            System.out.println("VendorError: " + ex.getErrorCode());
+        }
+        PreparedStatement stmt = conn.prepareStatement(Queries.GetUserByEmail);
+        stmt.setString(1, name);
+        ResultSet rs = stmt.executeQuery();
+        Faculty faculty = null;
+        while (rs.next()) {
+            faculty = new Faculty(rs.getInt("faculty_id"));
+            faculty.firstName = rs.getString("first_name");
+        }
+        rs.close();
+        stmt.close();
+        processFacultySite(conn, faculty);
+        faculty.output(); 
+        conn.close();
     }
 
     /**
@@ -215,14 +253,13 @@ public class Migrate {
             // Create a new Faculty object and output pages
             Faculty faculty = new Faculty(rs.getInt("id"));
             faculty.firstName = rs.getString("first_name");
-            faculty.isActive = (rs.getInt("website_live") == 1);
+            // faculty.isActive = (rs.getInt("website_live") == 1);
             processFacultySite(conn, faculty);
             faculty.output(); 
         }
         rs.close();
         stmt.close();
         conn.close();
-
     }
 
     /**
@@ -276,6 +313,7 @@ public class Migrate {
         stmt.setInt(1, currentFaculty.facultyID);
         rs = stmt.executeQuery();
         while(rs.next()) {
+            currentFaculty.isActive = (rs.getInt("website_live") == 1);
             currentFaculty.additionalInfo = rs.getString("additional_info");
             currentFaculty.officeHours = rs.getString("office_hours");
             currentFaculty.bio = rs.getString("bio");
@@ -293,7 +331,6 @@ public class Migrate {
             
             // This is the preferred middle name
             // Need to allow empty middle name
-            // if (isValid(rs.getString("middle_name")) && rs.getInt("middle_name_preferred") == 1) {
             if (rs.getInt("middle_name_preferred") == 1 ) {
                 currentFaculty.middleName = rs.getString("middle_name");
             }
@@ -305,7 +342,6 @@ public class Migrate {
             currentFaculty.alternateEmailPreferred = rs.getInt("first_name_preferred") == 1;
             
             currentFaculty.titles = rs.getString("titles");
-            //currentFaculty.handle = rs.getString("published_handle");
             currentFaculty.useFormEntryForPublications = (rs.getInt("publications_use_form_entry") == 1)? true : false;
             if (!(currentFaculty.useFormEntryForPublications)) {
                 currentFaculty.publicationsText = rs.getString("publications_freeform");
