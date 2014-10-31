@@ -32,6 +32,9 @@ class Course {
         return StringConstants.SITEROOT + faculty.handle() + "/courses/" + this.name;
     }
 
+    String photoURL() {
+        return path() + "/" + name + ".jpg";
+    }
 
     /**
      * Output this course as an XML (pcf) file
@@ -46,8 +49,8 @@ class Course {
      */
     String getContentAsHtml() {
         String content = "<h2>" + title + "</h2>";
-        content += "<img src=\"" + url() +  "/" + name + ".jpg\" alt=\"" + photoDescription + "\"/>";
-
+        // Put the image in the PCF 
+        // content += "<img src=\"" + url() +  "/" + name + ".jpg\" alt=\"" + photoDescription + "\"/>";
         // time
         content += ("<p><strong>Time:</strong> " + dayAndTime + " </p>");
         // location
@@ -68,7 +71,7 @@ class Course {
      * @return URL
      */
     String url() {
-        return "/people/" + faculty.handle() + "/courses/" + name;
+        return StringConstants.SITEROOT + faculty.handle() + "/courses/" + name;
     }
 
 }

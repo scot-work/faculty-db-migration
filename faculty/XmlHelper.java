@@ -27,7 +27,9 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.ProcessingInstruction;
 import org.w3c.dom.Text;
 
@@ -117,13 +119,17 @@ public class XmlHelper {
     }
 
     static void outputBasicFile(Faculty faculty, String title, String content, String path, Boolean active) {
-        outputBasicFile(faculty, title, content, path, active, "50");
+        outputBasicFile(faculty, title, content, path, active, "50", "", "");
+    }
+
+    static void outputBasicFile(Faculty faculty, String title, String content, String path, Boolean active, String navOrder) {
+        outputBasicFile(faculty, title, content, path, active, navOrder, "", "");
     }
 
     /**
      * Output a file based on the basic PCF template
      */
-    static void outputBasicFile(Faculty faculty, String title, String content, String path, Boolean active, String navOrder) {
+    static void outputBasicFile(Faculty faculty, String title, String content, String path, Boolean active, String navOrder, String imgSrc, String imgAlt) {
         Document doc = XmlHelper.getBasicOutline(navOrder);
 
         // Add title
@@ -135,10 +141,17 @@ public class XmlHelper {
         Element maincontentDiv = getElementByAttribute(doc, "//*[@label='maincontent']");
         maincontentDiv.appendChild(doc.createCDATASection(content));
 
-        if (!active){
-            Element hide = XmlHelper.getElementByAttribute(doc, "//*[@value='true']");
+        // Set hide checkbox if not active
+        Element hide = getElementByAttribute(doc, "//*[@value='true']");
+        if (!active) {
             hide.setAttribute("selected", "true");
         }
+
+        // insert image if any
+        // I don't know why this isn't working. If I replace imgSrc and imgAlt with literal strings, it works. Weird.
+        Element img = (Element) (doc.getElementsByTagName("img")).item(0);
+        img.setAttribute("src", imgSrc);
+        img.setAttribute("alt", imgAlt);
 
         // convert XML to a String
         String xml = XmlHelper.getStringFromDoc(doc);
@@ -492,10 +505,10 @@ public class XmlHelper {
         return doc;
     }
 
-    static Document getBasicOutline() {
+    /* static Document getBasicOutlinex() {
         // Default position is 2
         return getBasicOutline("50");
-    }
+    } */
 
     /**
      * Create minimum viable XML content for the basic faculty file
@@ -611,6 +624,11 @@ public class XmlHelper {
             photoMulti.setAttribute("alt","Do you want to add an image or a photo? (Max width 138 pixels)");
 
             photoDiv.appendChild(photoMulti);
+            // photoDiv.appendChild(doc.createCDATASection("<img src=\"\" alt=\"\" />"));
+            Element imgTag = doc.createElement("img");
+            //imgTag.setAttribute("src", "");
+            //imgTag.setAttribute("alt", "");
+            photoDiv.appendChild(imgTag);
             profile.appendChild(photoDiv);
             document.appendChild(profile);
 
@@ -697,9 +715,12 @@ public class XmlHelper {
         }
 
          // Title(s) and Department(s)
-         if (Migrate.isValid(faculty.titles)){
+         if (Migrate.isValid(faculty.jobTitles())){
          Element titleDiv = getElementByAttribute(doc, "//*[@label='titledepartment']");
          titleDiv.appendChild(doc.createCDATASection(faculty.jobTitles()));
+         System.out.println("Writing working title for " + faculty.fullName() + ": " + faculty.jobTitles());
+        } else {
+            System.out.println("Invalid working title: " + faculty.jobTitles());
         }
 
          // Additional Info

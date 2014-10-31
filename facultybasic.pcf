@@ -17,20 +17,27 @@
     
     <parameter name="pagetype">facultybasic</parameter>
     <parameter name="layout">
-    <option value="1col" selected="true">One Column</option>
+        <option value="1col" selected="true">One Column</option>
     </parameter>
     
     <ouc:properties label="config">
-        <parameter name="photo" group="Everyone" type="filechooser" prompt="Default Photo" alt="Choose a default image to show for the page.">http://www.sjsu.edu/_resources/img/sjsu-spartan.jpg</parameter>
-        <parameter name="hide" group="Everyone" type="radio" prompt="Hide Page?" alt="Prevent the page from pulishing and hide it from navigation menus and index pages.">
-            <option value="true" selected="false">Disable the page</option>
-            <option value="false" selected="true">Publish the page</option>
-        </parameter>
+    <parameter alt="Prevent the page from publishing and hide it from navigation menus and index pages." group="Everyone" name="hide" prompt="Hide Page?" type="checkbox">
+        <option selected="false" value="true">Hide this page</option>
+    </parameter>
         <parameter name="nav_order" group="Everyone" prompt="Nav Order" alt="Enter a number from 1 to 99 to control the order in which a link to this page appears in either the main navigation menu or sidebar navigation menus. Optionally, leave it blank to keep the page off navigation menus.">02</parameter>
     </ouc:properties>
     
+    <profile>
+        <ouc:div button="hide" group="Everyone" label="photo">
+            <ouc:multiedit type="image" prompt="Image or Photo" alt="Do you want to add an image or a photo? (Max width 138 pixels)"/>
+            <img src="http://dev.sjsu.edu/_resources/img/sjsu-spartan.jpg" alt="Spartan"/>
+        </ouc:div>  
+    </profile>
+    
     <ouc:div label="maincontent" group="Everyone" button-class="oucEditButton" button-text="Edit Content" break="break">
-    <ouc:editor csspath="/_resources/ou/editor/sjsu-wysiwyg.css" cssmenu="/_resources/ou/editor/styles.txt" width="1040" wysiwyg-class="maincontent"/>
+        <ouc:editor csspath="/_resources/ou/editor/sjsu-wysiwyg.css" cssmenu="/_resources/ou/editor/content.txt" width="1040" wysiwyg-class="maincontent"/>
+        <h3>
+            Stuff
+        </h3>
     </ouc:div>
-
 </document>

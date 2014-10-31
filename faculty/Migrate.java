@@ -115,8 +115,13 @@ public class Migrate {
         }
         rs.close();
         stmt.close();
-        processFacultySite(conn, faculty);
-        faculty.output(); 
+        if (faculty == null) {
+            System.out.println("Faculty " + name + " not found.");
+
+        } else {
+            processFacultySite(conn, faculty);
+            faculty.output(); 
+        }
         conn.close();
     }
 
