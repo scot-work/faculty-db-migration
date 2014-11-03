@@ -48,9 +48,8 @@ class Course {
      * @return
      */
     String getContentAsHtml() {
-        String content = "<h2>" + title + "</h2>";
-        // Put the image in the PCF 
-        // content += "<img src=\"" + url() +  "/" + name + ".jpg\" alt=\"" + photoDescription + "\"/>";
+        // String content = "<h2>" + title + "</h2>";
+        String content = "";
         // time
         content += ("<p><strong>Time:</strong> " + dayAndTime + " </p>");
         // location

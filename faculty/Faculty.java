@@ -265,8 +265,9 @@ class Faculty {
         for (Course c : courses) {
             if (c.photoSetting == 2) {
                 XmlHelper.outputBasicFile(c.faculty, c.title, c.getContentAsHtml(), c.path(), c.active, "10", c.photoURL(), c.photoDescription);
+            } else {
+                XmlHelper.outputBasicFile(c.faculty, c.title, c.getContentAsHtml(), c.path(), c.active, "10", "", "");
             }
-            XmlHelper.outputBasicFile(c.faculty, c.title, c.getContentAsHtml(), c.path(), c.active);
 
             // Output empty sidenav
             XmlHelper.outputSidenav(c.path(), "");

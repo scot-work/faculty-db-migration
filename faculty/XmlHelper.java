@@ -148,7 +148,6 @@ public class XmlHelper {
         }
 
         // insert image if any
-        // I don't know why this isn't working. If I replace imgSrc and imgAlt with literal strings, it works. Weird.
         Element img = (Element) (doc.getElementsByTagName("img")).item(0);
         img.setAttribute("src", imgSrc);
         img.setAttribute("alt", imgAlt);
