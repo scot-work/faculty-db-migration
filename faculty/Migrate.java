@@ -186,7 +186,7 @@ public class Migrate {
                 root.appendChild(expert.createXml(doc));
             }
             System.out.println(XmlHelper.getStringFromDoc(doc));
-        } catch(ParserConfigurationException pce){
+        } catch(ParserConfigurationException pce) {
             pce.printStackTrace();
         }
         rs.close();
@@ -274,7 +274,6 @@ public class Migrate {
      * @throws java.sql.SQLException
      */
     static void processFacultySite(Connection conn, Faculty currentFaculty) throws java.sql.SQLException {
-
         // Get SJSU ID from Faculty ID
         PreparedStatement stmt = conn.prepareStatement(Queries.TowerIDQuery);
         // SELECT towerid FROM sjsu_people_users WHERE faculty_id=?";
@@ -312,6 +311,8 @@ public class Migrate {
         rs.close();
         stmt.close();
         
+        System.out.println("\nStarting " + currentFaculty.fullName());
+
         // Self-entered information
         stmt = conn.prepareStatement(Queries.DetailsQuery);
         // SELECT * FROM sjsu_people_details WHERE id=?

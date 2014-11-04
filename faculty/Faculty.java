@@ -183,7 +183,7 @@ class Faculty {
             }
             
         }
-        XmlHelper.outputBasicFile(this, "Publications", publicationContent, StringConstants.SITEROOT + this.handle() + "/publications/", publicationsActive, "20");
+        XmlHelper.outputBasicFile(this, "Publications & Presentations", publicationContent, StringConstants.SITEROOT + this.handle() + "/publications/", publicationsActive, "20");
 
         // Output empty sidenav
         XmlHelper.outputSidenav(StringConstants.SITEROOT + this.handle() + "/publications/", "");
@@ -197,7 +197,7 @@ class Faculty {
             researchContent += (r.getContentAsHtml());
         }
         researchContent += ("</ul>");
-        XmlHelper.outputBasicFile(this, "Research", researchContent, StringConstants.SITEROOT + this.handle() + "/research/", researchActive, "30");
+        XmlHelper.outputBasicFile(this, "Research & Scholarly Activity", researchContent, StringConstants.SITEROOT + this.handle() + "/research/", researchActive, "30");
         // Output empty sidenav
         XmlHelper.outputSidenav(StringConstants.SITEROOT + this.handle() + "/research/" , "");
 
@@ -210,7 +210,7 @@ class Faculty {
             professionalContent += pa.toHTML();
         }
         professionalContent += ("</ul>");
-        XmlHelper.outputBasicFile(this, "Professional and Service Activity", professionalContent, StringConstants.SITEROOT + this.handle() + "/professional_service/", professionalActivityActive, "40");
+        XmlHelper.outputBasicFile(this, "Professional & Service Activity", professionalContent, StringConstants.SITEROOT + this.handle() + "/professional_service/", professionalActivityActive, "40");
         // Output empty sidenav
         XmlHelper.outputSidenav(StringConstants.SITEROOT + this.handle() + "/professional_service/" , "");
         

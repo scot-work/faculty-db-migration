@@ -36,7 +36,7 @@ import org.w3c.dom.Text;
 
 public class XmlHelper {
 
-    protected static final String DEFAULT_PHOTO = "http://www.sjsu.edu/_resources/img/sjsu-spartan.jpg";
+    protected static final String DEFAULT_PHOTO = "";
     protected static final String CSS_MENU = "/_resources/ou/editor/styles.txt";
     protected static final String CSS_PATH = "/_resources/editor/sjsu-wysiwyg.css";
 
@@ -662,7 +662,6 @@ public class XmlHelper {
 
         NodeList hide = XmlHelper.getElementsByAttribute(doc, "//*[@name='hide']/*");
         if (faculty.isActive) {
-            System.out.println("Writing " + faculty.fullName() + "\n");
             ((Element) hide.item(0)).setAttribute("selected", "false");
         } else {
             System.out.println("Inactive Faculty " + faculty.fullName() + "\n");
@@ -684,48 +683,46 @@ public class XmlHelper {
          }
 
          // Email
-         if (Migrate.isValid(faculty.sjsuEmail)){
-         Element emailDiv = getElementByAttribute(doc, "//*[@label='preferredemail']");
-         emailDiv.appendChild(doc.createTextNode(faculty.sjsuEmail));
+         if (Migrate.isValid(faculty.sjsuEmail)) {
+             Element emailDiv = getElementByAttribute(doc, "//*[@label='preferredemail']");
+             emailDiv.appendChild(doc.createTextNode(faculty.sjsuEmail));
         }
 
          // Alternate Email
-         if (Migrate.isValid(faculty.alternateEmail)){
-         Element altEmailDiv = getElementByAttribute(doc, "//*[@label='alternateemail']");
-         altEmailDiv.appendChild(doc.createTextNode(faculty.alternateEmail));
+         if (Migrate.isValid(faculty.alternateEmail)) {
+             Element altEmailDiv = getElementByAttribute(doc, "//*[@label='alternateemail']");
+             altEmailDiv.appendChild(doc.createTextNode(faculty.alternateEmail));
         }
 
          // Phone
-         if (Migrate.isValid(faculty.phone())){
-         Element phoneDiv = getElementByAttribute(doc, "//*[@label='preferredphone']");
-         phoneDiv.appendChild(doc.createTextNode(faculty.phone()));
+         if (Migrate.isValid(faculty.phone())) {
+             Element phoneDiv = getElementByAttribute(doc, "//*[@label='preferredphone']");
+             phoneDiv.appendChild(doc.createTextNode(faculty.phone()));
         }
 
          // Alternate Phone
-         if (Migrate.isValid(faculty.alternatePhone)){
-         Element altPhoneDiv = getElementByAttribute(doc, "//*[@label='alternatephone']");
-         altPhoneDiv.appendChild(doc.createTextNode(faculty.alternatePhone));
+         if (Migrate.isValid(faculty.alternatePhone)) {
+             Element altPhoneDiv = getElementByAttribute(doc, "//*[@label='alternatephone']");
+             altPhoneDiv.appendChild(doc.createTextNode(faculty.alternatePhone));
         }
 
          // Office Hours
-         if (Migrate.isValid(faculty.officeHours)){
-         Element officeHoursDiv = getElementByAttribute(doc, "//*[@label='officehours']");
-         officeHoursDiv.appendChild(doc.createTextNode(faculty.officeHours));
+         if (Migrate.isValid(faculty.officeHours)) {
+             Element officeHoursDiv = getElementByAttribute(doc, "//*[@label='officehours']");
+             officeHoursDiv.appendChild(doc.createTextNode(faculty.officeHours));
         }
-
-         // Title(s) and Department(s)
-         if (Migrate.isValid(faculty.jobTitles())){
-         Element titleDiv = getElementByAttribute(doc, "//*[@label='titledepartment']");
-         titleDiv.appendChild(doc.createCDATASection(faculty.jobTitles()));
-         System.out.println("Writing working title for " + faculty.fullName() + ": " + faculty.jobTitles());
+            // Title(s) and Department(s)
+            if (Migrate.isValid(faculty.jobTitles())){
+            Element titleDiv = getElementByAttribute(doc, "//*[@label='titledepartment']");
+            titleDiv.appendChild(doc.createCDATASection(faculty.jobTitles()));
         } else {
             System.out.println("Invalid working title: " + faculty.jobTitles());
         }
 
          // Additional Info
-         if (Migrate.isValid(faculty.additionalInfo)){
-         Element additionalInfoDiv = getElementByAttribute(doc, "//*[@label='addlinfo']");
-         additionalInfoDiv.appendChild(doc.createCDATASection(faculty.additionalInfo()));
+         if (Migrate.isValid(faculty.additionalInfo)) {
+             Element additionalInfoDiv = getElementByAttribute(doc, "//*[@label='addlinfo']");
+             additionalInfoDiv.appendChild(doc.createCDATASection(faculty.additionalInfo()));
         }
 
          // Info Title
@@ -734,27 +731,27 @@ public class XmlHelper {
          additionalInfoTitleDiv.appendChild(doc.createCDATASection("Additional Information")); */
 
          // Education
-         if (Migrate.isValid(faculty.education.output())){
-         Element educationDiv = getElementByAttribute(doc, "//*[@label='eduinfo']");
-         educationDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.education.output()));
+         if (Migrate.isValid(faculty.education.output())) {
+             Element educationDiv = getElementByAttribute(doc, "//*[@label='eduinfo']");
+             educationDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.education.output()));
         }
 
          // Licenses
-         if (Migrate.isValid(faculty.licenses.toString())){
-         Element licensesDiv = getElementByAttribute(doc, "//*[@label='licenses']");
-         licensesDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.licenses()));
+         if (Migrate.isValid(faculty.licenses.toString())) {
+             Element licensesDiv = getElementByAttribute(doc, "//*[@label='licenses']");
+             licensesDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.licenses()));
         }
 
          // Bio
-         if (Migrate.isValid(faculty.bio)){
-         Element bioDiv = getElementByAttribute(doc, "//*[@label='bioinfo']");
-         bioDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.bio));
+         if (Migrate.isValid(faculty.bio)) {
+             Element bioDiv = getElementByAttribute(doc, "//*[@label='bioinfo']");
+             bioDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.bio));
         }
 
          // Links
-         if (Migrate.isValid(faculty.links())){
-         Element linksDiv = getElementByAttribute(doc, "//*[@label='links']");
-         linksDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.links()));
+         if (Migrate.isValid(faculty.links())) {
+             Element linksDiv = getElementByAttribute(doc, "//*[@label='links']");
+             linksDiv.getChildNodes().item(0).appendChild(doc.createCDATASection(faculty.links()));
         }
 
          String path = StringConstants.SITEROOT + faculty.handle();
