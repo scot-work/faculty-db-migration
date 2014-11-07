@@ -44,8 +44,8 @@ public class Migrate {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
         // Choose live.properties or dev.properties  
-        InputStream stream = loader.getResourceAsStream("dev.properties");
-        // InputStream stream = loader.getResourceAsStream("live.properties");
+        // InputStream stream = loader.getResourceAsStream("dev.properties");
+        InputStream stream = loader.getResourceAsStream("live.properties");
         try {
             prop.load(stream);
         } catch (IOException e ) {

@@ -35,7 +35,7 @@ public class Publication {
 			result += authors + ". ";
 		}
 		if (Migrate.isValid(title)) {
-			result += "&quot;" + title + ",&quot; ";
+			result += "\"" + title + "\" ";
 		}
 		if (Migrate.isValid(publisher)) {
 			result += publisher + ". ";
