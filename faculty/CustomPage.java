@@ -25,7 +25,7 @@ class CustomPage {
 	 * @return
 	 */
 	String getContentAsHtml() {
-		String result = "\n<h2>" + title + "</h2>";
+		String result = "";
 		result += "\n<p>" + content + "</p>";
 		if (documents.size() > 0) {
 			result += "\n<h3>Documents</h3>";

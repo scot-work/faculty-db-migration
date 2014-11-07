@@ -38,30 +38,32 @@ String url() {
 * @return HTML string
 */
  String toHTML() {
-		String result = "\n";
-		// result += "<p>Debug: position is: " + String.valueOf(position) + "</p>";
-	if (Migrate.isValid(name)){
-		result += "<h2>" + name + "</h2>";
-	}
-	if (Migrate.isValid(description)){
-		result += "<p>" + description + "</p>";
-	}
-	if (docs.size() > 0) {
-		result += "<h3>Documents</h3><ul>";
-		for (Doc d : docs){
-			//result += "\n" + d.label + ", " + d.url;
-			result += d.toHTML();
+	String result = "\n";
+	// Don't output an empty heading
+	if (Migrate.isValid(description) || docs.size() > 0 || links.size() > 0) {
+		if (Migrate.isValid(name)){
+			result += "<h2>" + name + "</h2>";
 		}
-		result += "</ul>";
-	}
-	if (links.size() > 0) {
-		result += "<h3>Links</h3><ul>";
-		for (Link l : links){
-			//result += "\n" + l.label + ", " + l.url;
-			result += l.toHTML();
+		if (Migrate.isValid(description)){
+			result += "<p>" + description + "</p>";
 		}
-		result += "</ul>";
-	}
+		if (docs.size() > 0) {
+			result += "<h3>Documents</h3><ul>";
+			for (Doc d : docs){
+				//result += "\n" + d.label + ", " + d.url;
+				result += d.toHTML();
+			}
+			result += "</ul>";
+		}
+		if (links.size() > 0) {
+			result += "<h3>Links</h3><ul>";
+			for (Link l : links){
+				//result += "\n" + l.label + ", " + l.url;
+				result += l.toHTML();
+			}
+			result += "</ul>";
+		}
+}
 	return result;
 }
 

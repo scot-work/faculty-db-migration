@@ -3,6 +3,7 @@ package faculty;
 class Doc {
 	String label;
 	String url;
+	String localPath;
 
 	/**
 	 * Create a new Document object

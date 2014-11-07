@@ -51,13 +51,21 @@ class Course {
         // String content = "<h2>" + title + "</h2>";
         String content = "";
         // time
-        content += ("<p><strong>Time:</strong> " + dayAndTime + " </p>");
+        if (Migrate.isValid(dayAndTime)) {
+           content += ("<p><strong>Time:</strong> " + dayAndTime + " </p>");
+        }
         // location
-        content += ("<p><strong>Location:</strong> " + location + " </p>");
+        if (Migrate.isValid(location)) {
+            content += ("<p><strong>Location:</strong> " + location + " </p>");
+        }   
         // Supplemental URL
-        content += ("<p><strong>Supplemental URL:</strong> <a href=\"" + supplementalUrl + "\">" + supplementalUrl + "</a></p>");
-        content += ("<h2>Description</h2>");
-        content += ("<p>" + description + "</p>");
+        if (Migrate.isValid(supplementalUrl)) {
+            content += ("<p><strong>Supplemental URL:</strong> <a href=\"" + supplementalUrl + "\">" + supplementalUrl + "</a></p>");
+        }
+        if (Migrate.isValid(description)) {
+            content += ("<h2>Description</h2>");
+            content += ("<p>" + description + "</p>");
+        }
         for (Section s : sections){
             content += (s.toHTML());
         }

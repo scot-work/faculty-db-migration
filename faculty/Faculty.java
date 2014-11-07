@@ -190,7 +190,7 @@ class Faculty {
 
         // Output research page
         String researchContent = "";
-        researchContent += ("<h2>" + fullName() + "</h2>"); 
+        //researchContent += ("<h2>" + fullName() + "</h2>"); 
         researchContent += ("\n<h3>Research &amp; Scholarly Activity</h3>");
         researchContent += ("\n<ul>");
         for (Research r : research) {
@@ -203,7 +203,7 @@ class Faculty {
 
         // Output professional and service activities page
         String professionalContent = "";
-        professionalContent += ("<h2>" + fullName() + "</h2>"); 
+        //professionalContent += ("<h2>" + fullName() + "</h2>"); 
         professionalContent += ("\n<h3>Professional &amp; Service Activity</h3>");
         professionalContent += ("\n<ul>");
         for (ProfessionalActivity pa : professionalActivities) {
@@ -219,7 +219,7 @@ class Faculty {
         String customContent = "";
         for (CustomPage cp : customPages) {
             customContent = cp.getContentAsHtml();
-            XmlHelper.outputBasicFile(this, cp.name, customContent, StringConstants.SITEROOT + this.handle() + "/" + cp.name, true);
+            XmlHelper.outputBasicFile(this, cp.title, customContent, StringConstants.SITEROOT + this.handle() + "/" + cp.name, true);
 
             // Output empty sidenav
             XmlHelper.outputSidenav(StringConstants.SITEROOT + this.handle() + "/" + cp.name, "");

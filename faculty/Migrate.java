@@ -545,6 +545,7 @@ public class Migrate {
         // Get Custom Pages
         List<CustomPage> customPages = new ArrayList<CustomPage>();
         stmt = conn.prepareStatement(Queries.GetCustomPages);
+        // SELECT * FROM sjsu_people_pages WHERE faculty_id=?";
         stmt.setInt(1, currentFaculty.facultyID);
         rs = stmt.executeQuery();
         while(rs.next()) {
@@ -561,7 +562,7 @@ public class Migrate {
         stmt.close();
         currentFaculty.customPages = customPages;
 
-        // get links
+        // get custome page links
         for (CustomPage p : currentFaculty.customPages) {
             List<Link> links = new ArrayList<Link>();
             stmt = conn.prepareStatement(Queries.GetCustomPageLinks);
@@ -574,16 +575,24 @@ public class Migrate {
             p.links = links;
         }
 
-        // get documents
+        // get custom page documents
         for (CustomPage p : currentFaculty.customPages) {
             List<Doc> docs = new ArrayList<Doc>();
             stmt = conn.prepareStatement(Queries.GetCustomPageDocs);
             stmt.setInt(1, p.id);
             rs = stmt.executeQuery();
             while(rs.next()) {
-                Doc d = new Doc(rs.getString("label"), p.url 
+                Doc d = new Doc(rs.getString("label"), "/people" + p.url 
                         + "/" + rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1));
                 docs.add(d);
+                String sourceURL = liveSiteBaseDir + d.url;
+                // Save document without illegal characters
+                String destURL = outputDirectory + d.legalURL();
+                try {
+                       saveDocument(sourceURL, destURL);
+                    } catch(java.io.IOException e) {
+                        e.printStackTrace();
+                    }
             }
             p.documents = docs;
         }
@@ -654,10 +663,6 @@ public class Migrate {
                 } else {
                     section.active = true;
                 }
-                // section.url = c.url() + "/s" + rs.getString("position");
-                // Each section has a directory within the course: /s0 /s1 /s2 etc.
-                // It's not clear if it is the same as the section or not
-                // section.url = c.url() + "/s" + String.valueOf(section.position - 1);
                 sections.add(section);
             }
             c.sections = sections;
@@ -682,14 +687,9 @@ public class Migrate {
                 stmt.setInt(1, s.id);
                 rs = stmt.executeQuery();
                 while(rs.next()) {
-                    //String label = rs.getString("label");
                     String filename = "";
-                    //filename = URLEncoder.encode(rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1), "UTF-8");
                     filename = rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1);
-                   
                     Doc d = new Doc(rs.getString("label"), c.path() + s.url() + "/"  + filename);
-                    //Doc d = new Doc(label, s.url + "/" 
-                    //        + rs.getString("path").URLEncoder.encode(substring(rs.getString("path").lastIndexOf('/') + 1), "UTF-8"));
                     documents.add(d);
                     String sourceURL = liveSiteBaseDir + d.url;
                     // Save document without illegal characters
