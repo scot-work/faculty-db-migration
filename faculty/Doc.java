@@ -40,4 +40,6 @@ class Doc {
 		return result;
 	}
 
+	// LOCAL_DOC_ROOT/handle/"course"/course_id/"section"/section_id>
+
 }

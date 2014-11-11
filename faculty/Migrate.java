@@ -44,8 +44,10 @@ public class Migrate {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
 
         // Choose live.properties or dev.properties  
+        
         // InputStream stream = loader.getResourceAsStream("dev.properties");
         InputStream stream = loader.getResourceAsStream("live.properties");
+        
         try {
             prop.load(stream);
         } catch (IOException e ) {
@@ -655,6 +657,7 @@ public class Migrate {
                 section.name = rs.getString("name");
                 section.description = rs.getString("description");
                 section.position = rs.getInt("position");
+                section.course_id = c.id;
                 // If any section is inactive, make the course inactive
                 if (rs.getInt("status") == 0) {
                     section.active = false;
@@ -753,7 +756,7 @@ public class Migrate {
                 if (connection instanceof HttpURLConnection) {
                     HttpURLConnection httpConnection = (HttpURLConnection) connection;
                     if (httpConnection.getResponseCode() == 404) {
-                        System.out.println("Incorrect URL (404): " + currentURL);
+                        System.out.println("File not found: " + currentURL);
                     } else {
                         System.out.println("Downloading: " + currentURL);
                         InputStream is = url.openStream();

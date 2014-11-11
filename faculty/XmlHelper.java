@@ -38,7 +38,7 @@ public class XmlHelper {
 
     protected static final String DEFAULT_PHOTO = "";
     protected static final String CSS_MENU = "/_resources/ou/editor/styles.txt";
-    protected static final String CSS_PATH = "/_resources/editor/sjsu-wysiwyg.css";
+    protected static final String CSS_PATH = "/_resources/ou/editor/sjsu-wysiwyg.css";
 
     /**
     * Return one element based on xPath
@@ -454,6 +454,7 @@ public class XmlHelper {
             educationEditor.setAttribute("csspath", CSS_PATH);
             educationEditor.setAttribute("cssmenu", CSS_MENU);
             educationEditor.setAttribute("width", "1040");
+            educationEditor.setAttribute("wysiwyg-class", "eduinfo");
             educationDiv.appendChild(educationEditor);
             document.appendChild(educationDiv);
 
@@ -468,6 +469,7 @@ public class XmlHelper {
             licensesEditor.setAttribute("csspath", CSS_PATH);
             licensesEditor.setAttribute("cssmenu", CSS_MENU);
             licensesEditor.setAttribute("width", "1040");
+            licensesEditor.setAttribute("wysiwyg-class", "licenses");
             licensesDiv.appendChild(licensesEditor);
             document.appendChild(licensesDiv);
 
@@ -482,6 +484,7 @@ public class XmlHelper {
             bioEditor.setAttribute("csspath", CSS_PATH);
             bioEditor.setAttribute("cssmenu", CSS_MENU);
             bioEditor.setAttribute("width", "1040");
+            bioEditor.setAttribute("wysiwyg-class", "bioinfo");
             bioDiv.appendChild(bioEditor);
             document.appendChild(bioDiv);
 
@@ -496,6 +499,7 @@ public class XmlHelper {
             linksEditor.setAttribute("csspath", CSS_PATH);
             linksEditor.setAttribute("cssmenu", CSS_MENU);
             linksEditor.setAttribute("width", "1040");
+            linksEditor.setAttribute("wysiwyg-class", "links");
             linksDiv.appendChild(linksEditor);
             document.appendChild(linksDiv);
         } catch (ParserConfigurationException pce){
@@ -615,7 +619,7 @@ public class XmlHelper {
             Element photoDiv = doc.createElementNS(StringConstants.NAMESPACE,"ouc:div");
             photoDiv.setAttribute("label", "photo");
             photoDiv.setAttribute("group", "Everyone");
-            photoDiv.setAttribute("button", "Hide");
+            photoDiv.setAttribute("button", "hide");
 
             Element photoMulti = doc.createElementNS(StringConstants.NAMESPACE,"ouc:multiedit");
             photoMulti.setAttribute("type","image");

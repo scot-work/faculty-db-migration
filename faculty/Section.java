@@ -9,6 +9,7 @@ class Section {
 	List<Link> links;
 	// String url;
 	int id;
+	int course_id;
 	int position;
 	boolean active;
 

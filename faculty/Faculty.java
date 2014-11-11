@@ -59,6 +59,18 @@ class Faculty {
     }
 
     /**
+    *   Return true if faculty has at least one active course
+    */
+    Boolean hasActiveCourses() {
+        for (Course c : courses) {
+            if (c.active) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Full name
      * @return Full name of the faculty 
      */
@@ -256,7 +268,7 @@ class Faculty {
                     System.out.println("Course not active: " + c.title);
                 }
             }
-            XmlHelper.outputBasicFile(this, "Courses", "<ul>" + courseList + "</ul>", StringConstants.SITEROOT + this.handle() + "/courses", true, "10" );
+            XmlHelper.outputBasicFile(this, "Courses", "<ul>" + courseList + "</ul>", StringConstants.SITEROOT + this.handle() + "/courses", this.hasActiveCourses(), "10" );
 
             // Output sidenav.inc
             XmlHelper.outputSidenav(StringConstants.SITEROOT + this.handle() + "/courses", courseList);
