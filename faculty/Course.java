@@ -13,6 +13,7 @@ class Course {
     String description;
     String supplementalUrl;
     String photoDescription;
+    String photoExtension;
     int photoSetting;
     List<Section> sections; 
 
@@ -33,7 +34,7 @@ class Course {
     }
 
     String photoURL() {
-        return path() + "/" + name + ".jpg";
+        return path() + "/" + name + photoExtension;
     }
 
     /**

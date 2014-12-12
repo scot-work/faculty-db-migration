@@ -45,8 +45,8 @@ public class Migrate {
 
         // Choose live.properties or dev.properties  
         
-        // InputStream stream = loader.getResourceAsStream("dev.properties");
-        InputStream stream = loader.getResourceAsStream("live.properties");
+        InputStream stream = loader.getResourceAsStream("dev.properties");
+        // InputStream stream = loader.getResourceAsStream("live.properties");
         
         try {
             prop.load(stream);
@@ -673,12 +673,10 @@ public class Migrate {
             stmt.close();
 
             // Get course photo
+            String extension;
             if (c.photoSetting == 2) {
-                try {
-                       saveDocument(liveSiteBaseDir + c.path() + "/" + c.name + ".jpg", outputDirectory + c.path() + "/" + c.name + ".jpg");
-                    } catch(java.io.IOException e) {
-                        e.printStackTrace();
-                    }
+                extension = saveImage(c.path(), c.name);
+                c.photoExtension = extension;
             }
 
             // get docs for section
@@ -738,12 +736,30 @@ public class Migrate {
     }
 
     /**
-     * Read an image from the Web, save as file
+    * Download an image
+    */
+    static String saveImage(String path, String name) {
+    	boolean success = false;
+    	int count = -1;
+    	try {
+    		while (!success && ++count < (StringConstants.imageExtensions.length - 1)) {
+     			success = saveDocument(liveSiteBaseDir + path + "/" + name + StringConstants.imageExtensions[count], 
+     				outputDirectory + path + "/" + name + StringConstants.imageExtensions[count]);
+			}
+            
+        } catch(java.io.IOException e) {
+            e.printStackTrace();
+        }
+        return StringConstants.imageExtensions[count];
+    }
+
+    /**
+     * Read a file from the Web, save as file
      * @param documentUrl
      * @param destinationFile
      * @throws IOException
      */
-    static void saveDocument(String currentURL, String destinationFile) throws IOException {
+    static boolean saveDocument(String currentURL, String destinationFile) throws IOException {
         if (!Migrate.suppressFileOutput) {
             try {
                 // Need to replace spaces with %20
@@ -755,10 +771,11 @@ public class Migrate {
                // Cast to a HttpURLConnection
                 if (connection instanceof HttpURLConnection) {
                     HttpURLConnection httpConnection = (HttpURLConnection) connection;
-                    if (httpConnection.getResponseCode() == 404) {
-                        System.out.println("File not found: " + currentURL);
+                    if (httpConnection.getResponseCode() != 200) {
+                        System.out.println("*** File not found: " + currentURL);
+                        return false;
                     } else {
-                        System.out.println("Downloading: " + currentURL);
+                        // System.out.println("Downloading: " + currentURL);
                         InputStream is = url.openStream();
                         String dir = destinationFile.substring(0, destinationFile.lastIndexOf('/'));
                         // Create local directories to write to
@@ -771,12 +788,17 @@ public class Migrate {
                         }
                         is.close();
                         os.close();
+                        return true;
                     }
                 }
             } catch (java.io.FileNotFoundException fnfe){
                 System.out.println("Failed to download " + currentURL);
+                return false;
             }
+        } else {
+        	return true;
         }
+        return false;
     }
 }
 

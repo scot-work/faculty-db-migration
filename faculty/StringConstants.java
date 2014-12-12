@@ -16,4 +16,5 @@ public class StringConstants {
 	static final String SIDENAV_HEADER = "<!-- com.omniupdate.editor csspath=\"/_resources/ou/editor/sidenav.css\" cssmenu=\"/_resources/ou/editor/sidenav.txt\" width=\"1040\" -->";
 	static String PRIMARYNAV = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<?pcf-stylesheet path=\"/xsl/_shared/facultyprimarynav.xsl\" site=\"_resources\" extension=\"html\"?>\n<!DOCTYPE document SYSTEM \"http://commons.omniupdate.com/dtd/standard.dtd\">\n\n<document>\n<!-- com.omniupdate.properties -->\n<title>Homepage</title>\n<!-- /com.omniupdate.properties -->\n</document>";
 	static final String SITEROOT = "/people";
+	static final String[] imageExtensions = new String[]{".jpg",".png",".bmp",".gif",".jpeg"};
 }
