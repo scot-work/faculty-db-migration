@@ -742,9 +742,10 @@ public class Migrate {
     	boolean success = false;
     	int count = -1;
     	try {
-    		while (!success && ++count < (StringConstants.imageExtensions.length - 1)) {
+    		while (!success && ++count < (StringConstants.imageExtensions.length)) {
      			success = saveDocument(liveSiteBaseDir + path + "/" + name + StringConstants.imageExtensions[count], 
      				outputDirectory + path + "/" + name + StringConstants.imageExtensions[count]);
+     			// System.out.println(StringConstants.imageExtensions[count]);
 			}
             
         } catch(java.io.IOException e) {

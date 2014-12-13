@@ -24,6 +24,7 @@ class Faculty {
     Boolean alternatePhonePreferred;
     String additionalInfo;
     String photoDescription;
+    String photoExtension;
     String middleName;
     int photoSetting;
     String titles;
@@ -238,14 +239,15 @@ class Faculty {
         }
 
         // save photo
-        if (photoSetting == 2) {
+       /* if (photoSetting == 2) {
+           this.photoExtension = Migrate.saveImage(StringConstants.SITEROOT + this.handle(), handle());
             try {
                 Migrate.saveDocument(Migrate.liveSiteBaseDir + StringConstants.SITEROOT + handle() + handle() + ".jpg", 
                         Migrate.outputDirectory + StringConstants.SITEROOT + handle() + handle() + ".jpg");
             } catch (IOException e){
                 e.printStackTrace();
-            }
-        }
+            } 
+        }*/
 
         // write sidenav.inc	
         String sidenav = "";
@@ -295,7 +297,13 @@ class Faculty {
      */
     public String photoUrl() {
         if (this.photoSetting == 2) {
-            return StringConstants.SITEROOT + this.handle() + handle() + ".jpg";
+
+
+           this.photoExtension = Migrate.saveImage(StringConstants.SITEROOT + this.handle(), handle());
+
+
+            System.out.println(StringConstants.SITEROOT + this.handle() + handle() + this.photoExtension);
+            return StringConstants.SITEROOT + this.handle() + handle() + this.photoExtension;
         } else {
             return null;
         }

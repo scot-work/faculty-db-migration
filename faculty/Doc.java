@@ -15,14 +15,21 @@ class Doc {
 		this.url = url;
 	}
 
+	String extension() {
+		return " [" + url.substring(url.lastIndexOf('.') + 1).toUpperCase() + "]";
+	}
+
 	/**
 	 * Return as a formatted list item/link
 	 * @return HTML list item
 	 */
 	String toHTML() {
-		return "\n<li><a href=\"" + legalURL() + "\">" + label + "</a></li>";
+		return "\n<li><a href=\"" + legalURL() + "\">" + label + this.extension() + "</a></li>";
 	}
 
+	/**
+	* Replace or remove illegal characters 
+	*/
 	String legalURL() {
 		String result;
 		// remove apostrophes
@@ -39,7 +46,4 @@ class Doc {
 		result = result.replaceAll("@", "");
 		return result;
 	}
-
-	// LOCAL_DOC_ROOT/handle/"course"/course_id/"section"/section_id>
-
 }
