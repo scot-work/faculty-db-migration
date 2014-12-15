@@ -646,51 +646,57 @@ public class Migrate {
         // process courses
         // get sections
         Section section = null;
-        for (Course c : currentFaculty.courses) {
+        for (Course currentCourse : currentFaculty.courses) {
             List<Section> sections = new ArrayList<Section>();
             stmt = conn.prepareStatement(Queries.CourseSectionsQuery);
             // SELECT * FROM sjsu_people_course_section WHERE course_id=? ORDER BY position"
-            stmt.setInt(1, c.id);
+            stmt.setInt(1, currentCourse.id);
             rs = stmt.executeQuery();
             while(rs.next()) {
                 section = new Section(rs.getInt("id"));
                 section.name = rs.getString("name");
                 section.description = rs.getString("description");
                 section.position = rs.getInt("position");
-                section.course_id = c.id;
+                section.course_id = currentCourse.id;
                 // If any section is inactive, make the course inactive
                 if (rs.getInt("status") == 0) {
                     section.active = false;
-                    c.active = false;
-                    System.out.println("Section " + section.name + " is inactive, deactivating course " + c.title);
+                    currentCourse.active = false;
+                    System.out.println("Section " + section.name + " is inactive, deactivating course " + currentCourse.title);
                 } else {
                     section.active = true;
                 }
                 sections.add(section);
             }
-            c.sections = sections;
+            currentCourse.sections = sections;
             rs.close();
             stmt.close();
 
             // Get course photo
             String extension;
-            if (c.photoSetting == 2) {
-                extension = saveImage(c.path(), c.name);
-                c.photoExtension = extension;
+            if (currentCourse.photoSetting == 2) {
+                extension = saveImage(currentCourse.path(), currentCourse.name);
+                currentCourse.photoExtension = extension;
             }
 
             // get docs for section
-            for (Section s : c.sections) {
+            for (Section currentSection : currentCourse.sections) {
                 List<Doc> documents = new ArrayList<Doc>();
                 stmt = conn.prepareStatement(Queries.SectionDocsQuery);
                 // SELECT spd.path, spd.label  FROM sjsu_people_course_section_docs spcsd, sjsu_people_documents spd 
                 // WHERE spd.id = spcsd.document_id AND spcsd.course_section_id=? ORDER BY spcsd.position
-                stmt.setInt(1, s.id);
+                stmt.setInt(1, currentSection.id);
                 rs = stmt.executeQuery();
                 while(rs.next()) {
                     String filename = "";
                     filename = rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1);
-                    Doc d = new Doc(rs.getString("label"), c.path() + s.url() + "/"  + filename);
+                    Doc d = new Doc(rs.getString("label"), currentCourse.path() + currentSection.url() + "/"  + filename);
+
+                    // Get local path from course ID and section ID
+                    // /fac/<handle>/course/<courseID>/section/<sectionID>/
+                    d.localPath = "/fac" + currentFaculty.handle() + "/course/" + currentCourse.id + "/section/" + currentSection.id + "/";
+                    System.out.println(d.localPath);
+
                     documents.add(d);
                     String sourceURL = liveSiteBaseDir + d.url;
                     // Save document without illegal characters
@@ -701,19 +707,19 @@ public class Migrate {
                         e.printStackTrace();
                     }
                 }
-                s.docs = documents;
+                currentSection.docs = documents;
                 rs.close();
                 stmt.close();
 
                 List<Link> sectionLinks = new ArrayList<Link>();
                 stmt = conn.prepareStatement(Queries.SectionLinksQuery);
-                stmt.setInt(1, s.id);
+                stmt.setInt(1, currentSection.id);
                 rs = stmt.executeQuery();
                 while(rs.next()) {
                     Link l = new Link(rs.getString("label"), rs.getString("url"));
                     sectionLinks.add(l);
                 }
-                s.links = sectionLinks;
+                currentSection.links = sectionLinks;
                 rs.close();
                 stmt.close();
             } 
