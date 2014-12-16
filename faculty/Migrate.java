@@ -22,6 +22,8 @@ import org.w3c.dom.Element;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 /**
  * 
@@ -32,6 +34,7 @@ public class Migrate {
 
     public static String outputDirectory;
     public static String liveSiteBaseDir;
+    public static String localDocRoot;
     // Set to true to process faculty without outputting any files
     static Boolean suppressFileOutput = false;
 
@@ -55,6 +58,7 @@ public class Migrate {
         }
         Migrate.outputDirectory = prop.getProperty("outputDirectory");
         Migrate.liveSiteBaseDir = prop.getProperty("liveSiteBaseDir");
+        Migrate.localDocRoot = prop.getProperty("localDocRoot");
         if (args.length == 0) {
             try {
                 processAllFacultyPages(prop);
@@ -591,7 +595,7 @@ public class Migrate {
                 // Save document without illegal characters
                 String destURL = outputDirectory + d.legalURL();
                 try {
-                       saveDocument(sourceURL, destURL);
+                       saveDocumentFromURL(sourceURL, destURL);
                     } catch(java.io.IOException e) {
                         e.printStackTrace();
                     }
@@ -678,34 +682,79 @@ public class Migrate {
                 extension = saveImage(currentCourse.path(), currentCourse.name);
                 currentCourse.photoExtension = extension;
             }
-
+			String destPath = "";
             // get docs for section
             for (Section currentSection : currentCourse.sections) {
+                System.out.println("\n\nCopying section files from /fac directory to output directory");
                 List<Doc> documents = new ArrayList<Doc>();
                 stmt = conn.prepareStatement(Queries.SectionDocsQuery);
                 // SELECT spd.path, spd.label  FROM sjsu_people_course_section_docs spcsd, sjsu_people_documents spd 
                 // WHERE spd.id = spcsd.document_id AND spcsd.course_section_id=? ORDER BY spcsd.position
                 stmt.setInt(1, currentSection.id);
                 rs = stmt.executeQuery();
+                String cmd = "";
+                String filename = "";
                 while(rs.next()) {
-                    String filename = "";
+                    // Get the name of the file from the path
                     filename = rs.getString("path").substring(rs.getString("path").lastIndexOf('/') + 1);
-                    Doc d = new Doc(rs.getString("label"), currentCourse.path() + currentSection.url() + "/"  + filename);
 
-                    // Get local path from course ID and section ID
+                    // Create a new Doc object
+                    Doc currentDoc = new Doc(rs.getString("label"), currentCourse.path() + currentSection.url() + "/"  + filename);
+                    currentDoc.name = filename;
+
+                    // clean up filename to allow local copying
+                    //filename = filename.replaceAll("'", "\\\\'");
+                    filename = filename.replaceAll(" ", "\\\\ ");
+
                     // /fac/<handle>/course/<courseID>/section/<sectionID>/
-                    d.localPath = "/fac" + currentFaculty.handle() + "/course/" + currentCourse.id + "/section/" + currentSection.id + "/";
-                    System.out.println(d.localPath);
+                    currentDoc.localPath = localDocRoot + currentFaculty.handle() + "/course/" + currentCourse.id 
+                    + "/section/" + currentSection.id + "/" + filename;
+                    
+                    // copy to output directory with a name that OU can handle
+                    destPath = outputDirectory + currentCourse.path() + currentSection.url() + "/" + currentDoc.legalName();
 
-                    documents.add(d);
-                    String sourceURL = liveSiteBaseDir + d.url;
-                    // Save document without illegal characters
-                    String destURL = outputDirectory + d.legalURL();
+                    destPath = destPath.replaceAll(" ", "");
+                    
+                    // command to copy file
+                    // cmd = "cp '" + currentDoc.localPath + "' " + destPath;
+                    cmd = "cp " + currentDoc.localPath + " " + destPath;
+
+                    System.out.println(cmd);
+                    
+                    // Copy the file
                     try {
-                       saveDocument(sourceURL, destURL);
+                       new File(outputDirectory + currentCourse.path() + currentSection.url()).mkdirs();
+                            	// new File(destPath).mkdirs();
+                       Process cmdProc = Runtime.getRuntime().exec(cmd);
+                       BufferedReader stdoutReader = new BufferedReader(
+                           new InputStreamReader(cmdProc.getInputStream()));
+                       String cmdOutput;
+                       while ((cmdOutput = stdoutReader.readLine()) != null) {
+                        // process procs standard output here
+                            System.out.println(cmdOutput);
+                       }
+
+                       BufferedReader stderrReader = new BufferedReader(
+                           new InputStreamReader(cmdProc.getErrorStream()));
+                       String cmdError;
+                       while ((cmdError = stderrReader.readLine()) != null) {
+                            System.out.println("Error: " + cmdError + "\n");
+           // process procs standard error here
+                       }
+
+                   } catch (IOException e) {
+                      e.printStackTrace();
+                  }
+
+                  documents.add(currentDoc);
+                    // String sourceURL = liveSiteBaseDir + d.url;
+                    // Save document without illegal characters
+                    // String destURL = outputDirectory + d.legalURL();
+                    /* try {
+                       saveDocumentFromURL(sourceURL, destURL);
                     } catch(java.io.IOException e) {
                         e.printStackTrace();
-                    }
+                    } */
                 }
                 currentSection.docs = documents;
                 rs.close();
@@ -749,7 +798,7 @@ public class Migrate {
     	int count = -1;
     	try {
     		while (!success && ++count < (StringConstants.imageExtensions.length)) {
-     			success = saveDocument(liveSiteBaseDir + path + "/" + name + StringConstants.imageExtensions[count], 
+     			success = saveDocumentFromURL(liveSiteBaseDir + path + "/" + name + StringConstants.imageExtensions[count], 
      				outputDirectory + path + "/" + name + StringConstants.imageExtensions[count]);
      			// System.out.println(StringConstants.imageExtensions[count]);
 			}
@@ -766,7 +815,7 @@ public class Migrate {
      * @param destinationFile
      * @throws IOException
      */
-    static boolean saveDocument(String currentURL, String destinationFile) throws IOException {
+    static boolean saveDocumentFromURL(String currentURL, String destinationFile) throws IOException {
         if (!Migrate.suppressFileOutput) {
             try {
                 // Need to replace spaces with %20
