@@ -170,21 +170,21 @@ public class XmlHelper {
      */
     static void outputPcf(String directory, String content, String title) {
         content = cleanup(content);
-        if ( !Migrate.suppressFileOutput){
-        try {
+        if ( !Migrate.suppressFileOutput) {
+            try {
             // String outputDir = Migrate.outputDirectory + Migrate.baseURL + directory;
-            String outputDir = Migrate.outputDirectory + directory;
-            new File(outputDir).mkdirs();
-            String outputFile = outputDir + "/" + title;
-            PrintWriter writer = new PrintWriter(outputFile, "utf-8");
-            writer.println(content);
-            writer.close();
-        } catch (FileNotFoundException fnfe){
-            fnfe.printStackTrace();
-        } catch (UnsupportedEncodingException uee) {
-            uee.printStackTrace();
+                String outputDir = Migrate.outputDirectory + directory;
+                new File(outputDir).mkdirs();
+                String outputFile = outputDir + "/" + title;
+                PrintWriter writer = new PrintWriter(outputFile, "utf-8");
+                writer.println(content);
+                writer.close();
+            } catch (FileNotFoundException fnfe){
+                fnfe.printStackTrace();
+            } catch (UnsupportedEncodingException uee) {
+                uee.printStackTrace();
+            }
         }
-    }
     }
 
     /**

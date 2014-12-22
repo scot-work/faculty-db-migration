@@ -685,7 +685,7 @@ public class Migrate {
 			String destPath = "";
             // get docs for section
             for (Section currentSection : currentCourse.sections) {
-                System.out.println("\n\nCopying section files from /fac directory to output directory");
+                // System.out.println("\n\nCopying section files from /fac directory to output directory");
                 List<Doc> documents = new ArrayList<Doc>();
                 stmt = conn.prepareStatement(Queries.SectionDocsQuery);
                 // SELECT spd.path, spd.label  FROM sjsu_people_course_section_docs spcsd, sjsu_people_documents spd 
@@ -702,35 +702,28 @@ public class Migrate {
                     Doc currentDoc = new Doc(rs.getString("label"), currentCourse.path() + currentSection.url() + "/"  + filename);
                     currentDoc.name = filename;
 
-                    // clean up filename to allow local copying
-                    //filename = filename.replaceAll("'", "\\\\'");
-                    filename = filename.replaceAll(" ", "\\\\ ");
-
                     // /fac/<handle>/course/<courseID>/section/<sectionID>/
                     currentDoc.localPath = localDocRoot + currentFaculty.handle() + "/course/" + currentCourse.id 
-                    + "/section/" + currentSection.id + "/" + filename;
+                        + "/section/" + currentSection.id + "/" + filename;
                     
                     // copy to output directory with a name that OU can handle
                     destPath = outputDirectory + currentCourse.path() + currentSection.url() + "/" + currentDoc.legalName();
 
-                    destPath = destPath.replaceAll(" ", "");
+                    // remove spaces?
+                    // destPath = destPath.replaceAll(" ", "");
                     
                     // command to copy file
-                    // cmd = "cp '" + currentDoc.localPath + "' " + destPath;
-                    cmd = "cp " + currentDoc.localPath + " " + destPath;
-
-                    System.out.println(cmd);
+                    String[] cmdArray = new String[]{"cp", currentDoc.localPath, destPath};
                     
                     // Copy the file
                     try {
                        new File(outputDirectory + currentCourse.path() + currentSection.url()).mkdirs();
-                            	// new File(destPath).mkdirs();
-                       Process cmdProc = Runtime.getRuntime().exec(cmd);
+                       Process cmdProc = Runtime.getRuntime().exec(cmdArray);
                        BufferedReader stdoutReader = new BufferedReader(
                            new InputStreamReader(cmdProc.getInputStream()));
                        String cmdOutput;
                        while ((cmdOutput = stdoutReader.readLine()) != null) {
-                        // process procs standard output here
+                            // process procs standard output here
                             System.out.println(cmdOutput);
                        }
 
@@ -739,22 +732,15 @@ public class Migrate {
                        String cmdError;
                        while ((cmdError = stderrReader.readLine()) != null) {
                             System.out.println("Error: " + cmdError + "\n");
-           // process procs standard error here
+                            // process procs standard error here
                        }
 
-                   } catch (IOException e) {
+                    } catch (IOException e) {
                       e.printStackTrace();
-                  }
+                    }
 
                   documents.add(currentDoc);
-                    // String sourceURL = liveSiteBaseDir + d.url;
-                    // Save document without illegal characters
-                    // String destURL = outputDirectory + d.legalURL();
-                    /* try {
-                       saveDocumentFromURL(sourceURL, destURL);
-                    } catch(java.io.IOException e) {
-                        e.printStackTrace();
-                    } */
+                    
                 }
                 currentSection.docs = documents;
                 rs.close();
@@ -773,6 +759,16 @@ public class Migrate {
                 stmt.close();
             } 
         }
+
+        // Output pics and docs folders
+        String picsDir = outputDirectory + "/people" + currentFaculty.handle() + "/pics";
+        File pics = new File(picsDir);
+        pics.mkdirs();
+        
+        String docsDir = outputDirectory + "/people" + currentFaculty.handle() + "/docs";
+        File docs = new File(docsDir);
+        docs.mkdirs();
+       
         System.out.println("Finished " + currentFaculty.fullName() + "\n");
     }
 
@@ -795,18 +791,21 @@ public class Migrate {
     */
     static String saveImage(String path, String name) {
     	boolean success = false;
+        String extension = "";
     	int count = -1;
     	try {
     		while (!success && ++count < (StringConstants.imageExtensions.length)) {
-     			success = saveDocumentFromURL(liveSiteBaseDir + path + "/" + name + StringConstants.imageExtensions[count], 
-     				outputDirectory + path + "/" + name + StringConstants.imageExtensions[count]);
+                extension = StringConstants.imageExtensions[count];
+     			success = saveDocumentFromURL(liveSiteBaseDir + path + "/" + name + extension, 
+     				outputDirectory + path + "/" + name + extension);
+                
      			// System.out.println(StringConstants.imageExtensions[count]);
 			}
             
         } catch(java.io.IOException e) {
             e.printStackTrace();
         }
-        return StringConstants.imageExtensions[count];
+        return extension;
     }
 
     /**

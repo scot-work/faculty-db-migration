@@ -33,7 +33,9 @@ class Doc {
 	*/
 	String legalName(){
 		String result;
-		// remove apostrophes
+		// replace spaces with hyphen
+		result = this.name.replaceAll(" ", "-");
+		// remove single apostrophes
 		result = this.name.replaceAll("'", "");
 		// remove commas
 		result = result.replaceAll(",", "");
@@ -43,8 +45,12 @@ class Doc {
 		// remove square brackets
 		result = result.replaceAll("\\]", "");
 		result = result.replaceAll("\\[", "");
+		// remove backslashes
 		result = result.replaceAll("\\\\", "");
+		// remove at sign
 		result = result.replaceAll("@", "");
+		// remove plus sign
+		result = result.replaceAll("\\+", "");
 		return result;
 	}
 
