@@ -33,12 +33,19 @@ class Doc {
 	*/
 	String legalName(){
 		String result;
+
+		// Need to replace : and &
+
 		// replace spaces with hyphen
 		result = this.name.replaceAll(" ", "-");
 		// remove single apostrophes
 		result = this.name.replaceAll("'", "");
+		// remove colons
+		result = this.name.replaceAll(":", "");
 		// remove commas
 		result = result.replaceAll(",", "");
+		// remove ampersands
+		result = this.name.replaceAll("&", "and");
 		// remove parentheses
 		result = result.replaceAll("\\(", "");
 		result = result.replaceAll("\\)", "");

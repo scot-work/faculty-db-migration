@@ -48,8 +48,8 @@ public class Migrate {
 
         // Choose live.properties or dev.properties  
         
-        InputStream stream = loader.getResourceAsStream("dev.properties");
-        // InputStream stream = loader.getResourceAsStream("live.properties");
+        // InputStream stream = loader.getResourceAsStream("dev.properties");
+        InputStream stream = loader.getResourceAsStream("live.properties");
         
         try {
             prop.load(stream);
@@ -764,7 +764,7 @@ public class Migrate {
         String picsDir = outputDirectory + "/people" + currentFaculty.handle() + "/pics";
         File pics = new File(picsDir);
         pics.mkdirs();
-        
+
         String docsDir = outputDirectory + "/people" + currentFaculty.handle() + "/docs";
         File docs = new File(docsDir);
         docs.mkdirs();
